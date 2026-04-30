@@ -132,7 +132,7 @@ def backoffice_create_employee_view(request):
             )
 
             messages.success(request, "Employee created successfully")
-            return redirect("create_employee")
+            return redirect("backoffice")
 
         except Exception as e:
             messages.error(request, str(e))

@@ -1,46 +1,140 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>Create Employee</title>
+  <title>Create Employee</title>
+
+  <style>
+:root {
+  --bg: #f9f9f8;
+  --surface: #ffffff;
+  --border: #ebebea;
+  --text: #1c1c1a;
+  --muted: #8c8c89;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.main {
+  padding: 26px 24px;
+}
+
+/* HEADER */
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* MESSAGES */
+ul {
+  list-style: none;
+  margin-bottom: 12px;
+}
+
+li {
+  font-size: 13px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  margin-bottom: 6px;
+}
+
+/* CARD FORM */
+form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 18px;
+}
+
+/* FIELD */
+label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+input,
+select {
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+/* BUTTON */
+button {
+  margin-top: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background: var(--text);
+  color: #fff;
+}
+  </style>
 </head>
+
 <body>
 
-<h2>Create Employee</h2>
+<div class="main">
 
-{% if messages %}
+  <h2>Create Employee</h2>
+
+  {% if messages %}
     <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
     </ul>
-{% endif %}
+  {% endif %}
 
-<form method="POST">
+  <form method="POST">
     {% csrf_token %}
 
-    <label>First Name</label><br>
-    <input type="text" name="first_name"><br><br>
+    <label>First Name</label>
+    <input type="text" name="first_name">
 
-    <label>Last Name</label><br>
-    <input type="text" name="last_name"><br><br>
+    <label>Last Name</label>
+    <input type="text" name="last_name">
 
-    <label>Email</label><br>
-    <input type="email" name="email" required><br><br>
+    <label>Email</label>
+    <input type="email" name="email" required>
 
-    <label>Password</label><br>
-    <input type="password" name="password" required><br><br>
+    <label>Password</label>
+    <input type="password" name="password" required>
 
-    <label>Position</label><br>
+    <label>Position</label>
     <select name="position">
-        {% for value, label in positions %}
-            <option value="{{ value }}">{{ label }}</option>
-        {% endfor %}
+      {% for value, label in positions %}
+        <option value="{{ value }}">{{ label }}</option>
+      {% endfor %}
     </select>
 
-    <br><br>
-
     <button type="submit">Create Employee</button>
-</form>
+
+  </form>
+
+</div>
 
 </body>
 </html>
