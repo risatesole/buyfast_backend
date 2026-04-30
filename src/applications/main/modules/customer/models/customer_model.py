@@ -1,5 +1,5 @@
 from django.db import models
-from .model_user import User
+from ...account.user.models.model_user import User
 
 class Customer_model(models.Model):
     user = models.OneToOneField(

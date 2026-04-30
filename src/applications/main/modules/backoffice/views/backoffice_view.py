@@ -2,7 +2,7 @@ from .contexts.backoffice_context_handler import backoffice_view_context_handler
 from django.shortcuts import render,redirect, get_object_or_404
 from ...product.models.model_product import Product
 from ...product.models.price_model import Price
-from ...account.user.models.customer_profile import Customer_model
+from ...customer.models.customer_model import Customer_model
 from ...account.user.models.employee_profile import Employee, EmployeePosition
 from ...account.user.models.model_user import User
 from django.contrib import messages

@@ -1,5 +1,5 @@
 from ..models.model_user import User, UserRoles
-from ..models.customer_profile import Customer_model
+from ....customer.models.customer_model import Customer_model
 class emailExistsError(Exception):
     pass
 class UserService:

@@ -1,4 +1,4 @@
-from ....account.user.models.customer_profile import Customer_model as Customer_model
+from ....customer.models.customer_model import Customer_model as Customer_model
 from ....account.user.models.employee_profile import Employee
 from ....product.models.model_product import Product
 from ....product.models.price_model import Price
