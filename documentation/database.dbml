@@ -39,7 +39,8 @@ Table provider{
 Table stock_purchase {
   id int [pk]
   provider int [ref: > provider.id]
-  purchese_price boolean
+  purchese_price_per_item boolean
+  quantity int
   reference_doc varchar
   description varchar
   added_by int [ref: > employee.id]
