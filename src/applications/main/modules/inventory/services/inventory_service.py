@@ -61,3 +61,11 @@ class InventoryService:
             .select_related("product")
             .order_by("-date_time")
         )
+
+    @staticmethod
+    def list_stock_entries():
+        return (
+            StockEntry.objects
+            .select_related("product", "provider", "added_by")
+            .order_by("-received_at")
+        )

@@ -24,6 +24,7 @@ def backoffice_view_context_handler():
         "products": products,
         "inventory": None, 
         "stock_movement":InventoryService.list_stock_movements(),
+        "stock_entry": InventoryService.list_stock_entries(),
         "project": {
             "name": "Duck"
         }
