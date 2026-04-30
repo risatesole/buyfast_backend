@@ -1,7 +1,7 @@
 from django.db import models
 from .model_user import User
 
-class Customer(models.Model):
+class Customer_model(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,

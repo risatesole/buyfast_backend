@@ -2,7 +2,7 @@ from .contexts.backoffice_context_handler import backoffice_view_context_handler
 from django.shortcuts import render,redirect, get_object_or_404
 from ...product.models.model_product import Product
 from ...product.models.price_model import Price
-from ...account.user.models.customer_profile import Customer
+from ...account.user.models.customer_profile import Customer_model
 from ...account.user.models.employee_profile import Employee, EmployeePosition
 from ...account.user.models.model_user import User
 from django.contrib import messages
@@ -51,7 +51,7 @@ def backoffice_create_product_view(request):
 @login_required
 @user_passes_test(is_employee)
 def backoffice_customer_edit_view(request, customer_id):
-    customer = Customer.objects.select_related("user").filter(id=customer_id).first()
+    customer = Customer_model.objects.select_related("user").filter(id=customer_id).first()
 
     if not customer or customer.user.role != "customer":
         return redirect("backoffice")

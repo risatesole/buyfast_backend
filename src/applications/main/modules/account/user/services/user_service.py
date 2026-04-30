@@ -1,5 +1,5 @@
 from ..models.model_user import User, UserRoles
-from ..models.customer_profile import Customer
+from ..models.customer_profile import Customer_model
 class emailExistsError(Exception):
     pass
 class UserService:
@@ -24,7 +24,7 @@ class UserService:
             role=self.ROLE_CUSTOMER,
             status="active"
         )
-        customer = Customer.objects.create(
+        customer = Customer_model.objects.create(
             user=user
         )
 
