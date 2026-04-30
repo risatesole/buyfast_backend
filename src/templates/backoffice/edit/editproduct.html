@@ -1,147 +1,259 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Producto</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Producto</title>
 
-```
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+  <style>
+:root {
+  --bg: #f9f9f8;
+  --surface: #ffffff;
+  --border: #ebebea;
+  --text: #1c1c1a;
+  --muted: #8c8c89;
+}
 
-    .container {
-        background: white;
-        padding: 25px;
-        border-radius: 10px;
-        width: 400px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+body {
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+}
 
-    label {
-        display: block;
-        margin-top: 10px;
-        font-weight: bold;
-    }
+.main {
+  display: flex;
+  height: 100vh;
+}
 
-    input, textarea, select {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
+.content {
+  flex: 1;
+  padding: 26px 24px;
+  overflow-y: auto;
+}
 
-    button {
-        margin-top: 15px;
-        width: 100%;
-        padding: 10px;
-        border: none;
-        background: #007bff;
-        color: white;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+/* HEADER */
+.page-header {
+  margin-bottom: 18px;
+}
 
-    button:hover {
-        background: #0069d9;
-    }
+.page-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
 
-    img {
-        margin-top: 10px;
-        border-radius: 5px;
-    }
-</style>
-```
+.page-header p {
+  font-size: 12px;
+  color: var(--muted);
+}
 
+/* CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* FORM */
+.form-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* GRID */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* IMAGE */
+.preview-img {
+  width: 100px;
+  margin-top: 6px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
+
+/* FOOTER */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--text);
+  color: #fff;
+}
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>Editar Producto</h2>
+<div class="main">
+  <div class="content">
 
-```
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+    <div class="page-header">
+      <h2>Editar Producto</h2>
+      <p>Actualizar información del producto</p>
+    </div>
 
-    <!-- Nombre -->
-    <label>Nombre</label>
-    <input type="text" name="name" value="{{ product.name }}" required>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
 
-    <!-- Descripción -->
-    <label>Descripción</label>
-    <textarea name="description" rows="4" required>{{ product.description }}</textarea>
+      <div class="card">
+        <div class="card-header">Product Info</div>
 
-    <label>Brand</label>
-    <input type="text" name="brand" value="{{ product.brand }}" required>
+        <div class="form-body">
 
-    <!-- Categoría -->
-    <label>Categoría</label>
-    <select name="category" required>
-        <option value="FRUITS_AND_VEGETABLES" {% if product.category == "FRUITS_AND_VEGETABLES" %}selected{% endif %}>Frutas y vegetales</option>
-        <option value="LACTEOUS" {% if product.category == "LACTEOUS" %}selected{% endif %}>Lácteos</option>
-        <option value="GROCERY_AND_GOURMET" {% if product.category == "GROCERY_AND_GOURMET" %}selected{% endif %}>Grocery & Gourmet Food</option>
-        <option value="ELECTRONIC_AND_TECH" {% if product.category == "ELECTRONIC_AND_TECH" %}selected{% endif %}>Electronics & Tech</option>
-        <option value="CLOTHING" {% if product.category == "CLOTHING" %}selected{% endif %}>Clothing</option>
-        <option value="SHOES" {% if product.category == "SHOES" %}selected{% endif %}>Shoes</option>
-        <option value="JEWELRY" {% if product.category == "JEWELRY" %}selected{% endif %}>Jewelry</option>
-        <option value="HOME_AND_KITCHEN" {% if product.category == "HOME_AND_KITCHEN" %}selected{% endif %}>Home & Kitchen</option>
-        <option value="TOOLS_AND_HOME_IMPROVEMENT" {% if product.category == "TOOLS_AND_HOME_IMPROVEMENT" %}selected{% endif %}>Tools & Home Improvement</option>
-        <option value="FURNITURE" {% if product.category == "FURNITURE" %}selected{% endif %}>Furniture</option>
-        <option value="BOOKS" {% if product.category == "BOOKS" %}selected{% endif %}>Books</option>
-        <option value="VIDEO_GAMES" {% if product.category == "VIDEO_GAMES" %}selected{% endif %}>Video Games</option>
-        <option value="MUSIC" {% if product.category == "MUSIC" %}selected{% endif %}>Music</option>
-        <option value="MOVIES_AND_TV" {% if product.category == "MOVIES_AND_TV" %}selected{% endif %}>Movies & TV</option>
-        <option value="BEAUTY_AND_PERSONAL_CARE" {% if product.category == "BEAUTY_AND_PERSONAL_CARE" %}selected{% endif %}>Beauty & Personal Care</option>
-        <option value="HEALTH_AND_HOUSEHOLD" {% if product.category == "HEALTH_AND_HOUSEHOLD" %}selected{% endif %}>Health & Household</option>
-        <option value="TOYS_AND_GAMES" {% if product.category == "TOYS_AND_GAMES" %}selected{% endif %}>Toys & Games</option>
-        <option value="BABY_PRODUCTS" {% if product.category == "BABY_PRODUCTS" %}selected{% endif %}>Baby Products</option>
-        <option value="SPORTS_AND_OUTDOORS" {% if product.category == "SPORTS_AND_OUTDOORS" %}selected{% endif %}>Sports & Outdoors</option>
-        <option value="AUTOMOTIVE" {% if product.category == "AUTOMOTIVE" %}selected{% endif %}>Automotive</option>
-        <option value="PET_SUPPLIES" {% if product.category == "PET_SUPPLIES" %}selected{% endif %}>Pet Supplies</option>
-        <option value="OFFICE_PRODUCTS" {% if product.category == "OFFICE_PRODUCTS" %}selected{% endif %}>Office Products</option>
-        <option value="INDUSTRIAL_AND_SCIENTIFIC" {% if product.category == "INDUSTRIAL_AND_SCIENTIFIC" %}selected{% endif %}>Industrial & Scientific</option>
-    </select>
+          <!-- Nombre -->
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" name="name" value="{{ product.name }}" required>
+          </div>
 
-    <label>Metric Unit</label>
-    <select name="metric_unit" required>
-        <option value="UNIT">unit</option>
-        <option value="PAIR">Pair</option>
-        <option value="BOX">Box</option>
-    </select>
+          <!-- Descripción -->
+          <div class="field">
+            <label>Descripción</label>
+            <textarea name="description" required>{{ product.description }}</textarea>
+          </div>
 
-    <!-- Precio -->
-    <label>Precio</label>
-    <input type="number" step="0.01" name="price" value="{{ price.value }}" required>
+          <!-- Brand -->
+          <div class="field">
+            <label>Brand</label>
+            <input type="text" name="brand" value="{{ product.brand }}" required>
+          </div>
 
-    <!-- Imagen actual -->
-    {% if product.image %}
-        <label>Imagen actual</label>
-        <img src="{{ product.image.url }}" width="100">
-    {% endif %}
+          <!-- Category -->
+          <div class="field">
+            <label>Categoría</label>
+            <select name="category" required>
+              <option value="FRUITS_AND_VEGETABLES" {% if product.category == "FRUITS_AND_VEGETABLES" %}selected{% endif %}>Frutas y vegetales</option>
+              <option value="LACTEOUS" {% if product.category == "LACTEOUS" %}selected{% endif %}>Lácteos</option>
+              <option value="GROCERY_AND_GOURMET" {% if product.category == "GROCERY_AND_GOURMET" %}selected{% endif %}>Grocery & Gourmet Food</option>
+              <option value="ELECTRONIC_AND_TECH" {% if product.category == "ELECTRONIC_AND_TECH" %}selected{% endif %}>Electronics & Tech</option>
+              <option value="CLOTHING" {% if product.category == "CLOTHING" %}selected{% endif %}>Clothing</option>
+              <option value="SHOES" {% if product.category == "SHOES" %}selected{% endif %}>Shoes</option>
+              <option value="JEWELRY" {% if product.category == "JEWELRY" %}selected{% endif %}>Jewelry</option>
+              <option value="HOME_AND_KITCHEN" {% if product.category == "HOME_AND_KITCHEN" %}selected{% endif %}>Home & Kitchen</option>
+              <option value="TOOLS_AND_HOME_IMPROVEMENT" {% if product.category == "TOOLS_AND_HOME_IMPROVEMENT" %}selected{% endif %}>Tools & Home Improvement</option>
+              <option value="FURNITURE" {% if product.category == "FURNITURE" %}selected{% endif %}>Furniture</option>
+              <option value="BOOKS" {% if product.category == "BOOKS" %}selected{% endif %}>Books</option>
+              <option value="VIDEO_GAMES" {% if product.category == "VIDEO_GAMES" %}selected{% endif %}>Video Games</option>
+              <option value="MUSIC" {% if product.category == "MUSIC" %}selected{% endif %}>Music</option>
+              <option value="MOVIES_AND_TV" {% if product.category == "MOVIES_AND_TV" %}selected{% endif %}>Movies & TV</option>
+              <option value="BEAUTY_AND_PERSONAL_CARE" {% if product.category == "BEAUTY_AND_PERSONAL_CARE" %}selected{% endif %}>Beauty & Personal Care</option>
+              <option value="HEALTH_AND_HOUSEHOLD" {% if product.category == "HEALTH_AND_HOUSEHOLD" %}selected{% endif %}>Health & Household</option>
+              <option value="TOYS_AND_GAMES" {% if product.category == "TOYS_AND_GAMES" %}selected{% endif %}>Toys & Games</option>
+              <option value="BABY_PRODUCTS" {% if product.category == "BABY_PRODUCTS" %}selected{% endif %}>Baby Products</option>
+              <option value="SPORTS_AND_OUTDOORS" {% if product.category == "SPORTS_AND_OUTDOORS" %}selected{% endif %}>Sports & Outdoors</option>
+              <option value="AUTOMOTIVE" {% if product.category == "AUTOMOTIVE" %}selected{% endif %}>Automotive</option>
+              <option value="PET_SUPPLIES" {% if product.category == "PET_SUPPLIES" %}selected{% endif %}>Pet Supplies</option>
+              <option value="OFFICE_PRODUCTS" {% if product.category == "OFFICE_PRODUCTS" %}selected{% endif %}>Office Products</option>
+              <option value="INDUSTRIAL_AND_SCIENTIFIC" {% if product.category == "INDUSTRIAL_AND_SCIENTIFIC" %}selected{% endif %}>Industrial & Scientific</option>
+            </select>
+          </div>
 
-    <!-- Nueva imagen -->
-    <label>Nueva Imagen</label>
-    <input type="file" name="image">
+          <!-- Metric -->
+          <div class="field">
+            <label>Metric Unit</label>
+            <select name="metric_unit" required>
+              <option value="UNIT">Unit</option>
+              <option value="PAIR">Pair</option>
+              <option value="BOX">Box</option>
+            </select>
+          </div>
 
-    <button type="submit">Guardar Cambios</button>
-</form>
-```
+          <!-- Price -->
+          <div class="field">
+            <label>Precio</label>
+            <input type="number" step="0.01" name="price" value="{{ price.value }}" required>
+          </div>
 
+          <!-- Image preview -->
+          {% if product.image %}
+          <div class="field">
+            <label>Imagen actual</label>
+            <img class="preview-img" src="{{ product.image.url }}">
+          </div>
+          {% endif %}
+
+          <!-- New image -->
+          <div class="field">
+            <label>Nueva Imagen</label>
+            <input type="file" name="image">
+          </div>
+
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">
+            Guardar Cambios
+          </button>
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
 </div>
 
 </body>
