@@ -40,7 +40,7 @@ Table stock_purchase {
   id int [pk]
   provider int [ref: > provider.id]
   purchese_price_per_item boolean
-  quantity int
+  quantity_item int
   reference_doc varchar
   description varchar
   added_by int [ref: > employee.id]
@@ -50,7 +50,7 @@ Table stock_entry{
   id int [pk]
   purchese_receipt int [ref: - stock_purchase.id]
   product int [ref: >product.id]
-  quantity int 
+  quantity_item int 
 }
 
 Table order {
