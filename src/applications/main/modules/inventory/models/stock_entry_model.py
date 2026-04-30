@@ -16,13 +16,8 @@ class StockEntry(models.Model):
         related_name="receipts"
     )
 
-    metric_unit = models.CharField(
-        max_length=50,
-        help_text="unit, pound, bottle, etc."
-    )
-
     quantity = models.PositiveIntegerField()
-    cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2) # quantity based in the quantity stablished in the product model
 
     received_at = models.DateTimeField(auto_now_add=True)
 

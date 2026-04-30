@@ -248,17 +248,12 @@ def backoffice_add_stock_entry_view(request):
         try:
             product_id = request.POST.get("product")
             provider_id = request.POST.get("provider")
-            metric_unit = request.POST.get("metric_unit")
+            
             quantity_str = request.POST.get("quantity")
             cost_str = request.POST.get("cost_per_unit")
             note = request.POST.get("note")
 
             # --- VALIDATION ---
-
-            if not product_id or not metric_unit:
-                messages.error(request, "Product and metric unit are required.")
-                return redirect("add_stock_entry")
-
             if not quantity_str:
                 messages.error(request, "Quantity is required.")
                 return redirect("add_stock_entry")
@@ -300,7 +295,6 @@ def backoffice_add_stock_entry_view(request):
             InventoryService.add_inventory_entry(
                 product=product,
                 provider=provider,
-                metric_unit=metric_unit,
                 quantity=quantity,
                 cost_per_unit=cost_per_unit,
                 added_by=employee,

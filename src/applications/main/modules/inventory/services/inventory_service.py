@@ -14,7 +14,6 @@ class InventoryService:
     def add_inventory_entry(
         product,
         provider,
-        metric_unit,
         quantity,
         cost_per_unit,
         added_by=None,
@@ -26,7 +25,6 @@ class InventoryService:
         entry = StockEntry.objects.create(
             product=product,
             provider=provider,
-            metric_unit=metric_unit,
             quantity=quantity,
             cost_per_unit=cost_per_unit,
             added_by=added_by,

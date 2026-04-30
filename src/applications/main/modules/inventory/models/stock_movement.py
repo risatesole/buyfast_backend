@@ -14,7 +14,7 @@ class StockMovement_model(models.Model):
         choices=MOVEMENT_TYPES
     )
     document_reference = models.CharField(max_length=255, blank=True)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField() # quantity in the prefixed metric unit stablished in product module
     balance = models.IntegerField()
 
     def __str__(self):
