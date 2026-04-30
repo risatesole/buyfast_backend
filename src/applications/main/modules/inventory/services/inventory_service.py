@@ -55,7 +55,7 @@ class InventoryService:
         return entry
 
     @staticmethod
-    def list_inventory_movements():
+    def list_stock_movements():
         return (
             StockMovement_model.objects
             .select_related("product")
