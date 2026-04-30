@@ -3,7 +3,7 @@ from ....employee.models.employee_model import employee_model
 from ....product.models.model_product import Product
 from ....product.models.price_model import Price
 from ....inventory.models.provider_model import Provider
-def inventory_stock(products):
+def inventory_stock(products): # mock btw
     inventory = []
 
     for product in products:
