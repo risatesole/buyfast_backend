@@ -18,7 +18,7 @@ Table employee{
 
 Table product {
   id int [pk]
-  metric_unit varchar [note: "pounds, units, bottles, pair"]
+  item_metric_unit varchar [note: "pounds, units, bottles, pair"]
   nombre varchar
   descripcion varchar
 }
@@ -36,20 +36,10 @@ Table provider{
   correo varcahr
 }
 
-Table stock_purchase {
-  id int [pk]
-  provider int [ref: > provider.id]
-  purchese_price_per_item boolean
-  quantity_item int
-  reference_doc varchar
-  description varchar
-  added_by int [ref: > employee.id]
-}
-
 Table stock_entry{
   id int [pk]
-  purchese_receipt int [ref: - stock_purchase.id]
   product int [ref: >product.id]
+  provider int [ref: > provider.id]
   quantity_item int 
 }
 

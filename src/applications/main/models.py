@@ -6,4 +6,3 @@ from .modules.employee.models.employee_model import employee_model as employee_m
 from .modules.inventory.models.provider_model import Provider as Provider
 from .modules.inventory.models.stock_entry_model import StockEntry as StockEntry
 from .modules.inventory.models.stock_movement import StockMovement_model as StockMovement_model
-from .modules.inventory.models.stock_purchase_model import StockPurchase as StockPurchase
