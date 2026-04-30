@@ -25,6 +25,7 @@ class InventoryService:
             cost_per_unit=cost_per_unit,
             added_by=added_by,
             note=note
+            # datetime gets added automatically
         )
 
         # 2. Get last balance
@@ -48,6 +49,7 @@ class InventoryService:
             document_reference=f"ENTRY-{entry.id}",
             quantity=quantity,
             balance=new_balance
+            # datetime gets added automatically
         )
 
         return entry
