@@ -1,5 +1,5 @@
 # from django.http import HttpResponse
-from django.shortcuts import render, redirect
+
 from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
@@ -8,13 +8,7 @@ from .modules.backoffice.views.backoffice_view import backoffice_view, backoffic
 from .modules.account.user.views import signin_view, signout_view, signup_view
 from .modules.account.user.views.view_web_preferences import preferences_user_view
 
-def home_view(request):
-    context = {
-        "project":{
-            "name": "Duck"
-        }
-    }
-    return render(request, "pages/home/index.html",context)
+from .views import home_view
 
 urlpatterns = [
     path("", home_view, name="home"),
