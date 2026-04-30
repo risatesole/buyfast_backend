@@ -991,6 +991,7 @@
                   <th>Category</th>
                   <th>Brand</th>
                   <th>Price</th>
+                  <th>Metric unit</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -1020,6 +1021,9 @@
                   <td>{{product.brand}}</td>
                   <td style="font-weight: 600">
                     ${{ product.current_price|default:0 }}
+                  </td>
+                  <td>
+                    {{product.metric_unit}}
                   </td>
                   <td>
                     <a href="{% url 'product_edit' product.id %}">

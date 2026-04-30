@@ -61,6 +61,18 @@ class Product(models.Model):
         null=True,
         blank=True
     )
+    
+    METRIC_UNIT_CHOICES = [
+        ("UNIT", "Unit"),
+        ("PAIR", "Shoe pair"),
+        ("BOX","Box")
+    ]
+
+    metric_unit = models.CharField(
+        max_length=10,
+        choices=METRIC_UNIT_CHOICES,
+        default="UNIT"
+    )
 
     def __str__(self):
         return self.name

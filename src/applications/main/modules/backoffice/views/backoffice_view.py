@@ -27,6 +27,8 @@ def backoffice_create_product_view(request):
         image = request.FILES.get("image")
         price_value = request.POST.get("price")
         brand = request.POST.get("brand")
+        metric_unit=request.POST.get("metric_unit")
+
 
         product = Product.objects.create(
             name=name,
@@ -34,7 +36,8 @@ def backoffice_create_product_view(request):
             category=category,
             image=image,
             status="ACTIVE",
-            brand=brand
+            brand=brand,
+            metric_unit = metric_unit
         )
 
         # 2. crear precio relacionado
@@ -157,6 +160,7 @@ def backoffice_edit_product_view(request, product_id):
         product.description = request.POST.get("description")
         product.category = request.POST.get("category")
         product.brand = request.POST.get("brand")
+        product.metric_unit = request.POST.get("metric_unit")
 
         if request.FILES.get("image"):
             product.image = request.FILES.get("image")
