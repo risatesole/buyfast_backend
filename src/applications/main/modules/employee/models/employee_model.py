@@ -1,5 +1,5 @@
 from django.db import models
-from .model_user import User
+from ...account.user.models.model_user import User
 
 
 class EmployeePosition(models.TextChoices):
@@ -12,7 +12,7 @@ class EmployeePosition(models.TextChoices):
     CONTENT_MANAGER = "content_manager", "Content Manager"
     FINANCE = "finance", "Finance / Accounting"
 
-class Employee(models.Model):
+class employee_model(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,

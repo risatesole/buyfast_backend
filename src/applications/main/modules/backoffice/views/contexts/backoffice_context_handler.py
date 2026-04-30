@@ -1,5 +1,5 @@
 from ....customer.models.customer_model import Customer_model as Customer_model
-from ....account.user.models.employee_profile import Employee
+from ....employee.models.employee_model import employee_model
 from ....product.models.model_product import Product
 from ....product.models.price_model import Price
 from ....inventory.models.provider_model import Provider
@@ -19,7 +19,7 @@ def inventory_stock(products):
 
 def backoffice_view_context_handler():
     customers = Customer_model.objects.select_related("user").all()
-    employees = Employee.objects.select_related("user").all()
+    employees = employee_model.objects.select_related("user").all()
 
     products = Product.objects.prefetch_related("prices").all()
     providers = Provider.objects.all()

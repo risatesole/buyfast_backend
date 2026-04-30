@@ -1,6 +1,6 @@
 from django.db import models
 from .provider_model import Provider
-from ...account.user.models.employee_profile import Employee
+from ...employee.models.employee_model import employee_model
 
 class StockEntry(models.Model):
     product = models.ForeignKey(
@@ -27,7 +27,7 @@ class StockEntry(models.Model):
     received_at = models.DateTimeField(auto_now_add=True)
 
     added_by = models.ForeignKey(
-        Employee,
+        employee_model,
         on_delete=models.SET_NULL,
         null=True,
         blank=True

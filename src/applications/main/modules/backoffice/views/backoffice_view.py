@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from ...product.models.model_product import Product
 from ...product.models.price_model import Price
 from ...customer.models.customer_model import Customer_model
-from ...account.user.models.employee_profile import Employee, EmployeePosition
+from ...employee.models.employee_model import employee_model, EmployeePosition
 from ...account.user.models.model_user import User
 from django.contrib import messages
 
@@ -102,7 +102,7 @@ def backoffice_create_employee_view(request):
             )
 
             # 2. Create employee profile
-            Employee.objects.create(
+            employee_model.objects.create(
                 user=user,
                 position=position or EmployeePosition.STORE_MANAGER
             )
@@ -120,7 +120,7 @@ def backoffice_create_employee_view(request):
 @login_required
 @user_passes_test(is_employee)
 def backoffice_edit_employee_view(request, employee_id):
-    employee = Employee.objects.select_related("user").filter(id=employee_id).first()
+    employee = employee_model.objects.select_related("user").filter(id=employee_id).first()
 
     if not employee or employee.user.role != "employee":
         return redirect("backoffice")
