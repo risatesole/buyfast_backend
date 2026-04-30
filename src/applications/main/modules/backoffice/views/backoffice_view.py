@@ -6,6 +6,7 @@ from ...customer.models.customer_model import Customer_model
 from ...employee.models.employee_model import employee_model, EmployeePosition
 from ...account.user.models.model_user import User
 from django.contrib import messages
+from ...inventory.services.inventory_service import InventoryService
 
 from ...inventory.models.provider_model import Provider
 
@@ -28,7 +29,7 @@ def backoffice_create_product_view(request):
         price_value = request.POST.get("price")
         brand = request.POST.get("brand")
         metric_unit=request.POST.get("metric_unit")
-
+        initial_inventory_existance = request.POST.get("initial_inventory_existance") # i want to add this value to the inventory if it returns number more than 0 and put it into inventory
 
         product = Product.objects.create(
             name=name,
@@ -47,8 +48,27 @@ def backoffice_create_product_view(request):
                 value=price_value
             )
 
-        return redirect("backoffice")
+         # 3. Add initial inventory if needed
+        if initial_inventory_existance:
+            try:
+                qty = int(float(initial_inventory_existance))
 
+                if qty > 0:
+                    employee = employee_model.objects.get(user=request.user)
+
+                    InventoryService.add_inventory_entry(
+                        product=product,
+                        provider=None,  # or allow selecting provider later
+                        quantity=qty,
+                        cost_per_unit=0,  # or request field if you want
+                        added_by=employee,
+                        note="Initial inventory"
+                    )
+
+            except ValueError:
+                pass  # ignore invalid input silently or show message if you prefer
+
+        return redirect("backoffice")
     return render(request, "backoffice/create/createproduct.html")
 
 @login_required
