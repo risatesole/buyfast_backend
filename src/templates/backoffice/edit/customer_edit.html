@@ -1,61 +1,179 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Edit Customer</title>
-  </head>
+<head>
+  <title>Edit Customer</title>
 
-  <body>
-    <h1>Edit Customer</h1>
+  <style>
+:root {
+  --bg: #f9f9f8;
+  --surface: #ffffff;
+  --border: #ebebea;
+  --text: #1c1c1a;
+  --muted: #8c8c89;
+}
 
-    <form method="POST">
-      {% csrf_token %}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-      <hr />
+body {
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
 
-      <h3>User Info</h3>
+.main {
+  padding: 26px 24px;
+}
 
-      <p><strong>ID:</strong> {{ customer.id }}</p>
+/* HEADER */
+h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
 
-      <label>Email</label><br />
-      <input type="email" name="email" value="{{ customer.user.email }}" /><br /><br />
+h3 {
+  font-size: 13px;
+  margin: 14px 0 10px;
+  color: var(--text);
+}
 
-      <label>First Name</label><br />
-      <input type="text" name="first_name" value="{{ customer.user.first_name }}" /><br /><br />
+/* CARD FORM */
+form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 18px;
+}
 
-      <label>Last Name</label><br />
-      <input type="text" name="last_name" value="{{ customer.user.last_name }}" /><br /><br />
-      
-      <!-- STATUS DROPDOWN -->
-      <label>Status</label><br />
-      <select name="status">
-        <option value="active" {% if customer.user.status == "active" %}selected{% endif %}>
-          Active
-        </option>
-        <option value="deactivated" {% if customer.user.status == "deactivated" %}selected{% endif %}>
-          Deactivated
-        </option>
-        <option value="deleted" {% if customer.user.status == "deleted" %}selected{% endif %}>
-          Deleted
-        </option>
-      </select>
+/* DIVIDER */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
 
-      <hr />
+/* LABELS */
+label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 
-      <h3>Customer Info</h3>
+/* INPUTS */
+input,
+select,
+textarea {
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
 
-      <label>Phone</label><br />
-      <input type="text" name="phone" value="{{ customer.phone }}" /><br /><br />
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
 
-      <label>Address</label><br />
-      <textarea name="address">{{ customer.address }}</textarea><br /><br />
+/* ID */
+strong {
+  font-weight: 600;
+}
 
-      <hr />
+/* BUTTON */
+button {
+  margin-top: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background: var(--text);
+  color: #fff;
+}
 
-      <button type="submit">Save Changes</button>
-    </form>
+/* BACK LINK */
+a {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.7;
+}
 
-    <br />
+a:hover {
+  opacity: 1;
+}
+  </style>
+</head>
 
-    <a href="/backoffice/">← Back</a>
-  </body>
+<body>
+
+<div class="main">
+
+  <h1>Edit Customer</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <hr />
+
+    <h3>User Info</h3>
+
+    <p><strong>ID:</strong> {{ customer.id }}</p>
+
+    <label>Email</label>
+    <input type="email" name="email" value="{{ customer.user.email }}" />
+
+    <label>First Name</label>
+    <input type="text" name="first_name" value="{{ customer.user.first_name }}" />
+
+    <label>Last Name</label>
+    <input type="text" name="last_name" value="{{ customer.user.last_name }}" />
+
+    <label>Status</label>
+    <select name="status">
+      <option value="active" {% if customer.user.status == "active" %}selected{% endif %}>
+        Active
+      </option>
+      <option value="deactivated" {% if customer.user.status == "deactivated" %}selected{% endif %}>
+        Deactivated
+      </option>
+      <option value="deleted" {% if customer.user.status == "deleted" %}selected{% endif %}>
+        Deleted
+      </option>
+    </select>
+
+    <hr />
+
+    <h3>Customer Info</h3>
+
+    <label>Phone</label>
+    <input type="text" name="phone" value="{{ customer.phone }}" />
+
+    <label>Address</label>
+    <textarea name="address">{{ customer.address }}</textarea>
+
+    <hr />
+
+    <button type="submit">Save Changes</button>
+
+  </form>
+
+  <a href="/backoffice/">← Back</a>
+
+</div>
+
+</body>
 </html>
