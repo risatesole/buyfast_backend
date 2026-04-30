@@ -2,8 +2,13 @@ from django.utils import timezone
 from django.db import transaction
 from ..models.stock_entry_model import StockEntry
 from ..models.stock_movement import StockMovement_model
-
+from ..models.provider_model import Provider
 class InventoryService:
+
+    @staticmethod
+    def list_providers():
+        return Provider.objects.all()
+
 
     @staticmethod
     @transaction.atomic

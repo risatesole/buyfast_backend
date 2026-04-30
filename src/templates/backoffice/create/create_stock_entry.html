@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Stock Entry</title>
+</head>
+
+<body>
+
+    <h1>Add Stock Entry</h1>
+
+    {% if messages %}
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Product:</label>
+        <select name="product" required>
+            <option value="">Select product</option>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label>Provider:</label>
+        <select name="provider">
+            <option value="">Optional</option>
+            {% for provider in providers %}
+            <option value="{{ provider.id }}">{{ provider }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label>Metric Unit:</label>
+        <select name="metric_unit" required>
+            <option value="">Select unit</option>
+            <option value="pounds">Pounds</option>
+            <option value="units">Units</option>
+            <option value="bottles">Bottles</option>
+            <option value="pair">Pair</option>
+        </select>
+        <br><br>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" required>
+        <br><br>
+
+        <label>Cost per Unit:</label>
+        <input type="number" step="0.01" name="cost_per_unit" required>
+        <br><br>
+
+        <label>Note:</label>
+        <textarea name="note"></textarea>
+        <br><br>
+
+        <button type="submit">Add Entry</button>
+
+    </form>
+
+</body>
+
+</html>

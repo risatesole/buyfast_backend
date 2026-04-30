@@ -220,3 +220,72 @@ def backoffice_edit_provider(request, provider_id):
     return render(request, "backoffice/edit/edit_provider.html", {
         "provider": provider
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from ...inventory.services.inventory_service import InventoryService
+
+def backoffice_add_stock_entry_view(request):
+    products = Product.objects.all()
+    providers = InventoryService.list_providers()
+
+    if request.method == "POST":
+        try:
+            product_id = request.POST.get("product")
+            provider_id = request.POST.get("provider")
+            metric_unit = request.POST.get("metric_unit")
+            quantity = request.POST.get("quantity")
+            cost_per_unit = request.POST.get("cost_per_unit")
+            note = request.POST.get("note")
+
+            # Basic validation
+            if not product_id or not metric_unit or not quantity or not cost_per_unit:
+                messages.error(request, "Please fill all required fields.")
+                return redirect("add_stock_entry")
+
+            product = Product.objects.get(id=product_id)
+
+            # Still OK to fetch directly (simple lookup)
+            provider = None
+            if provider_id:
+                provider = Provider.objects.get(id=provider_id)
+
+            InventoryService.add_inventory_entry(
+                product=product,
+                provider=provider,
+                metric_unit=metric_unit,
+                quantity=int(quantity),
+                cost_per_unit=cost_per_unit,
+                added_by=request.user if request.user.is_authenticated else None,
+                note=note
+            )
+
+            messages.success(request, "Stock entry added successfully.")
+            return redirect("backoffice")
+
+        except Product.DoesNotExist:
+            messages.error(request, "Invalid product selected.")
+        except Provider.DoesNotExist:
+            messages.error(request, "Invalid provider selected.")
+        except ValueError:
+            messages.error(request, "Quantity must be a number.")
+        except Exception as e:
+            messages.error(request, f"Unexpected error: {str(e)}")
+
+    return render(request, "backoffice/create/create_stock_entry.html", {
+        "products": products,
+        "providers": providers
+    })
