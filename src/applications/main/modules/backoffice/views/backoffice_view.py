@@ -84,14 +84,15 @@ def backoffice_customer_edit_view(request, customer_id):
         user.email = request.POST.get("email")
         user.first_name = request.POST.get("first_name")
         user.last_name = request.POST.get("last_name")
-        user.role = request.POST.get("role")
+        user.role = request.POST.get("role", user.role)
+        user.status = request.POST.get("status")
         user.save()
 
         customer.phone = request.POST.get("phone")
         customer.address = request.POST.get("address")
         customer.save()
 
-        return redirect("customer_edit", customer_id=customer.id) # type: ignore
+        return redirect("backoffice")
 
     return render(request, "backoffice/edit/customer_edit.html", {
         "customer": customer
