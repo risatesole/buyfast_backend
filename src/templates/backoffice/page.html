@@ -1161,6 +1161,7 @@
                   <th>Total Cost</th>
                   <th>Received At</th>
                   <th>Added By</th>
+                  <th>Provider</th>
                   <th>Note</th>
                 </tr>
               </thead>
@@ -1177,6 +1178,7 @@
                   <td>{{ entry.total_cost }}</td>
                   <td>{{ entry.received_at }}</td>
                   <td>{{ entry.added_by|default:"—" }}</td>
+                  <td>{{ entry.provider.name}}</td>
                   <td>{{ entry.note|default:"—" }}</td>
                 </tr>
                 {% empty %}
