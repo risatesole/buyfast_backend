@@ -47,17 +47,17 @@ class InventoryService:
             date_time=timezone.now(),
             product=product,
             movement_type="purchase_entry",
-            document_reference=f"ENTRY-{entry.id}",
+            document_reference=f"ENTRY-{entry.id}", # type: ignore
             quantity=quantity,
             balance=new_balance
         )
 
         return entry
 
-        @staticmethod
-        def list_inventory_movements():
-            return (
-                StockMovement_model.objects
-                .select_related("product")
-                .order_by("-date_time")
-            )
+    @staticmethod
+    def list_inventory_movements():
+        return (
+            StockMovement_model.objects
+            .select_related("product")
+            .order_by("-date_time")
+        )
