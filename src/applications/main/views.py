@@ -12,3 +12,6 @@ def home_view(request):
 
 def storefront_electronic_section(request):
     return render(request,"pages/home/electronic_section.html")
+
+def storefront_Health_and_Household_section(request):
+    return render(request,"pages/home/health_and_household.html")

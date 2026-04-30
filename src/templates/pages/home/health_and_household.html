@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health & Household — SHOP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0f0f0f;
+    --gray-50: #f9f9f8;
+    --gray-100: #f2f2f0;
+    --gray-200: #e5e5e2;
+    --gray-400: #9b9b96;
+    --gray-600: #5f5f5a;
+    --white: #ffffff;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --font: 'DM Sans', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+    --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--black);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--white); border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px; display: flex; align-items: center; gap: 20px; height: 60px;
+  }
+  .nav-logo { font-family: var(--font-serif); font-size: 22px; letter-spacing: -0.5px; color: var(--black); text-decoration: none; flex-shrink: 0; }
+  .nav-search {
+    flex: 1; max-width: 480px; display: flex; align-items: center;
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-xl);
+    background: var(--gray-50); padding: 0 16px; gap: 10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .nav-search:focus-within { border-color: var(--black); background: var(--white); }
+  .nav-search svg { flex-shrink: 0; opacity: 0.4; }
+  .nav-search input { border: none; background: transparent; outline: none; font-family: var(--font); font-size: 14px; color: var(--black); width: 100%; height: 40px; }
+  .nav-search input::placeholder { color: var(--gray-400); }
+  .nav-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: var(--radius-xl);
+    font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 1.5px solid transparent; color: var(--black); transition: all 0.15s; background: transparent; text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--gray-50); border-color: var(--gray-200); }
+  .nav-btn.primary { background: var(--black); color: var(--white); border-color: var(--black); }
+  .nav-btn.primary:hover { background: #2a2a2a; }
+  .cart-badge { background: var(--black); color: var(--white); font-size: 10px; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+  /* DELIVERY BAR */
+  .delivery-bar { background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 0 24px; display: flex; align-items: center; height: 38px; font-size: 12px; color: var(--gray-600); }
+  .delivery-bar strong { color: var(--black); font-weight: 500; }
+
+  /* PAGE HEADER */
+  .page-header { padding: 22px 24px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-400); margin-bottom: 5px; }
+  .breadcrumb a { color: var(--gray-400); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--black); }
+  .page-title { font-family: var(--font-serif); font-size: 28px; letter-spacing: -0.3px; }
+  .result-count { font-size: 13px; color: var(--gray-400); padding-bottom: 4px; }
+
+  /* FILTER ROW */
+  .filter-row { padding: 16px 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .type-chip {
+    padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--gray-200);
+    background: var(--gray-50); font-family: var(--font); font-size: 13px; font-weight: 500;
+    color: var(--gray-600); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .type-chip:hover { border-color: var(--black); color: var(--black); background: var(--white); }
+  .type-chip.active { background: var(--black); color: var(--white); border-color: var(--black); }
+  .divider-v { width: 1px; height: 22px; background: var(--gray-200); }
+  .sort-select {
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-md);
+    padding: 7px 28px 7px 12px; font-family: var(--font); font-size: 13px;
+    background: var(--gray-50); color: var(--black); outline: none; cursor: pointer; appearance: none; margin-left: auto;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9b96' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+
+  /* PRODUCT GRID */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 0 24px 52px; }
+
+  .product-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+  .product-card:hover { border-color: var(--gray-400); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+
+  .product-img-wrap { background: var(--gray-50); padding: 24px; display: flex; align-items: center; justify-content: center; height: 190px; position: relative; }
+  .product-img-wrap img { width: 100%; height: 100%; object-fit: contain; max-height: 140px; }
+
+  .product-meta { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 3px; }
+
+  .product-name { font-size: 13.5px; font-weight: 500; line-height: 1.35; margin-bottom: 8px; color: var(--black); }
+
+  /* EMPTY */
+  .empty-state { grid-column: 1/-1; text-align: center; padding: 80px 0; color: var(--gray-400); }
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">SHOP</a>
+
+  <div class="nav-search">
+    <input type="text" placeholder="Search health & household…" id="searchInput">
+  </div>
+
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="toggleCart()">
+      Cart <div class="cart-badge" id="cartCount">0</div>
+    </button>
+    <button class="nav-btn primary">Sign in</button>
+  </div>
+</nav>
+
+<div class="delivery-bar">Welcome to <strong>&nbsp;SHOP</strong></div>
+
+<div class="page-header">
+  <div>
+    <div class="breadcrumb">
+      <a href="#">Home</a> / Health & Household
+    </div>
+    <h1 class="page-title">Health & Household</h1>
+  </div>
+</div>
+
+<div class="product-grid" id="productGrid"></div>
+
+</body>
+</html>

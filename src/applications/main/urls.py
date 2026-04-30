@@ -8,7 +8,7 @@ from .modules.backoffice.views.backoffice_view import backoffice_view, backoffic
 from .modules.account.user.views import signin_view, signout_view, signup_view
 from .modules.account.user.views.view_web_preferences import preferences_user_view
 
-from .views import home_view, storefront_electronic_section
+from .views import home_view, storefront_electronic_section, storefront_Health_and_Household_section
 
 urlpatterns = [
     path("", home_view, name="home"),
@@ -26,6 +26,7 @@ urlpatterns = [
     path("backoffice/add_stock_entry", backoffice_add_stock_entry_view, name="add_stock_entry"),
 
     path("electronics/",storefront_electronic_section,name="storefront_electronic_section"),
+    path("health_and_household", storefront_Health_and_Household_section, name="storefront_Health_and_Household_section"),
 
     path("signin/",signin_view,name="signin"),
     path("signup/", signup_view, name="signup"),
