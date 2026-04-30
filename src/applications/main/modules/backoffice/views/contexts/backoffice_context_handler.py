@@ -22,7 +22,7 @@ def backoffice_view_context_handler():
         "employees": employees,
         "providers": providers,
         "products": products,
-        "inventory": None, 
+        "inventory": InventoryService.get_stock(), 
         "stock_movement":InventoryService.list_stock_movements(),
         "stock_entry": InventoryService.list_stock_entries(),
         "project": {

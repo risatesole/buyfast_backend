@@ -67,3 +67,29 @@ class InventoryService:
             .select_related("product", "provider", "added_by")
             .order_by("-received_at")
         )
+
+
+    @staticmethod
+    def get_stock():
+        movements = StockMovement_model.objects.select_related("product").order_by("-date_time")
+
+        seen_products = set()
+        inventory = []
+
+        for movement in movements:
+            product_id = movement.product.id
+
+            if product_id in seen_products:
+                continue
+
+            seen_products.add(product_id)
+
+            inventory.append({
+                "id": product_id,
+                "product_name": movement.product.name,
+                "stock_quantity": movement.balance,
+                "metric_unit": movement.product.metric_unit,
+                "status": "In Stock"
+            })
+
+        return {"inventory": inventory}

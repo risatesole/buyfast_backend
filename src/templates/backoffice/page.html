@@ -1101,33 +1101,41 @@
             <table>
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Stock</th>
-                  <th>Unit</th>
-                  <th>Status</th>
+                  <th>id</th>
+                  <th>product name</th>
+                  <th>stock quantity</th>
+                  <th>metric unit</th>
+                  <th>status</th>
                 </tr>
               </thead>
               <tbody>
-                {% for item in inventory %}
-                <tr class="clickable" onclick="openModal('inventoryModal')">
-                  <td style="font-weight: 500">{{ item.name }}</td>
-                  <td>{{ item.stock }}</td>
-                  <td style="color: var(--muted)">{{ item.unit }}</td>
-                  <td>
-                    {% if item.status == "Low Stock" or item.stock == 0 %}
-                    <span class="badge badge-red">{{ item.status }}</span>
-                    {% elif item.status == "In Stock" %}
-                    <span class="badge badge-green">{{ item.status }}</span>
-                    {% else %}
-                    <span class="badge badge-amber">{{ item.status }}</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="4" class="empty">No inventory records.</td>
-                </tr>
-                {% endfor %}
+                {% for item in inventory.inventory %}
+<tr class="clickable" onclick="openModal('inventoryModal')">
+
+  <td style="font-weight: 500">{{ item.id }}</td>
+
+  <td>{{ item.product_name }}</td>
+
+  <td style="color: var(--muted)">{{ item.stock_quantity }}</td>
+
+  <td>{{ item.metric_unit }}</td>
+
+  <td>
+    {% if item.stock_quantity == 0 %}
+      <span class="badge badge-red">Out of Stock</span>
+    {% elif item.stock_quantity < 10 %}
+      <span class="badge badge-amber">Low Stock</span>
+    {% else %}
+      <span class="badge badge-green">In Stock</span>
+    {% endif %}
+  </td>
+
+</tr>
+{% empty %}
+<tr>
+  <td colspan="5" class="empty">No inventory records.</td>
+</tr>
+{% endfor %}
               </tbody>
             </table>
           </div>
