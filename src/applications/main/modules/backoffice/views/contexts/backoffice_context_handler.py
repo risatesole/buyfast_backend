@@ -17,14 +17,13 @@ def backoffice_view_context_handler():
         latest_price = product.prices.first()  # type: ignore
         product.current_price = latest_price.value if latest_price else 0  # type: ignore
 
-    # inventory_logs = InventoryService.list_inventory_movements()
-
     context = {
         "customers": customers,
         "employees": employees,
         "providers": providers,
         "products": products,
-        "inventory": None,  # <-- replaced mock
+        "inventory": None, 
+        "stock_movement":InventoryService.list_stock_movements(),
         "project": {
             "name": "Duck"
         }
