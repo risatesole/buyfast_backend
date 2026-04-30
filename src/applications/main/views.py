@@ -7,3 +7,8 @@ def home_view(request):
         }
     }
     return render(request, "pages/home/index.html",context)
+
+
+
+def storefront_electronic_section(request):
+    return render(request,"pages/home/electronic_section.html")
