@@ -3,19 +3,7 @@ from ....employee.models.employee_model import employee_model
 from ....product.models.model_product import Product
 from ....product.models.price_model import Price
 from ....inventory.models.provider_model import Provider
-def inventory_stock(products): # mock btw
-    inventory = []
-
-    for product in products:
-        inventory.append({
-            "id": product.id,
-            "name": product.name,
-            "stock": getattr(product, "stock", 0),
-            "unit": "kg",
-            "status": "Low" if getattr(product, "stock", 0) < 20 else "Normal",
-        })
-
-    return inventory
+from ....inventory.services.inventory_service import InventoryService
 
 def backoffice_view_context_handler():
     customers = Customer_model.objects.select_related("user").all()
@@ -24,17 +12,20 @@ def backoffice_view_context_handler():
     products = Product.objects.prefetch_related("prices").all()
     providers = Provider.objects.all()
 
+    # Add current price to products
     for product in products:
-        latest_price = product.prices.first() # type: ignore
-        product.current_price = latest_price.value if latest_price else 0 # type: ignore
+        latest_price = product.prices.first()  # type: ignore
+        product.current_price = latest_price.value if latest_price else 0  # type: ignore
+
+    # inventory_logs = InventoryService.list_inventory_movements()
 
     context = {
         "customers": customers,
         "employees": employees,
         "providers": providers,
         "products": products,
-        "inventory": inventory_stock(products),
-        "project":{
+        "inventory": None,  # <-- replaced mock
+        "project": {
             "name": "Duck"
         }
     }

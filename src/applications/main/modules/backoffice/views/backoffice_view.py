@@ -233,12 +233,10 @@ def backoffice_edit_provider(request, provider_id):
 
 
 
-
-
-
 from ...inventory.services.inventory_service import InventoryService
+from ...employee.models.employee_model import employee_model
 
-def backoffice_add_stock_entry_view(request):
+def backoffice_add_stock_entry_view(request): 
     products = Product.objects.all()
     providers = InventoryService.list_providers()
 
@@ -247,29 +245,61 @@ def backoffice_add_stock_entry_view(request):
             product_id = request.POST.get("product")
             provider_id = request.POST.get("provider")
             metric_unit = request.POST.get("metric_unit")
-            quantity = request.POST.get("quantity")
-            cost_per_unit = request.POST.get("cost_per_unit")
+            quantity_str = request.POST.get("quantity")
+            cost_str = request.POST.get("cost_per_unit")
             note = request.POST.get("note")
 
-            # Basic validation
-            if not product_id or not metric_unit or not quantity or not cost_per_unit:
-                messages.error(request, "Please fill all required fields.")
+            # --- VALIDATION ---
+
+            if not product_id or not metric_unit:
+                messages.error(request, "Product and metric unit are required.")
                 return redirect("add_stock_entry")
+
+            if not quantity_str:
+                messages.error(request, "Quantity is required.")
+                return redirect("add_stock_entry")
+
+            try:
+                quantity = int(float(quantity_str))
+            except ValueError:
+                messages.error(request, "Quantity must be a valid number.")
+                return redirect("add_stock_entry")
+
+            if quantity <= 0:
+                messages.error(request, "Quantity must be greater than 0.")
+                return redirect("add_stock_entry")
+
+            if not cost_str:
+                messages.error(request, "Cost per unit is required.")
+                return redirect("add_stock_entry")
+
+            from decimal import Decimal, InvalidOperation
+            try:
+                cost_per_unit = Decimal(cost_str)
+            except (InvalidOperation, ValueError):
+                messages.error(request, "Cost must be a valid number (e.g. 10.50).")
+                return redirect("add_stock_entry")
+
+            # --- FETCH OBJECTS ---
 
             product = Product.objects.get(id=product_id)
 
-            # Still OK to fetch directly (simple lookup)
             provider = None
             if provider_id:
                 provider = Provider.objects.get(id=provider_id)
+
+            # 🔥 Direct mapping (since you guarantee it's always an employee)
+            employee = employee_model.objects.get(user=request.user)
+
+            # --- SERVICE CALL ---
 
             InventoryService.add_inventory_entry(
                 product=product,
                 provider=provider,
                 metric_unit=metric_unit,
-                quantity=int(quantity),
+                quantity=quantity,
                 cost_per_unit=cost_per_unit,
-                added_by=request.user if request.user.is_authenticated else None,
+                added_by=employee,
                 note=note
             )
 
@@ -280,8 +310,10 @@ def backoffice_add_stock_entry_view(request):
             messages.error(request, "Invalid product selected.")
         except Provider.DoesNotExist:
             messages.error(request, "Invalid provider selected.")
-        except ValueError:
-            messages.error(request, "Quantity must be a number.")
+        except employee_model.DoesNotExist:
+            messages.error(request, "Employee profile not found.")
+        except ValueError as e:
+            messages.error(request, f"Value error: {str(e)}")
         except Exception as e:
             messages.error(request, f"Unexpected error: {str(e)}")
 

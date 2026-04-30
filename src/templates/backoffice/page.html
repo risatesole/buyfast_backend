@@ -733,8 +733,8 @@
           <span class="menu-chevron">›</span>
         </button>
         <div class="submenu">
-          <button class="submenu-item" onclick="showSection('inventory-logs', this)">
-            Inventory Logs
+          <button class="submenu-item" onclick="showSection('inventory-entries', this)">
+            Inventory Entries
           </button>
         </div>
       </div>
@@ -1117,14 +1117,61 @@
         </div>
 
         <!-- ═══ INVENTORY LOGS ═══ -->
-        <div id="inventory-logs" class="section">
+        <div id="inventory-entries" class="section">
           <div class="page-header">
             <div>
-              <h2>Inventory Logs</h2>
+              <h2>Inventory Entries</h2>
             </div>
           </div>
           <div class="card">
-            <div class="empty">No inventory logs to display.</div>
+            <table>
+  <thead>
+    <tr>
+      <th>DateTime</th>
+      <th>Product</th>
+      <th>Movement Type</th>
+      <th>Document Ref</th>
+      <th>Quantity</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for item in inventory %}
+    <tr class="clickable" onclick="openModal('inventoryModal')">
+      <td style="font-weight: 500">
+        {{ item.date_time }}
+      </td>
+
+      <td>
+        {{ item.product }}
+      </td>
+
+      <td>
+        {{ item.get_movement_type_display }}
+      </td>
+
+      <td>
+        {{ item.document_reference|default:"-" }}
+      </td>
+
+      <td>
+        {{ item.quantity }}
+      </td>
+
+      <td>
+        {{ item.balance }}
+      </td>
+    </tr>
+
+    {% empty %}
+    <tr>
+      <td colspan="6" class="empty">No inventory records.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
           </div>
         </div>
 
@@ -1151,14 +1198,14 @@
         products: "Products",
         providers: "Providers",
         inventory: "Inventory",
-        "inventory-logs": "Inventory Logs",
+        "inventory-entries": "Inventory Entry",
         settings: "Settings",
       };
 
       // Track which groups should stay open based on active section
       const groupSections = {
         "group-customers": ["customers", "orders"],
-        "group-inventory": ["inventory", "inventory-logs"],
+        "group-inventory": ["inventory", "inventory-entries"],
       };
 
       function showSection(id, btn) {

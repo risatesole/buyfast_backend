@@ -9,7 +9,6 @@ class InventoryService:
     def list_providers():
         return Provider.objects.all()
 
-
     @staticmethod
     @transaction.atomic
     def add_inventory_entry(
@@ -21,7 +20,9 @@ class InventoryService:
         added_by=None,
         note=None
     ):
-        # 1. Create StockEntry
+        # Optional: remove debug prints in production
+        # print(type(quantity))
+
         entry = StockEntry.objects.create(
             product=product,
             provider=provider,
@@ -30,10 +31,8 @@ class InventoryService:
             cost_per_unit=cost_per_unit,
             added_by=added_by,
             note=note
-            # datetime gets added automatically
         )
 
-        # 2. Get last balance
         last_movement = (
             StockMovement_model.objects
             .filter(product=product)
@@ -42,11 +41,8 @@ class InventoryService:
         )
 
         last_balance = last_movement.balance if last_movement else 0
-
-        # 3. Calculate new balance
         new_balance = last_balance + quantity
 
-        # 4. Create StockMovement
         StockMovement_model.objects.create(
             date_time=timezone.now(),
             product=product,
@@ -54,7 +50,14 @@ class InventoryService:
             document_reference=f"ENTRY-{entry.id}",
             quantity=quantity,
             balance=new_balance
-            # datetime gets added automatically
         )
 
         return entry
+
+        @staticmethod
+        def list_inventory_movements():
+            return (
+                StockMovement_model.objects
+                .select_related("product")
+                .order_by("-date_time")
+            )
