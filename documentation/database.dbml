@@ -2,6 +2,7 @@ Table user{
   id int [pk]
   first_name varchar
   last_name varchar
+  role varchar [note: "employee, customer"]
 }
 
 Table customer{
