@@ -29,10 +29,11 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-d!0w_bs6g&3xxpm9!i4@y+w%d)$-yuvta7lh&0k6%kyh0=f3wg'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG: bool = os.getenv("DJANGO_ENVIRONMENT") == "development" 
+
+ALLOWED_HOSTS = ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
