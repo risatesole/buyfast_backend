@@ -7,8 +7,9 @@ from django.urls import path
 from .modules.backoffice.views.backoffice_view import backoffice_view, backoffice_create_product_view, backoffice_customer_edit_view, backoffice_create_employee_view, backoffice_edit_product_view, backoffice_edit_employee_view, backoffice_create_provider, backoffice_edit_provider, backoffice_add_stock_entry_view
 from .modules.account.user.views import signin_view, signout_view, signup_view
 from .modules.account.user.views.view_web_preferences import preferences_user_view
-
+from .modules.store.views.category_view import store_category_view
 from .views import home_view, storefront_electronic_section, storefront_Health_and_Household_section, storefront_product_page, categories_view
+
 
 urlpatterns = [
     path("", home_view, name="home"),
@@ -35,4 +36,5 @@ urlpatterns = [
     path("signout/", signout_view, name="signout"),
     path("settings/",preferences_user_view, name="settings"),
     path("account/",preferences_user_view, name="account"),
+    path("category/<str:name>/",store_category_view)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # add this to the end of ] so it saves to the storage
