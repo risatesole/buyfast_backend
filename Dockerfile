@@ -1,7 +1,5 @@
 FROM python:3.12-slim
 
-# Environment variables
-
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -20,12 +18,14 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . /app/
 
-RUN addgroup --system app && adduser --system --group app
+# Creates a real user with a home directory
+RUN addgroup --system app && adduser --system --ingroup app --home /home/app --shell /bin/sh app
+
+# Give ownership of /app and /data to the app user
+RUN mkdir -p /data/media && chown -R app:app /app /data
+
 USER app
 
 EXPOSE 8000
 
-# -----------------------------
-# Start production server
-# -----------------------------
 CMD ["gunicorn", "src.config.wsgi:application", "--bind", "0.0.0.0:8000"]
