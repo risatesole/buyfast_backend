@@ -1,37 +1,31 @@
-# Base image
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
-# Set environment variables
+# Environment variables
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
-RUN apk add --no-cache build-base libffi-dev musl-dev mariadb-client bash
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set work directory
 WORKDIR /app
 
-# Copy project files
-COPY . /app
+COPY requirements.txt /app/
 
-# Install Python requirements
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir gunicorn
 
-# Expose default Django port
+COPY . /app/
+
+RUN addgroup --system app && adduser --system --group app
+USER app
+
 EXPOSE 8000
 
-# Default command
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-
-###########################################################
-# Podman Instructions:
-#
-# 1. Build the image:
-#    podman build -t django-app .
-#
-# 2. Run the container using your environment file:
-#    podman run --env-file .env.example django-app
-#
-# 3. Optional: map port if you want to access Django from the host:
-#    podman run -p 8000:8000 --env-file .env.example django-app
-###########################################################
+# -----------------------------
+# Start production server
+# -----------------------------
+CMD ["gunicorn", "src.config.wsgi:application", "--bind", "0.0.0.0:8000"]
