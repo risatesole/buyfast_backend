@@ -2,11 +2,37 @@ from django.shortcuts import render, redirect
 
 def home_view(request):
     context = {
+        "storename": "Petal",
         "project":{
             "name": "Duck"
         }
     }
     return render(request, "pages/home/index.html",context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 mock_products = [
