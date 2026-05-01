@@ -999,6 +999,7 @@
                   <th>Brand</th>
                   <th>Price</th>
                   <th>Metric unit</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -1030,6 +1031,7 @@
                     ${{ product.current_price|default:0 }}
                   </td>
                   <td>{{product.metric_unit}}</td>
+                  <td>{{product.status}}</td>
                   <td>
                     <a href="{% url 'product_edit' product.id %}">
                       <button class="btn btn-ghost">Edit</button>

@@ -30,13 +30,13 @@ def backoffice_create_product_view(request):
         brand = request.POST.get("brand")
         metric_unit=request.POST.get("metric_unit")
         initial_inventory_existance = request.POST.get("initial_inventory_existance") # i want to add this value to the inventory if it returns number more than 0 and put it into inventory
-
+        status = request.POST.get("status")
         product = Product.objects.create(
             name=name,
             description=description,
             category=category,
             image=image,
-            status="ACTIVE",
+            status=status,
             brand=brand,
             metric_unit = metric_unit
         )
