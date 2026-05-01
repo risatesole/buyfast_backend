@@ -44,7 +44,7 @@ class InventoryService:
         StockMovement_model.objects.create(
             date_time=timezone.now(),
             product=product,
-            movement_type="purchase_entry",
+            movement_type="initial_inventory",
             document_reference=f"ENTRY-{entry.id}", # type: ignore
             quantity=quantity,
             balance=new_balance
