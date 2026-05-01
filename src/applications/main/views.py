@@ -207,7 +207,6 @@ mock_products = [
     {"name": "Safety Goggles", "description": "Anti-fog protective eyewear.", "category": "INDUSTRIAL_AND_SCIENTIFIC", "status": "ACTIVE", "brand": "SafeGuard", "image": "products/goggles.jpg", "metric_unit": "UNIT"}
 ]
 
-from django.shortcuts import render
 
 def storefront_Health_and_Household_section(request):
     # Filter the list to only include Health and Household items
