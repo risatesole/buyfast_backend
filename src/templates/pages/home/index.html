@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ project.name }} — Modern Marketplace</title>
+<title>Shop — Modern Marketplace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
@@ -17,7 +17,6 @@
     --gray-400: #9b9b96;
     --gray-600: #5f5f5a;
     --white: #ffffff;
-    --accent: #0f0f0f;
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -128,6 +127,8 @@
     font-family: var(--font);
     transition: all 0.15s;
     white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex; align-items: center;
   }
   .cat-btn:hover { background: var(--gray-100); color: var(--black); }
   .cat-btn.active { background: var(--black); color: var(--white); font-weight: 500; }
@@ -178,13 +179,12 @@
     background: var(--white);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    padding: 16px;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    overflow: hidden;
     transition: transform 0.2s;
+    aspect-ratio: 1;
   }
   .hero-img-card:hover { transform: translateY(-2px); }
-  .hero-img-card img { width: 80px; height: 80px; object-fit: contain; }
-  .hero-img-card span { font-size: 11px; color: var(--gray-600); font-weight: 500; text-align: center; }
+  .hero-img-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* SECTION */
   .section { padding: 0 24px; margin-bottom: 40px; }
@@ -201,31 +201,28 @@
   }
 
   .cat-card {
-    background: var(--gray-50);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    padding: 20px 16px;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    overflow: hidden;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none; color: inherit;
-    position: relative; overflow: hidden;
+    position: relative;
   }
   .cat-card:hover {
     border-color: var(--black);
-    background: var(--white);
     box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
   }
-
-  .cat-icon {
-    width: 64px; height: 64px;
-    border-radius: var(--radius-md);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
+  .cat-card-img {
+    width: 100%; aspect-ratio: 1;
+    overflow: hidden; background: var(--gray-100);
   }
-  .cat-name { font-size: 13px; font-weight: 500; text-align: center; line-height: 1.3; }
-  .cat-count { font-size: 11px; color: var(--gray-400); }
+  .cat-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .cat-card:hover .cat-card-img img { transform: scale(1.04); }
+  .cat-card-info { padding: 10px 12px 12px; background: var(--white); }
+  .cat-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
+  .cat-count { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
 
   /* PRODUCT GRID */
   .product-grid {
@@ -251,17 +248,18 @@
 
   .product-img-wrap {
     background: var(--gray-50);
-    padding: 24px;
     display: flex; align-items: center; justify-content: center;
-    height: 200px; position: relative;
+    height: 200px; position: relative; overflow: hidden;
   }
-  .product-img-wrap img { width: 100%; height: 100%; object-fit: contain; max-height: 150px; }
+  .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+  .product-card:hover .product-img-wrap img { transform: scale(1.04); }
 
   .product-badge {
     position: absolute; top: 12px; left: 12px;
     background: var(--black); color: var(--white);
     font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
     padding: 3px 8px; border-radius: 20px;
+    z-index: 1;
   }
   .product-badge.sale { background: #c0392b; }
 
@@ -272,6 +270,7 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: 14px;
     opacity: 0; transition: opacity 0.2s;
+    z-index: 1;
   }
   .product-card:hover .product-wish { opacity: 1; }
 
@@ -304,16 +303,17 @@
   }
 
   .deal-card {
-    background: var(--gray-50);
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    padding: 16px;
     cursor: pointer;
     transition: all 0.2s;
-    text-align: center;
+    overflow: hidden;
   }
-  .deal-card:hover { border-color: var(--black); background: var(--white); transform: translateY(-2px); }
-  .deal-card img { width: 80px; height: 80px; object-fit: contain; margin: 0 auto 12px; display: block; }
+  .deal-card:hover { border-color: var(--black); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .deal-card-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; background: var(--gray-100); }
+  .deal-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .deal-card:hover .deal-card-img img { transform: scale(1.04); }
+  .deal-card-body { padding: 12px; }
   .deal-off { display: inline-block; background: #c0392b; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 8px; }
   .deal-name { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.3; }
   .deal-price { font-size: 16px; font-weight: 600; }
@@ -328,39 +328,21 @@
   }
   .banner-card {
     border-radius: var(--radius-lg);
-    padding: 28px 24px;
     position: relative; overflow: hidden;
-    cursor: pointer; min-height: 160px;
+    cursor: pointer; min-height: 200px;
     display: flex; flex-direction: column; justify-content: flex-end;
     transition: transform 0.2s;
   }
   .banner-card:hover { transform: translateY(-2px); }
-  .banner-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.18; }
-  .banner-bg1 { background: #e8f4fd; }
-  .banner-bg2 { background: #fdf3e8; }
-  .banner-bg3 { background: #f0fdf4; }
-  .banner-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: 0.5; margin-bottom: 6px; position: relative; }
-  .banner-title { font-family: var(--font-serif); font-size: 22px; margin-bottom: 4px; position: relative; }
-  .banner-sub { font-size: 12px; opacity: 0.6; position: relative; }
-
-  /* TESTIMONIALS */
-  .review-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-  .review-card {
-    background: var(--gray-50);
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    padding: 20px;
+  .banner-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .banner-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
   }
-  .review-stars { color: #e8a020; font-size: 13px; margin-bottom: 10px; }
-  .review-text { font-size: 13.5px; line-height: 1.6; color: var(--gray-600); margin-bottom: 14px; }
-  .review-author { display: flex; align-items: center; gap: 10px; }
-  .review-avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--gray-200); display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600; color: var(--gray-600);
-  }
-  .review-name { font-size: 13px; font-weight: 500; }
-  .review-date { font-size: 11px; color: var(--gray-400); }
+  .banner-text { position: relative; z-index: 1; padding: 24px; color: var(--white); }
+  .banner-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; margin-bottom: 6px; }
+  .banner-title { font-family: var(--font-serif); font-size: 22px; margin-bottom: 4px; }
+  .banner-sub { font-size: 12px; opacity: 0.75; }
 
   /* FOOTER */
   footer {
@@ -401,7 +383,7 @@
   .cart-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gray-200); background: transparent; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
   .cart-items { flex: 1; overflow-y: auto; }
   .cart-item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--gray-100); }
-  .cart-item img { width: 60px; height: 60px; object-fit: contain; background: var(--gray-50); border-radius: var(--radius-md); padding: 8px; flex-shrink: 0; }
+  .cart-item img { width: 60px; height: 60px; object-fit: cover; background: var(--gray-50); border-radius: var(--radius-md); flex-shrink: 0; }
   .cart-item-info { flex: 1; }
   .cart-item-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
   .cart-item-price { font-size: 15px; font-weight: 600; }
@@ -412,8 +394,8 @@
   .cart-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
   .checkout-btn { width: 100%; padding: 14px; background: var(--black); color: var(--white); border: none; border-radius: var(--radius-xl); font-family: var(--font); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
   .checkout-btn:hover { background: #2a2a2a; }
-  .cart-empty { text-align: center; padding: 60px 0; color: var(--gray-400); }
-  .cart-empty .cart-empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .cart-empty { text-align: center; padding: 60px 0; color: var(--gray-400); font-size: 14px; }
+  .cart-empty-icon { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.25; }
 
   /* TOAST */
   .toast {
@@ -426,11 +408,11 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* UTILITIES */
   .divider { height: 1px; background: var(--gray-200); margin: 0 24px 36px; }
+
   .prime-badge {
     display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    font-size: 10px; font-weight: 600;
     color: var(--gray-400); border: 1px solid var(--gray-200);
     padding: 2px 7px; border-radius: 20px; margin-top: 4px;
   }
@@ -460,7 +442,7 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#">{{project.name}}</a>
+  <a class="nav-logo" href="#">Shop</a>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" placeholder="Search for products, brands, categories…" id="searchInput">
@@ -477,25 +459,23 @@
 
 <!-- DELIVERY BAR -->
 <div class="delivery-bar">
-  <!-- <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> -->
-  You are <span class="location-link">{{user.first_name}}</span>
-  &nbsp;·&nbsp; Welcome to <strong> {{ project.name}} </strong>
+  Welcome to <strong>&nbsp;Shop</strong> &nbsp;·&nbsp; Free delivery on orders over $35
 </div>
 
 <!-- CATEGORY NAV -->
 <div class="cat-nav" id="catNav">
   <button class="cat-btn active" onclick="filterCat(this,'all')">All</button>
-  <button class="cat-btn" onclick="filterCat(this,'electronics')">Electronics</button>
-  <button class="cat-btn" onclick="filterCat(this,'fashion')">Fashion</button>
-  <button class="cat-btn" onclick="filterCat(this,'home')">Home & Kitchen</button>
-  <button class="cat-btn" onclick="filterCat(this,'beauty')">Beauty</button>
-  <button class="cat-btn" onclick="filterCat(this,'sports')">Sports</button>
-  <button class="cat-btn" onclick="filterCat(this,'books')">Books</button>
-  <button class="cat-btn" onclick="filterCat(this,'toys')">Toys & Games</button>
-  <button class="cat-btn" onclick="filterCat(this,'food')">Grocery</button>
-  <button class="cat-btn" onclick="filterCat(this,'garden')">Garden</button>
-  <button class="cat-btn" onclick="filterCat(this,'pets')">Pets</button>
-  <button class="cat-btn" onclick="filterCat(this,'automotive')">Automotive</button>
+  <a class="cat-btn" href="https://example.com/electronics">Electronics</a>
+  <a class="cat-btn" href="https://example.com/fashion">Fashion</a>
+  <a class="cat-btn" href="https://example.com/home-kitchen">Home &amp; Kitchen</a>
+  <a class="cat-btn" href="https://example.com/beauty">Beauty</a>
+  <a class="cat-btn" href="https://example.com/sports">Sports</a>
+  <a class="cat-btn" href="https://example.com/books">Books</a>
+  <a class="cat-btn" href="https://example.com/toys-games">Toys &amp; Games</a>
+  <a class="cat-btn" href="https://example.com/grocery">Grocery</a>
+  <a class="cat-btn" href="https://example.com/garden">Garden</a>
+  <a class="cat-btn" href="https://example.com/pets">Pets</a>
+  <a class="cat-btn" href="https://example.com/automotive">Automotive</a>
 </div>
 
 <!-- HERO -->
@@ -512,20 +492,16 @@
   </div>
   <div class="hero-visual">
     <div class="hero-img-card">
-      <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=160&h=160&fit=crop&crop=center" alt="Watch">
-      <span>Watches</span>
+      <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop&crop=center" alt="Watches">
     </div>
     <div class="hero-img-card">
-      <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=160&h=160&fit=crop&crop=center" alt="Beauty">
-      <span>Beauty</span>
+      <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300&h=300&fit=crop&crop=center" alt="Beauty">
     </div>
     <div class="hero-img-card">
-      <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=160&h=160&fit=crop&crop=center" alt="Sports">
-      <span>Sports</span>
+      <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=300&h=300&fit=crop&crop=center" alt="Sports">
     </div>
     <div class="hero-img-card">
-      <img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=160&h=160&fit=crop&crop=center" alt="Electronics">
-      <span>Tech</span>
+      <img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop&crop=center" alt="Electronics">
     </div>
   </div>
 </div>
@@ -534,69 +510,57 @@
 <div class="section">
   <div class="section-header">
     <span class="section-title">Browse Categories</span>
-    <a class="section-link">View all →</a>
+    <a class="section-link" href="https://example.com/categories">View all &rarr;</a>
   </div>
   <div class="cat-grid">
-    <div class="cat-card" onclick="filterCat(null,'electronics')">
-      <div class="cat-icon" style="background:#e8f4fd;">📱</div>
-      <div class="cat-name">Electronics</div>
-      <div class="cat-count">2.4M+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'fashion')">
-      <div class="cat-icon" style="background:#fdf3e8;">👗</div>
-      <div class="cat-name">Fashion</div>
-      <div class="cat-count">5.1M+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'home')">
-      <div class="cat-icon" style="background:#f0fdf4;">🏠</div>
-      <div class="cat-name">Home & Kitchen</div>
-      <div class="cat-count">3.2M+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'beauty')">
-      <div class="cat-icon" style="background:#fdf0f8;">💄</div>
-      <div class="cat-name">Beauty</div>
-      <div class="cat-count">890K+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'sports')">
-      <div class="cat-icon" style="background:#f0f8e8;">🏃</div>
-      <div class="cat-name">Sports & Outdoors</div>
-      <div class="cat-count">1.7M+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'books')">
-      <div class="cat-icon" style="background:#fef8e8;">📚</div>
-      <div class="cat-name">Books</div>
-      <div class="cat-count">48M+ titles</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'toys')">
-      <div class="cat-icon" style="background:#fff0f0;">🎮</div>
-      <div class="cat-name">Toys & Games</div>
-      <div class="cat-count">620K+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'food')">
-      <div class="cat-icon" style="background:#f0f0ff;">🛒</div>
-      <div class="cat-name">Grocery</div>
-      <div class="cat-count">Same-day delivery</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'garden')">
-      <div class="cat-icon" style="background:#edfdf0;">🌿</div>
-      <div class="cat-name">Garden</div>
-      <div class="cat-count">430K+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'pets')">
-      <div class="cat-icon" style="background:#fdf5e8;">🐾</div>
-      <div class="cat-name">Pet Supplies</div>
-      <div class="cat-count">780K+ products</div>
-    </div>
-    <div class="cat-card" onclick="filterCat(null,'automotive')">
-      <div class="cat-icon" style="background:#f5f5f5;">🚗</div>
-      <div class="cat-name">Automotive</div>
-      <div class="cat-count">2.1M+ products</div>
-    </div>
-    <div class="cat-card">
-      <div class="cat-icon" style="background:#fdf0ff;">⌚</div>
-      <div class="cat-name">Watches & Jewelry</div>
-      <div class="cat-count">320K+ products</div>
-    </div>
+    <a class="cat-card" href="https://example.com/electronics">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop" alt="Electronics" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Electronics</div><div class="cat-count">2.4M+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/fashion">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop" alt="Fashion" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Fashion</div><div class="cat-count">5.1M+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/home-kitchen">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop" alt="Home & Kitchen" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Home &amp; Kitchen</div><div class="cat-count">3.2M+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/beauty">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=300&fit=crop" alt="Beauty" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Beauty</div><div class="cat-count">890K+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/sports">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=300&h=300&fit=crop" alt="Sports" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Sports &amp; Outdoors</div><div class="cat-count">1.7M+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/books">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=300&fit=crop" alt="Books" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Books</div><div class="cat-count">48M+ titles</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/toys-games">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&h=300&fit=crop" alt="Toys & Games" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Toys &amp; Games</div><div class="cat-count">620K+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/grocery">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop" alt="Grocery" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Grocery</div><div class="cat-count">Same-day delivery</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/garden">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&h=300&fit=crop" alt="Garden" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Garden</div><div class="cat-count">430K+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/pets">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop" alt="Pets" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Pet Supplies</div><div class="cat-count">780K+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/automotive">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=300&h=300&fit=crop" alt="Automotive" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Automotive</div><div class="cat-count">2.1M+ products</div></div>
+    </a>
+    <a class="cat-card" href="https://example.com/watches-jewelry">
+      <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop" alt="Watches & Jewelry" loading="lazy"></div>
+      <div class="cat-card-info"><div class="cat-name">Watches &amp; Jewelry</div><div class="cat-count">320K+ products</div></div>
+    </a>
   </div>
 </div>
 
@@ -604,65 +568,94 @@
 
 <!-- BANNER STRIP -->
 <div class="banner-strip">
-  <div class="banner-card banner-bg1">
-    <img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=400&h=200&fit=crop" alt="">
-    <div class="banner-label">Tech Week</div>
-    <div class="banner-title">New Arrivals in Electronics</div>
-    <div class="banner-sub">Up to 40% off top brands</div>
-  </div>
-  <div class="banner-card banner-bg2">
-    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=200&fit=crop" alt="">
-    <div class="banner-label">Style Drop</div>
-    <div class="banner-title">Spring Fashion Edit</div>
-    <div class="banner-sub">Curated looks for every occasion</div>
-  </div>
-  <div class="banner-card banner-bg3">
-    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop" alt="">
-    <div class="banner-label">Home Refresh</div>
-    <div class="banner-title">Kitchen & Living</div>
-    <div class="banner-sub">Free delivery on orders $35+</div>
-  </div>
+  <a class="banner-card" href="https://example.com/electronics" style="text-decoration:none">
+    <img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=600&h=300&fit=crop" alt="Electronics">
+    <div class="banner-overlay"></div>
+    <div class="banner-text">
+      <div class="banner-label">Tech Week</div>
+      <div class="banner-title">New Arrivals in Electronics</div>
+      <div class="banner-sub">Up to 40% off top brands</div>
+    </div>
+  </a>
+  <a class="banner-card" href="https://example.com/fashion" style="text-decoration:none">
+    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=300&fit=crop" alt="Fashion">
+    <div class="banner-overlay"></div>
+    <div class="banner-text">
+      <div class="banner-label">Style Drop</div>
+      <div class="banner-title">Spring Fashion Edit</div>
+      <div class="banner-sub">Curated looks for every occasion</div>
+    </div>
+  </a>
+  <a class="banner-card" href="https://example.com/home-kitchen" style="text-decoration:none">
+    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=300&fit=crop" alt="Home & Kitchen">
+    <div class="banner-overlay"></div>
+    <div class="banner-text">
+      <div class="banner-label">Home Refresh</div>
+      <div class="banner-title">Kitchen &amp; Living</div>
+      <div class="banner-sub">Free delivery on orders $35+</div>
+    </div>
+  </a>
 </div>
+
 <div class="divider"></div>
 
+<!-- TODAY'S DEALS -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-title">Today's Deals</span>
+    <a class="section-link" href="https://example.com/deals">See all deals &rarr;</a>
+  </div>
+  <div class="deals-row" id="dealsRow"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PRODUCTS -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-title">Featured Products</span>
+    <a class="section-link" href="https://example.com/products">View all &rarr;</a>
+  </div>
+  <div class="product-grid" id="productGrid"></div>
+</div>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="logo">{{ project.name}}</div>
+      <div class="logo">Shop</div>
       <p>Your one-stop marketplace for millions of products. Fast delivery, easy returns, and unbeatable prices.</p>
     </div>
     <div class="footer-col">
       <h5>Get to know us</h5>
-      <a href="#">About us</a>
-      <a href="#">Careers</a>
-      <a href="#">Press</a>
-      <a href="#">Sustainability</a>
+      <a href="https://example.com/about">About us</a>
+      <a href="https://example.com/careers">Careers</a>
+      <a href="https://example.com/press">Press</a>
+      <a href="https://example.com/sustainability">Sustainability</a>
     </div>
     <div class="footer-col">
       <h5>Make money with us</h5>
-      <a href="#">Sell products</a>
-      <a href="#">Become an affiliate</a>
-      <a href="#">Advertise</a>
+      <a href="https://example.com/sell">Sell products</a>
+      <a href="https://example.com/affiliate">Become an affiliate</a>
+      <a href="https://example.com/advertise">Advertise</a>
     </div>
     <div class="footer-col">
       <h5>Customer service</h5>
-      <a href="#">Help center</a>
-      <a href="#">Returns</a>
-      <a href="#">Track your order</a>
-      <a href="#">Contact us</a>
+      <a href="https://example.com/help">Help center</a>
+      <a href="https://example.com/returns">Returns</a>
+      <a href="https://example.com/track">Track your order</a>
+      <a href="https://example.com/contact">Contact us</a>
     </div>
     <div class="footer-col">
       <h5>Let us help you</h5>
-      <a href="#">Your account</a>
-      <a href="#">Your orders</a>
-      <a href="#">Wishlist</a>
-      <a href="#">Accessibility</a>
+      <a href="https://example.com/account">Your account</a>
+      <a href="https://example.com/orders">Your orders</a>
+      <a href="https://example.com/wishlist">Wishlist</a>
+      <a href="https://example.com/accessibility">Accessibility</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2025 SHOP. All rights reserved.</div>
+    <div>&copy; 2026 Shop. All rights reserved.</div>
     <div class="footer-pay">
       <div class="pay-badge">VISA</div>
       <div class="pay-badge">MC</div>
@@ -678,12 +671,12 @@
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
     <h3>Your cart</h3>
-    <button class="cart-close" onclick="toggleCart()">✕</button>
+    <button class="cart-close" onclick="toggleCart()">&#10005;</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-footer" id="cartFooter" style="display:none">
     <div class="cart-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
-    <button class="checkout-btn">Proceed to checkout →</button>
+    <button class="checkout-btn">Proceed to checkout &rarr;</button>
   </div>
 </div>
 
@@ -692,27 +685,27 @@
 
 <script>
 const products = [
-  { id:1, name:'Wireless Noise-Cancelling Headphones', brand:'SoundCore', price:79.99, old:129.99, rating:4.5, reviews:2841, img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop', cat:'electronics', badge:'Best Seller' },
-  { id:2, name:'Merino Wool Crew-Neck Sweater', brand:'Everlane', price:65.00, old:null, rating:4.7, reviews:512, img:'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=300&h=300&fit=crop', cat:'fashion', badge:null },
-  { id:3, name:'Non-Stick Ceramic Cookware Set 10pc', brand:'GreenLife', price:89.99, old:149.99, rating:4.4, reviews:1203, img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop', cat:'home', badge:'Sale' },
-  { id:4, name:'Vitamin C Brightening Serum 30ml', brand:'Paula\'s Choice', price:34.00, old:null, rating:4.8, reviews:3420, img:'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300&h=300&fit=crop', cat:'beauty', badge:'New' },
-  { id:5, name:'Ultra-Light Running Shoes', brand:'Allbirds', price:120.00, old:145.00, rating:4.6, reviews:876, img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop', cat:'sports', badge:'Sale' },
-  { id:6, name:'Atomic Habits — James Clear', brand:'Penguin Books', price:14.99, old:24.99, rating:4.9, reviews:98421, img:'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=300&fit=crop', cat:'books', badge:'Bestseller' },
-  { id:7, name:'4K Ultra HD Smart TV 55"', brand:'TCL', price:399.99, old:599.99, rating:4.3, reviews:5670, img:'https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop', cat:'electronics', badge:'Sale' },
-  { id:8, name:'Air Fryer XL 5.8-Quart', brand:'Cosori', price:79.99, old:109.99, rating:4.7, reviews:21340, img:'https://images.unsplash.com/photo-1585515320310-259814833e62?w=300&h=300&fit=crop', cat:'home', badge:'Top Pick' },
-  { id:9, name:'Classic Leather Sneakers', brand:'Common Projects', price:199.00, old:null, rating:4.5, reviews:234, img:'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=300&h=300&fit=crop', cat:'fashion', badge:null },
-  { id:10, name:'Yoga Mat Premium Anti-Slip 6mm', brand:'Manduka', price:88.00, old:null, rating:4.8, reviews:1102, img:'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=300&h=300&fit=crop', cat:'sports', badge:null },
-  { id:11, name:'Luxury Skincare Gift Set', brand:'Kiehl\'s', price:75.00, old:95.00, rating:4.6, reviews:445, img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=300&fit=crop', cat:'beauty', badge:'Gift' },
-  { id:12, name:'Mechanical Gaming Keyboard RGB', brand:'Keychron', price:129.99, old:159.99, rating:4.7, reviews:3204, img:'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=300&h=300&fit=crop', cat:'electronics', badge:null },
+  { id:1,  name:'Wireless Noise-Cancelling Headphones', brand:'SoundCore',       price:79.99,  old:129.99, rating:4.5, reviews:2841,  img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',  cat:'electronics', badge:'Best Seller' },
+  { id:2,  name:'Merino Wool Crew-Neck Sweater',        brand:'Everlane',         price:65.00,  old:null,   rating:4.7, reviews:512,   img:'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&h=400&fit=crop',  cat:'fashion',     badge:null },
+  { id:3,  name:'Non-Stick Ceramic Cookware Set 10pc',  brand:'GreenLife',        price:89.99,  old:149.99, rating:4.4, reviews:1203,  img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',  cat:'home',        badge:'Sale' },
+  { id:4,  name:'Vitamin C Brightening Serum 30ml',     brand:"Paula's Choice",   price:34.00,  old:null,   rating:4.8, reviews:3420,  img:'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop',  cat:'beauty',      badge:'New' },
+  { id:5,  name:'Ultra-Light Running Shoes',            brand:'Allbirds',         price:120.00, old:145.00, rating:4.6, reviews:876,   img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',  cat:'sports',      badge:'Sale' },
+  { id:6,  name:'Atomic Habits — James Clear',          brand:'Penguin Books',    price:14.99,  old:24.99,  rating:4.9, reviews:98421, img:'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=400&fit=crop',  cat:'books',       badge:'Bestseller' },
+  { id:7,  name:'4K Ultra HD Smart TV 55"',             brand:'TCL',              price:399.99, old:599.99, rating:4.3, reviews:5670,  img:'https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=400&h=400&fit=crop',  cat:'electronics', badge:'Sale' },
+  { id:8,  name:'Air Fryer XL 5.8-Quart',              brand:'Cosori',           price:79.99,  old:109.99, rating:4.7, reviews:21340, img:'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&h=400&fit=crop',  cat:'home',        badge:'Top Pick' },
+  { id:9,  name:'Classic Leather Sneakers',             brand:'Common Projects',  price:199.00, old:null,   rating:4.5, reviews:234,   img:'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&h=400&fit=crop',  cat:'fashion',     badge:null },
+  { id:10, name:'Yoga Mat Premium Anti-Slip 6mm',       brand:'Manduka',          price:88.00,  old:null,   rating:4.8, reviews:1102,  img:'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&h=400&fit=crop',  cat:'sports',      badge:null },
+  { id:11, name:'Luxury Skincare Gift Set',             brand:"Kiehl's",          price:75.00,  old:95.00,  rating:4.6, reviews:445,   img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',  cat:'beauty',      badge:'Gift' },
+  { id:12, name:'Mechanical Gaming Keyboard RGB',       brand:'Keychron',         price:129.99, old:159.99, rating:4.7, reviews:3204,  img:'https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=400&fit=crop',  cat:'electronics', badge:null },
 ];
 
 const deals = [
-  { name:'AirPods Pro (2nd Gen)', price:'$189.99', old:'$249.99', off:'24%', pct:72, img:'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=200&h=200&fit=crop' },
-  { name:'Instant Pot Duo 7-in-1', price:'$59.99', old:'$99.99', off:'40%', pct:55, img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&h=200&fit=crop' },
-  { name:'Kindle Paperwhite 16GB', price:'$99.99', old:'$139.99', off:'29%', pct:40, img:'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200&h=200&fit=crop' },
-  { name:'Nike Air Max 270', price:'$89.99', old:'$150.00', off:'40%', pct:68, img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop' },
-  { name:'Dyson V15 Detect', price:'$449.99', old:'$599.99', off:'25%', pct:85, img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop' },
-  { name:'The North Face Puffer Jacket', price:'$129.99', old:'$199.99', off:'35%', pct:31, img:'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=200&h=200&fit=crop' },
+  { name:'AirPods Pro (2nd Gen)',       price:'$189.99', old:'$249.99', off:'24%', pct:72, img:'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400&h=300&fit=crop' },
+  { name:'Instant Pot Duo 7-in-1',     price:'$59.99',  old:'$99.99',  off:'40%', pct:55, img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop' },
+  { name:'Kindle Paperwhite 16GB',     price:'$99.99',  old:'$139.99', off:'29%', pct:40, img:'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=300&fit=crop' },
+  { name:'Nike Air Max 270',           price:'$89.99',  old:'$150.00', off:'40%', pct:68, img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop' },
+  { name:'Dyson V15 Detect',           price:'$449.99', old:'$599.99', off:'25%', pct:85, img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop' },
+  { name:'The North Face Puffer Jacket',price:'$129.99', old:'$199.99', off:'35%', pct:31, img:'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&h=300&fit=crop' },
 ];
 
 let cart = [];
@@ -722,28 +715,27 @@ function renderProducts(cat) {
   const grid = document.getElementById('productGrid');
   const filtered = cat === 'all' ? products : products.filter(p => p.cat === cat);
   grid.innerHTML = filtered.map(p => {
-    const off = p.old ? Math.round((1 - p.price/p.old)*100) : null;
-    const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating%1 >= 0.5 ? '★' : '') ;
+    const off = p.old ? Math.round((1 - p.price / p.old) * 100) : null;
     const badgeColor = p.badge === 'Sale' ? 'sale' : '';
     return `
     <div class="product-card">
       <div class="product-img-wrap">
-        <img src="${p.img}&q=80" alt="${p.name}" loading="lazy">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
         ${p.badge ? `<div class="product-badge ${badgeColor}">${p.badge}</div>` : ''}
-        <div class="product-wish" title="Add to wishlist">♡</div>
+        <div class="product-wish" title="Add to wishlist">&#9825;</div>
       </div>
       <div class="product-info">
         <div class="product-brand">${p.brand}</div>
         <div class="product-name">${p.name}</div>
         <div class="product-rating">
-          <span class="stars">${'★'.repeat(Math.floor(p.rating))}${ (p.rating%1)>=0.5 ? '½' : ''}</span>
+          <span class="stars">${'&#9733;'.repeat(Math.floor(p.rating))}${p.rating % 1 >= 0.5 ? '&#189;' : ''}</span>
           <span class="rating-count">${p.reviews.toLocaleString()}</span>
         </div>
         <div class="product-price">
           <span class="price-current">$${p.price.toFixed(2)}</span>
           ${p.old ? `<span class="price-old">$${p.old.toFixed(2)}</span><span class="price-off">${off}% off</span>` : ''}
         </div>
-        <div class="prime-badge">✓ Free Delivery</div>
+        <div class="prime-badge">&#10003; Free Delivery</div>
         <button class="product-add" onclick="addToCart(${p.id})">Add to cart</button>
       </div>
     </div>`;
@@ -753,12 +745,14 @@ function renderProducts(cat) {
 function renderDeals() {
   document.getElementById('dealsRow').innerHTML = deals.map(d => `
     <div class="deal-card">
-      <img src="${d.img}&q=80" alt="${d.name}" loading="lazy">
-      <div><span class="deal-off">${d.off} OFF</span></div>
-      <div class="deal-name">${d.name}</div>
-      <div class="deal-price">${d.price} <span style="font-size:12px;color:var(--gray-400);text-decoration:line-through;font-weight:400">${d.old}</span></div>
-      <div class="deal-progress"><div class="deal-bar" style="width:${d.pct}%"></div></div>
-      <div class="deal-left">${d.pct}% claimed</div>
+      <div class="deal-card-img"><img src="${d.img}" alt="${d.name}" loading="lazy"></div>
+      <div class="deal-card-body">
+        <div><span class="deal-off">${d.off} OFF</span></div>
+        <div class="deal-name">${d.name}</div>
+        <div class="deal-price">${d.price} <span style="font-size:12px;color:var(--gray-400);text-decoration:line-through;font-weight:400">${d.old}</span></div>
+        <div class="deal-progress"><div class="deal-bar" style="width:${d.pct}%"></div></div>
+        <div class="deal-left">${d.pct}% claimed</div>
+      </div>
     </div>
   `).join('');
 }
@@ -767,48 +761,44 @@ function filterCat(btn, cat) {
   currentCat = cat;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  else {
-    const btns = document.querySelectorAll('.cat-btn');
-    btns.forEach(b => { if(b.textContent.trim().toLowerCase().includes(cat)) b.classList.add('active'); });
-  }
   renderProducts(cat);
-  document.getElementById('productGrid').scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('productGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function addToCart(id) {
   const p = products.find(x => x.id === id);
   const existing = cart.find(x => x.id === id);
   if (existing) { existing.qty++; }
-  else { cart.push({...p, qty:1}); }
+  else { cart.push({ ...p, qty: 1 }); }
   updateCart();
-  showToast(`"${p.name.slice(0,30)}…" added to cart`);
+  showToast(`"${p.name.slice(0, 30)}${p.name.length > 30 ? '…' : ''}" added to cart`);
 }
 
 function updateCart() {
-  const count = cart.reduce((a,x) => a+x.qty, 0);
+  const count = cart.reduce((a, x) => a + x.qty, 0);
   document.getElementById('cartCount').textContent = count;
   const items = document.getElementById('cartItems');
   const footer = document.getElementById('cartFooter');
 
   if (cart.length === 0) {
-    items.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍</div><div>Your cart is empty</div></div>`;
+    items.innerHTML = `<div class="cart-empty"><svg class="cart-empty-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 6L8 12v24a4 4 0 004 4h24a4 4 0 004-4V12l-6-6z"/><line x1="8" y1="12" x2="40" y2="12"/><path d="M30 20a6 6 0 01-12 0"/></svg><div>Your cart is empty</div></div>`;
     footer.style.display = 'none';
   } else {
     items.innerHTML = cart.map(item => `
       <div class="cart-item">
-        <img src="${item.img}&w=120&h=120&fit=crop" alt="${item.name}">
+        <img src="${item.img}" alt="${item.name}">
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
           <div class="cart-qty">
-            <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+            <button class="qty-btn" onclick="changeQty(${item.id},-1)">&#8722;</button>
             <span>${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+            <button class="qty-btn" onclick="changeQty(${item.id},1)">&#43;</button>
           </div>
         </div>
       </div>
     `).join('');
-    const total = cart.reduce((a,x) => a + x.price*x.qty, 0);
+    const total = cart.reduce((a, x) => a + x.price * x.qty, 0);
     document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
     footer.style.display = 'block';
   }
@@ -834,35 +824,41 @@ function showToast(msg) {
 }
 
 // Search
-document.getElementById('searchInput').addEventListener('input', function() {
+document.getElementById('searchInput').addEventListener('input', function () {
   const q = this.value.toLowerCase();
   if (!q) { renderProducts(currentCat); return; }
-  const filtered = products.filter(p => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+  const filtered = products.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.brand.toLowerCase().includes(q) ||
+    p.cat.toLowerCase().includes(q)
+  );
   const grid = document.getElementById('productGrid');
   if (filtered.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--gray-400)">No products found for "${q}"</div>`;
   } else {
     currentCat = 'all';
-    const off_fn = p => p.old ? Math.round((1 - p.price/p.old)*100) : null;
     grid.innerHTML = filtered.map(p => {
-      const off = off_fn(p);
+      const off = p.old ? Math.round((1 - p.price / p.old) * 100) : null;
       const badgeColor = p.badge === 'Sale' ? 'sale' : '';
       return `
       <div class="product-card">
         <div class="product-img-wrap">
-          <img src="${p.img}&q=80" alt="${p.name}" loading="lazy">
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
           ${p.badge ? `<div class="product-badge ${badgeColor}">${p.badge}</div>` : ''}
-          <div class="product-wish">♡</div>
+          <div class="product-wish">&#9825;</div>
         </div>
         <div class="product-info">
           <div class="product-brand">${p.brand}</div>
           <div class="product-name">${p.name}</div>
-          <div class="product-rating"><span class="stars">${'★'.repeat(Math.floor(p.rating))}</span><span class="rating-count">${p.reviews.toLocaleString()}</span></div>
+          <div class="product-rating">
+            <span class="stars">${'&#9733;'.repeat(Math.floor(p.rating))}</span>
+            <span class="rating-count">${p.reviews.toLocaleString()}</span>
+          </div>
           <div class="product-price">
             <span class="price-current">$${p.price.toFixed(2)}</span>
             ${p.old ? `<span class="price-old">$${p.old.toFixed(2)}</span><span class="price-off">${off}% off</span>` : ''}
           </div>
-          <div class="prime-badge">✓ Free Delivery</div>
+          <div class="prime-badge">&#10003; Free Delivery</div>
           <button class="product-add" onclick="addToCart(${p.id})">Add to cart</button>
         </div>
       </div>`;

@@ -1,245 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>{{ section_title }} — SHOP</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
-
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --black: #0f0f0f;
-    --gray-50: #f9f9f8;
-    --gray-100: #f2f2f0;
-    --gray-200: #e5e5e2;
-    --gray-400: #9b9b96;
-    --gray-600: #5f5f5a;
-    --white: #ffffff;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --font: 'DM Sans', sans-serif;
-    --font-serif: 'DM Serif Display', serif;
-    --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
-  }
-
-  body {
-    font-family: var(--font);
-    background: var(--white);
-    color: var(--black);
-    font-size: 14px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    height: 60px;
-  }
-
-  .nav-logo {
-    font-family: var(--font-serif);
-    font-size: 22px;
-    text-decoration: none;
-    color: var(--black);
-  }
-
-  .nav-search {
-    flex: 1;
-    max-width: 480px;
-    display: flex;
-    align-items: center;
-    border: 1.5px solid var(--gray-200);
-    border-radius: var(--radius-xl);
-    background: var(--gray-50);
-    padding: 0 16px;
-  }
-
-  .nav-search input {
-    border: none;
-    outline: none;
-    width: 100%;
-    height: 40px;
-    background: transparent;
-    font-family: var(--font);
-  }
-
-  .nav-actions {
-    margin-left: auto;
-    display: flex;
-    gap: 10px;
-  }
-
-  .nav-btn {
-    padding: 8px 14px;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--gray-200);
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .nav-btn.primary {
-    background: var(--black);
-    color: var(--white);
-    border: none;
-  }
-
-  .delivery-bar {
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
-    padding: 8px 24px;
-    font-size: 12px;
-  }
-
-  .page-header {
-    padding: 22px 24px 0;
-  }
-
-  .breadcrumb {
-    font-size: 12px;
-    color: var(--gray-400);
-    margin-bottom: 6px;
-  }
-
-  .page-title {
-    font-family: var(--font-serif);
-    font-size: 28px;
-  }
-
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 20px 24px 60px;
-  }
-
-  .product-card {
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    transition: 0.2s;
-  }
-
-  .product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-  }
-
-  .product-img {
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--gray-50);
-  }
-
-  .product-img img {
-    max-width: 100%;
-    max-height: 140px;
-    object-fit: contain;
-  }
-
-  .product-info {
-    padding: 14px;
-  }
-
-  .product-name {
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-
-  .product-brand {
-    font-size: 12px;
-    color: var(--gray-400);
-    margin-bottom: 8px;
-  }
-
-  .product-desc {
-    font-size: 12px;
-    color: var(--gray-600);
-    margin-bottom: 10px;
-  }
-
-  .empty {
-    padding: 60px;
-    text-align: center;
-    color: var(--gray-400);
-  }
-</style>
+  <title> section_title — SHOP</title>
 </head>
 
 <body>
 
-<nav>
-  <a class="nav-logo" href="#">SHOP</a>
+  <nav>
+    <a class="nav-logo" href="#">SHOP</a>
 
-  <div class="nav-search">
-    <input type="text" placeholder="Search {{ section_title|lower }}…" id="searchInput">
-  </div>
-
-  <div class="nav-actions">
-    <button class="nav-btn">Cart</button>
-    <button class="nav-btn primary">Sign in</button>
-  </div>
-</nav>
-
-<div class="delivery-bar">
-  Welcome to <strong>{{ section_title }}</strong>
-</div>
-
-<div class="page-header">
-  <div class="breadcrumb">
-    Home › {{ section_title }}
-  </div>
-  <h1 class="page-title">{{ section_title }}</h1>
-</div>
-
-<div class="product-grid" id="grid"></div>
-
-<script>
-const products = {{ products|safe }};
-
-const grid = document.getElementById("grid");
-const search = document.getElementById("searchInput");
-
-function render(list) {
-  if (!list.length) {
-    grid.innerHTML = `<div class="empty">No products found</div>`;
-    return;
-  }
-
-  grid.innerHTML = list.map(p => `
-    <div class="product-card">
-      <div class="product-img">
-        <img src="${p.image}" alt="${p.name}">
-      </div>
-      <div class="product-info">
-        <div class="product-name">${p.name}</div>
-        <div class="product-brand">${p.brand}</div>
-        <div class="product-desc">${p.description}</div>
-      </div>
+    <div class="nav-search">
+      <input type="text" placeholder="Search {{ section_title|lower }}…" id="searchInput">
     </div>
-  `).join("");
-}
 
-search.addEventListener("input", () => {
-  const q = search.value.toLowerCase();
-  render(products.filter(p => p.name.toLowerCase().includes(q)));
-});
+    <div class="nav-actions">
+      <button class="nav-btn">Cart</button>
+      <button class="nav-btn primary">Sign in</button>
+    </div>
+  </nav>
 
-render(products);
-</script>
+  <div class="delivery-bar">
+    Welcome to <strong>{{ section_title }}</strong>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb">
+      Home › {{ section_title }}
+    </div>
+    <h1 class="page-title">{{ section_title }}</h1>
+  </div>
+
+  <div class="product-grid" id="grid"></div>
 
 </body>
+
 </html>
