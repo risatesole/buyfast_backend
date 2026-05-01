@@ -207,7 +207,6 @@ mock_products = [
     {"name": "Safety Goggles", "description": "Anti-fog protective eyewear.", "category": "INDUSTRIAL_AND_SCIENTIFIC", "status": "ACTIVE", "brand": "SafeGuard", "image": "products/goggles.jpg", "metric_unit": "UNIT"}
 ]
 
-
 def storefront_Health_and_Household_section(request):
     # Filter the list to only include Health and Household items
     health_household_items = [
@@ -217,13 +216,12 @@ def storefront_Health_and_Household_section(request):
 
     context = {
         "section_title": "Health & Household",
+        "section_slogan": "Designed for wellbeing & daily life",
+        "section_hero_short_text": "thoughtful essentials",
         "products": health_household_items
     }
 
     return render(request, "pages/home/store_front_section_template.html", context)
-
-
-#
 
 def storefront_product_page(request,product_id):
     return render(request,"pages/home/store_product_page.html")
