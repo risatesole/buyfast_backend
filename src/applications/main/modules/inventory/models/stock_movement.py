@@ -7,7 +7,7 @@ class StockMovement_model(models.Model):
         ("customer_sell", "Customer Sell"),
     ]
 
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(auto_now_add=True)
     product = models.ForeignKey("Product", on_delete=models.CASCADE)
     movement_type = models.CharField(
         max_length=50,
