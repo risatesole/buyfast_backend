@@ -32,5 +32,5 @@ urlpatterns = [
     path("signin/",signin_view,name="signin"),
     path("signup/", signup_view, name="signup"),
     path("signout/", signout_view, name="signout"),
-    path("preferences/",preferences_user_view, name="preferences"),
+    path("account/",preferences_user_view, name="account"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # add this to the end of ] so it saves to the storage
