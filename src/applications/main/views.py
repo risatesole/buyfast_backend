@@ -1,16 +1,165 @@
 from django.shortcuts import render, redirect
 
-def home_view(request):
-    context = {
-        "storename": "Petal",
-        "project":{
-            "name": "Duck"
+
+def categories_context_handler():
+    
+    categories = [
+        {
+            "name": "Electronics",
+            "slug": "electronics",
+            "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
+            "count": "2.4K+ products"
+        },
+        {
+            "name": "Grocery",
+            "slug": "grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+            "count": "1.8K+ products"
+        },
+        {
+            "name": "Home & Kitchen",
+            "slug": "home",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },        
+        {
+            "name": "Shoes",
+            "slug": "shoes",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },
+       
+
+
+
+
+
+
+
+
+
+        {
+            "name": "Electronics",
+            "slug": "electronics",
+            "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
+            "count": "2.4K+ products"
+        },
+        {
+            "name": "Grocery",
+            "slug": "grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+            "count": "1.8K+ products"
+        },
+        {
+            "name": "Home & Kitchen",
+            "slug": "home",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },        
+        {
+            "name": "Shoes",
+            "slug": "shoes",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },
+                {
+            "name": "Electronics",
+            "slug": "electronics",
+            "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
+            "count": "2.4K+ products"
+        },
+        {
+            "name": "Grocery",
+            "slug": "grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+            "count": "1.8K+ products"
+        },
+        {
+            "name": "Home & Kitchen",
+            "slug": "home",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },        
+        {
+            "name": "Shoes",
+            "slug": "shoes",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },
+                {
+            "name": "Electronics",
+            "slug": "electronics",
+            "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
+            "count": "2.4K+ products"
+        },
+        {
+            "name": "Grocery",
+            "slug": "grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+            "count": "1.8K+ products"
+        },
+        {
+            "name": "Home & Kitchen",
+            "slug": "home",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },        
+        {
+            "name": "Shoes",
+            "slug": "shoes",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },
+                {
+            "name": "Electronics",
+            "slug": "electronics",
+            "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
+            "count": "2.4K+ products"
+        },
+        {
+            "name": "Grocery",
+            "slug": "grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop",
+            "count": "1.8K+ products"
+        },
+        {
+            "name": "Home & Kitchen",
+            "slug": "home",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },        
+        {
+            "name": "Shoes",
+            "slug": "shoes",
+            "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop",
+            "count": "3.2K+ products"
+        },
+    ]
+    # trick i found the [:8] limits the return to just 8 categories... jaja
+    return categories[:8] 
+
+
+def home_context_handler():
+    hero_section = {
+        "text": {
+            "main": "Compra a tu manera",
+            "eyebrow": "productos que dicen comprame",
+            "supporting": "Descubre cientos de productos seleccionados para cada estilo y ocasión"
         }
     }
-    return render(request, "pages/home/index.html",context)
+
+    context = {
+        "storename": "Petal",
+        "hero": hero_section,
+        "categories": categories_context_handler()
+
+    }
+    return context
 
 
-
+def home_view(request):
+    context = home_context_handler()
+    return render(request, "pages/home/index.html", context)
 
 
 

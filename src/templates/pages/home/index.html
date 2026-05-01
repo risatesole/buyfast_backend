@@ -759,73 +759,63 @@
 </nav>
 
 <!-- DELIVERY BAR -->
-<div class="delivery-bar">
+<!-- <div class="delivery-bar">
   Welcome to <strong>{{ section_title|default:"Marketplace" }}</strong> · Free delivery on orders over $35
   {% if user.is_authenticated and user.first_name %}
     · Hello, {{ user.first_name }}!
   {% endif %}
-</div>
+</div> -->
 
 <!-- PAGE HEADER -->
 <div class="page-header">
   <div class="breadcrumb">Discover › {{ section_title|default:"Marketplace" }}</div>
-  <h1 class="page-title">{{ section_title|default:"Essential Selection" }}</h1>
+  <!-- <h1 class="page-title">{{ section_title|default:"Essential Selection" }}</h1> -->
 </div>
 
 <!-- INTRO BANNER -->
 <div class="intro-banner">
   <div class="intro-text">
-    <div class="intro-badge">Curated Essentials</div>
-    <div class="intro-title">Quality for everyday life</div>
-    <div class="intro-desc">From electronics to pantry staples — thoughtfully selected for modern living.</div>
+    <div class="intro-badge">{{ hero.text.eyebrow}}</div>
+    <div class="intro-title">{{ hero.text.main }}</div>
+    <div class="intro-desc">{{hero.text.Supporting}}</div>
     <div class="intro-meta">
-      <span class="pill">Electronics</span>
-      <span class="pill">Gourmet & Grocery</span>
-      <span class="pill">Home & Living</span>
+      <span class="pill">Electronicos</span>
+      <span class="pill">Cocina </span>
+      <span class="pill">Zapatos</span>
     </div>
   </div>
 </div>
 
 <!-- CATEGORY FILTERS -->
-<div class="topic-filters">
+<!-- <div class="topic-filters">
   <a href="/?category=all" class="topic-chip active">All items</a>
   <a href="/?category=electronics" class="topic-chip">Electronics</a>
   <a href="/?category=grocery" class="topic-chip">Grocery & Gourmet</a>
   <a href="/?category=home" class="topic-chip">Home & Kitchen</a>
   <a href="/?category=beauty" class="topic-chip">Beauty & Care</a>
   <a href="/?category=books" class="topic-chip">Books</a>
-</div>
-
+</div> -->
 <!-- CATEGORY GRID SECTION -->
 <div class="section-header">
-  <span class="section-title">Shop by Category</span>
-  <a href="/categories" class="section-link">View all →</a>
+  <span class="section-title">Compra por categorias</span>
+  <a href="/categories" class="section-link">ver mas →</a>
 </div>
+
 <div class="cat-grid">
-  <a href="/category/electronics" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop" alt="Electronics" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Electronics</div><div class="cat-count">2.4K+ products</div></div>
-  </a>
-  <a href="/category/grocery" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop" alt="Grocery" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Grocery</div><div class="cat-count">1.8K+ products</div></div>
-  </a>
-  <a href="/category/home" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop" alt="Home & Kitchen" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Home & Kitchen</div><div class="cat-count">3.2K+ products</div></div>
-  </a>
-  <a href="/category/beauty" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=300&fit=crop" alt="Beauty" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Beauty</div><div class="cat-count">890+ products</div></div>
-  </a>
-  <a href="/category/books" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=300&fit=crop" alt="Books" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Books</div><div class="cat-count">48K+ titles</div></div>
-  </a>
-  <a href="/category/fashion" class="cat-card">
-    <div class="cat-card-img"><img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop" alt="Fashion" loading="lazy"></div>
-    <div class="cat-card-info"><div class="cat-name">Fashion</div><div class="cat-count">5.1K+ products</div></div>
-  </a>
+  {% for category in categories %}
+    <a href="/category/{{ category.slug }}" class="cat-card">
+      
+      <div class="cat-card-img">
+        <img src="{{ category.image }}" alt="{{ category.name }}" loading="lazy">
+      </div>
+
+      <div class="cat-card-info">
+        <div class="cat-name">{{ category.name }}</div>
+        <div class="cat-count">{{ category.count }}</div>
+      </div>
+
+    </a>
+  {% endfor %}
 </div>
 
 <div class="divider"></div>
