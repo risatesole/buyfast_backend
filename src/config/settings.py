@@ -146,6 +146,9 @@ LOGIN_URL = "/signin"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media")
 
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+
+
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS",
     ""
