@@ -145,3 +145,8 @@ AUTH_USER_MODEL = "main.User"
 LOGIN_URL = "/signin"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", "/data/media")
+
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    ""
+).split(",")
