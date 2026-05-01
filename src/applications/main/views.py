@@ -224,6 +224,12 @@ def storefront_Health_and_Household_section(request):
     return render(request, "pages/home/store_front_section_template.html", context)
 
 
+#
+
+def storefront_product_page(request,product_id):
+    return render(request,"pages/home/store_product_page.html")
+
+
 
 def storefront_electronic_section(request):
     return render(request,"pages/home/electronic_section.html")
