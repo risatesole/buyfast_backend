@@ -182,7 +182,7 @@ def backoffice_edit_product_view(request, product_id):
         product.category = request.POST.get("category")
         product.brand = request.POST.get("brand")
         product.metric_unit = request.POST.get("metric_unit")
-
+        product.status = request.POST.get("status")
         if request.FILES.get("image"):
             product.image = request.FILES.get("image")
 
