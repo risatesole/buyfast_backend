@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Categories — Modern Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* ===== EXACT SAME CSS FROM THE ORIGINAL STORE DESIGN ===== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --black: #0f0f0f;
+    --gray-50: #f9f9f8;
+    --gray-100: #f2f2f0;
+    --gray-200: #e5e5e2;
+    --gray-400: #9b9b96;
+    --gray-600: #5f5f5a;
+    --white: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+    --font-serif: 'DM Serif Display', 'Times New Roman', Georgia, serif;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
+    --dropdown-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.02);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--black);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAVIGATION — IDENTICAL */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 60px;
+  }
+
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    color: var(--black);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .nav-search {
+    flex: 1;
+    max-width: 560px;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    background: var(--gray-50);
+    padding: 0 16px;
+    gap: 10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .nav-search:focus-within {
+    border-color: var(--black);
+    background: var(--white);
+  }
+  .nav-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--black);
+    width: 100%;
+    height: 40px;
+  }
+  .nav-search input::placeholder {
+    color: var(--gray-400);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--radius-xl);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    text-decoration: none;
+    color: var(--black);
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .nav-btn:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-200);
+  }
+  .nav-btn.primary {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+  }
+  .nav-btn.primary:hover {
+    background: #2a2a2a;
+  }
+
+  /* User menu with dropdown */
+  .user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 10px;
+    border-radius: var(--radius-xl);
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: var(--black);
+    background-color: var(--gray-50);
+  }
+  .user-avatar:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-400);
+  }
+  
+  .avatar-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .avatar-text {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--dropdown-shadow);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 1000;
+  }
+  
+  .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--black);
+    text-decoration: none;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  
+  .dropdown-item:last-child {
+    border-bottom: none;
+  }
+  
+  .dropdown-item:hover {
+    background: var(--gray-50);
+  }
+  
+  .dropdown-divider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: 4px 0;
+  }
+  
+  .dropdown-logout {
+    color: #c41e3a;
+  }
+  .dropdown-logout:hover {
+    background: #fff5f5;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 32px 24px 12px 24px;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 24px;
+  }
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+  }
+  .page-title {
+    font-family: var(--font-serif);
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--black);
+    line-height: 1.2;
+  }
+
+  /* SECTION HEADER (matching original) */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 24px 18px 24px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .section-link {
+    font-size: 13px;
+    color: var(--gray-400);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .section-link:hover {
+    color: var(--black);
+  }
+
+  /* CATEGORY GRID — EXACT SAME AS ORIGINAL */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 60px;
+  }
+  .cat-card {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .cat-card:hover {
+    border-color: var(--black);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .cat-card-img {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--gray-100);
+  }
+  .cat-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .cat-card:hover .cat-card-img img {
+    transform: scale(1.04);
+  }
+  .cat-card-info {
+    padding: 10px 12px 12px;
+    background: var(--white);
+  }
+  .cat-name {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.3;
+    text-transform: capitalize;
+  }
+  .cat-count {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  /* FOOTER — IDENTICAL */
+  footer {
+    margin-top: 20px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+    padding: 48px 24px 32px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 40px;
+  }
+  .footer-brand .logo {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .footer-brand p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    max-width: 260px;
+  }
+  .footer-col h5 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 14px;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 13px;
+    color: var(--gray-600);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.15s;
+  }
+  .footer-col a:hover {
+    color: var(--black);
+  }
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 12px;
+    color: var(--gray-400);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* RESPONSIVE — SAME AS ORIGINAL */
+  @media (max-width: 800px) {
+    nav {
+      padding: 0 16px;
+    }
+    .page-header,
+    .cat-grid {
+      padding-left: 16px;
+      padding-right: 16px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .page-title {
+      font-size: 28px;
+    }
+    .user-avatar .avatar-text {
+      display: none;
+    }
+    .user-avatar {
+      padding: 6px 10px;
+    }
+    .section-header {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+  }
+
+  @media (max-width: 550px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION — EXACT COPY FROM ORIGINAL ===== -->
+<nav>
+  <a class="nav-logo" href="/">MODERN MARKET</a>
+  <div class="nav-search">
+    <form action="/search" method="get" style="flex:1; display: flex;">
+      <input type="text" name="q" placeholder="Search for products, brands, categories…">
+    </form>
+  </div>
+  <div class="nav-actions">
+    <a href="/cart" class="nav-btn">Cart</a>
+    
+    <!-- User menu with dropdown (authenticated demo) -->
+    <div class="user-menu" id="userMenu">
+      <div class="user-avatar" id="userAvatarBtn">
+        <span class="avatar-text">Alex</span>
+        <div class="avatar-icon">A</div>
+      </div>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <a href="/account" class="dropdown-item">Account</a>
+        <a href="/settings" class="dropdown-item">Settings</a>
+        <div class="dropdown-divider"></div>
+        <a href="/signout" class="dropdown-item dropdown-logout">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGE HEADER (simple, just like original style) ===== -->
+<div class="page-header">
+  <div class="breadcrumb">Discover › All Categories</div>
+  <h1 class="page-title">Shop by Category</h1>
+</div>
+
+<!-- ===== MAIN CATEGORY GRID — THE EXACT STRUCTURE YOU WANT ===== 
+     This is the core content: all categories displayed using the exact 
+     cat-grid / cat-card / cat-card-img / cat-card-info pattern -->
+<div class="section-header">
+  <span class="section-title">All Categories</span>
+</div>
+<div class="cat-grid">
+  {% for category in categories %}
+    <a href="/category/{{ category.slug }}" class="cat-card">
+      
+      <div class="cat-card-img">
+        <img 
+          src="{{ category.image }}" 
+          alt="{{ category.name }}" 
+          loading="lazy"
+        >
+      </div>
+
+      <div class="cat-card-info">
+        <div class="cat-name">{{ category.name }}</div>
+      </div>
+
+    </a>
+  {% endfor %}
+</div>
+
+<!-- ===== FOOTER — EXACT COPY FROM ORIGINAL ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">MODERN MARKET</div>
+      <p>Your marketplace for millions of products. Fast delivery, easy returns, and curated quality across electronics, grocery, home, and more.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Get to know us</h5>
+      <a href="/about">About us</a>
+      <a href="/careers">Careers</a>
+      <a href="/press">Press</a>
+    </div>
+    <div class="footer-col">
+      <h5>Customer service</h5>
+      <a href="/help">Help center</a>
+      <a href="/returns">Returns</a>
+      <a href="/contact">Contact us</a>
+    </div>
+    <div class="footer-col">
+      <h5>Let us help you</h5>
+      <a href="/account">Your account</a>
+      <a href="/orders">Your orders</a>
+      <a href="/wishlist">Wishlist</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>&copy; 2026 Modern Market. All rights reserved.</div>
+    <div>Free shipping on orders $35+</div>
+  </div>
+</footer>
+
+<!-- Dropdown Toggle Script — IDENTICAL TO ORIGINAL -->
+<script>
+  (function() {
+    const userMenu = document.getElementById('userMenu');
+    const avatarBtn = document.getElementById('userAvatarBtn');
+    const dropdown = document.getElementById('dropdownMenu');
+    
+    if (!userMenu || !avatarBtn || !dropdown) return;
+    
+    let isOpen = false;
+    
+    function toggleDropdown(event) {
+      event.stopPropagation();
+      isOpen = !isOpen;
+      if (isOpen) {
+        dropdown.classList.add('show');
+      } else {
+        dropdown.classList.remove('show');
+      }
+    }
+    
+    function closeDropdown() {
+      isOpen = false;
+      dropdown.classList.remove('show');
+    }
+    
+    avatarBtn.addEventListener('click', toggleDropdown);
+    
+    document.addEventListener('click', function(event) {
+      if (!userMenu.contains(event.target)) {
+        closeDropdown();
+      }
+    });
+    
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && isOpen) {
+        closeDropdown();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
