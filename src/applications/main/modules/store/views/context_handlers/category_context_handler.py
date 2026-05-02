@@ -19,5 +19,6 @@ def store_category_context_handler(name):
 
     return {
         "category": category_key,
-        "products": products
+        "products": products,
+        "storename": "petal"
     }

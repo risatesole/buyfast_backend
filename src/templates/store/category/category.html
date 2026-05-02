@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Shoes — Modern Market</title>
+  <title>{{category}} — {{storename}}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap"
@@ -126,37 +126,41 @@
 <body>
 
   <nav>
-    <a href="/" class="nav-logo">MODERN MARKET</a>
+    <a href="/" class="nav-logo">{{storename}}</a>
   </nav>
 
   <div class="page-header">
-    <div class="breadcrumb">Home › Shoes</div>
-    <h1 class="page-title">Shoes</h1>
+    <div class="breadcrumb">Home › {{category}}</div>
+    <h1 class="page-title">{{category}}</h1>
   </div>
+<div class="product-grid">
 
-  <div class="product-grid">
-
-    {% for product in products %}
+  {% for product in products %}
     <a href="/product/{{ product.id }}" class="product-card">
       <div class="product-img">
         <img src="{{ product.image.url }}" alt="{{ product.name }}">
       </div>
+
       <div class="product-info">
         <div class="product-name">{{ product.name }}</div>
 
         <div class="product-price">
           {% if product.prices.all %}
-          ${{ product.prices.first.value }}
+            ${{ product.prices.first.value }}
           {% else %}
-          No price
+            No price
           {% endif %}
         </div>
-
       </div>
     </a>
-    {% endfor %}
 
-  </div>
+  {% empty %}
+    <div class="no-products">
+      There are no products available in this category.
+    </div>
+  {% endfor %}
+
+</div>
 </body>
 
 </html>
