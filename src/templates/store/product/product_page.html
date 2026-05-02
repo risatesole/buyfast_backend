@@ -166,7 +166,6 @@
                 {{ product.description }}
             </div>
             {% if product.status == "ACTIVE" %}
-            <!-- prettier-ignore -->
             <div class="price">
                 {% if product.prices.all %}
                 ${{ product.prices.first.value }}
@@ -175,13 +174,16 @@
                 {% endif %}
             </div>
 
-
-            <button>
-                Buy Now
-            </button>
+            <form method="POST" action="{% url 'buy_product' product.id %}">
+                {% csrf_token %}
+                <button type="submit">
+                    Buy Now
+                </button>
+            </form>
             {% else %}
             <p>Currently unavailable</p>
             {% endif %}
+            
 
         </div>
 

@@ -9,7 +9,7 @@ from .modules.account.user.views import signin_view, signout_view, signup_view
 from .modules.account.user.views.view_web_preferences import preferences_user_view
 from .modules.store.views.category_view import store_category_view
 from .views import home_view, storefront_electronic_section, storefront_Health_and_Household_section, categories_view
-from .modules.store.views.product_view import storefront_product_page
+from .modules.store.views.product_view import storefront_product_page,store_front_buy_product
 
 urlpatterns = [
     path("", home_view, name="home"),
@@ -29,6 +29,7 @@ urlpatterns = [
     path("electronics/",storefront_electronic_section,name="storefront_electronic_section"),
     path("health_and_household", storefront_Health_and_Household_section, name="storefront_Health_and_Household_section"),
     path("product/<int:product_id>",storefront_product_page, name="product_page"),
+    path("buy/<int:product_id>/", store_front_buy_product, name="buy_product"),
 
     path("categories/",categories_view, name="categories"),
     path("signin/",signin_view,name="signin"),
