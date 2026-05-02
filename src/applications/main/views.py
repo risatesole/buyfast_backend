@@ -1,36 +1,6 @@
 from django.shortcuts import render, redirect
 from .modules.product.services.product.product_service import ProductService
 
-def home_context_handler():
-    product = ProductService()
-
-    hero_section = {
-        "text": {
-            "main": "Compra a tu manera",
-            "eyebrow": "productos que dicen comprame",
-            "supporting": "Descubre cientos de productos seleccionados para cada estilo y ocasión"
-        }
-    }
-
-    context = {
-        "storename": "Petal",
-        "hero": hero_section,
-        "categories": product.getAllCategories()[:10]
-
-    }
-    return context
-
-
-def home_view(request):
-    context = home_context_handler()
-    return render(request, "pages/home/index.html", context)
-
-
-
-
-
-
-
 def categories_view(request):
     product = ProductService()
     context = {
@@ -38,20 +8,6 @@ def categories_view(request):
         "categories": product.getAllCategories()
     }
     return render(request, "store/categories/categories_page.html",context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
