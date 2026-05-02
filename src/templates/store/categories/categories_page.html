@@ -427,9 +427,9 @@
 </head>
 <body>
 
-<!-- ===== NAVIGATION — EXACT COPY FROM ORIGINAL ===== -->
+<!-- NAVIGATION -->
 <nav>
-  <a class="nav-logo" href="/">MODERN MARKET</a>
+  <a class="nav-logo" href="/">{{ storename }}</a>
   <div class="nav-search">
     <form action="/search" method="get" style="flex:1; display: flex;">
       <input type="text" name="q" placeholder="Search for products, brands, categories…">
@@ -438,12 +438,15 @@
   <div class="nav-actions">
     <a href="/cart" class="nav-btn">Cart</a>
     
-    <!-- User menu with dropdown (authenticated demo) -->
+    <!-- User menu with dropdown -->
+    {% if user.is_authenticated %}
     <div class="user-menu" id="userMenu">
       <div class="user-avatar" id="userAvatarBtn">
-        <span class="avatar-text">Alex</span>
-        <div class="avatar-icon">A</div>
+        <span class="avatar-text">{{ user.first_name }}</span>
+        <div class="avatar-icon">{{ user.first_name|slice:":1"|upper }}</div>
       </div>
+      
+      <!-- Dropdown menu -->
       <div class="dropdown-menu" id="dropdownMenu">
         <a href="/account" class="dropdown-item">Account</a>
         <a href="/settings" class="dropdown-item">Settings</a>
@@ -451,12 +454,28 @@
         <a href="/signout" class="dropdown-item dropdown-logout">Logout</a>
       </div>
     </div>
+    {% else %}
+    <a href="/signin" class="nav-btn primary">Sign in</a>
+    {% endif %}
   </div>
 </nav>
 
+<!-- DELIVERY BAR -->
+<!-- <div class="delivery-bar">
+  Welcome to <strong>{{ section_title|default:"Marketplace" }}</strong> · Free delivery on orders over $35
+  {% if user.is_authenticated and user.first_name %}
+    · Hello, {{ user.first_name }}!
+  {% endif %}
+</div> -->
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="breadcrumb">Discover › {{ section_title|default:"Marketplace" }}</div>
+  <!-- <h1 class="page-title">{{ section_title|default:"Essential Selection" }}</h1> -->
+</div>
+
 <!-- ===== PAGE HEADER (simple, just like original style) ===== -->
 <div class="page-header">
-  <div class="breadcrumb">Discover › All Categories</div>
   <h1 class="page-title">Shop by Category</h1>
 </div>
 

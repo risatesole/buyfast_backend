@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 def categories_context_handler():
     categories = [
         {
-            "name": "Electronics",
-            "slug": "electronics",
+            "name": "FRUITS_AND_VEGETABLES",
+            "slug": "fruits_and_vegetables",
             "image": "https://images.unsplash.com/photo-1593640408182-31c228b78b5b?w=300&h=300&fit=crop",
             "count": "2.4K+ products"
         },
@@ -104,6 +104,7 @@ def home_view(request):
 
 def categories_view(request):
     context = {
+        "storename": "Petal",
         "categories": categories_context_handler()
     }
     return render(request, "store/categories/categories_page.html",context)
