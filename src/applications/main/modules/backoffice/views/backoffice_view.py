@@ -11,17 +11,16 @@ from ...inventory.services.inventory_service import InventoryService
 from ...inventory.models.provider_model import Provider
 
 from django.contrib.auth.decorators import login_required, user_passes_test
-def is_employee(user):
-    return user.is_authenticated and user.role == "employee"
+from ...auth.is_employee_challenge import is_employee_challenge
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_view(request):
     """HANDLE POST ACTIONS"""
     return render(request, "backoffice/page.html", backoffice_view_context_handler())
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_create_product_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -74,7 +73,7 @@ def backoffice_create_product_view(request):
     return render(request, "backoffice/create/createproduct.html")
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_customer_edit_view(request, customer_id):
     customer = Customer_model.objects.select_related("user").filter(id=customer_id).first()
 
@@ -101,7 +100,7 @@ def backoffice_customer_edit_view(request, customer_id):
     })
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_create_employee_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -144,7 +143,7 @@ def backoffice_create_employee_view(request):
     })
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_edit_employee_view(request, employee_id):
     employee = employee_model.objects.select_related("user").filter(id=employee_id).first()
 
@@ -174,7 +173,7 @@ def backoffice_edit_employee_view(request, employee_id):
     })
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_edit_product_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     price = Price.objects.filter(product=product).first()
@@ -212,7 +211,7 @@ def backoffice_edit_product_view(request, product_id):
 
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_create_provider(request):
     if request.method == "POST":
         Provider.objects.create(
@@ -228,7 +227,7 @@ def backoffice_create_provider(request):
 
 
 @login_required
-@user_passes_test(is_employee)
+@user_passes_test(is_employee_challenge)
 def backoffice_edit_provider(request, provider_id):
     provider = get_object_or_404(Provider, id=provider_id)
 
