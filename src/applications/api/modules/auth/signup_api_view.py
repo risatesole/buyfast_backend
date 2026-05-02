@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from ....main.modules.account.user.services.user.user_service import UserService, emailExistsError
 
 @api_view(['POST'])
-def api_signup_view(request):
+def signup_api_view(request):
     service = UserService()
 
     first_name = request.data.get("first_name")
