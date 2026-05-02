@@ -1,13 +1,10 @@
 from django.db import transaction
-
 from ...inventory.models.stock_movement import StockMovement_model
-
 
 def sell_product(product, user) -> None:
     """
     Sells 1 unit of a product and updates stock movement.
     """
-
     with transaction.atomic():
 
         last_movement = (
