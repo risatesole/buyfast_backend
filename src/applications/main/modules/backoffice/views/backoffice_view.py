@@ -1,4 +1,4 @@
-from .contexts.backoffice_context_handler import backoffice_view_context_handler
+
 from django.shortcuts import render,redirect, get_object_or_404
 from ...product.models.model_product import Product
 from ...product.models.price_model import Price
@@ -13,11 +13,6 @@ from ...inventory.models.provider_model import Provider
 from django.contrib.auth.decorators import login_required, user_passes_test
 from ...auth.is_employee_challenge import is_employee_challenge
 
-@login_required
-@user_passes_test(is_employee_challenge)
-def backoffice_view(request):
-    """HANDLE POST ACTIONS"""
-    return render(request, "backoffice/page.html", backoffice_view_context_handler())
 
 @login_required
 @user_passes_test(is_employee_challenge)

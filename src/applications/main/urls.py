@@ -15,11 +15,12 @@ from .modules.account.user.views.view_web_preferences import preferences_user_vi
 
 # backoffice/intranet views
 from .modules.backoffice.views.backoffice_view import(
-    backoffice_view, backoffice_create_product_view, 
+     backoffice_create_product_view, 
     backoffice_customer_edit_view, backoffice_create_employee_view, 
     backoffice_edit_product_view, backoffice_edit_employee_view, 
     backoffice_create_provider, backoffice_edit_provider
 )
+from .modules.backoffice.views.dashboard.dashboard_view import backoffice_dashboard_view
 from .modules.backoffice.views.actions.add_product_backoffice import backoffice_add_stock_entry_view
 urlpatterns = [
 
@@ -38,7 +39,7 @@ urlpatterns = [
     path("account/",preferences_user_view, name="account"),
 
     # backoffice/intranet related views
-    path("backoffice/",backoffice_view, name="backoffice"),
+    path("backoffice/",backoffice_dashboard_view, name="backoffice"),
     path("backoffice/createproduct",backoffice_create_product_view, name="backoffice_create_product_view" ),
     path("backoffice/customer/<int:customer_id>/", backoffice_customer_edit_view, name="customer_edit"),
     path("backoffice/createemployee/", backoffice_create_employee_view, name="backoffice_create_employee_view"),
