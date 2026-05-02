@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.name }} — SHOP</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --black: #0f0f0f;
+            --gray-50: #f9f9f8;
+            --gray-200: #e5e5e2;
+            --gray-400: #9b9b96;
+            --gray-600: #5f5f5a;
+            --white: #ffffff;
+            --font: 'DM Sans', sans-serif;
+            --font-serif: 'DM Serif Display', serif;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--white);
+            color: var(--black);
+            font-size: 14px;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 20px;
+        }
+
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 22px;
+        }
+
+        .search {
+            flex: 1;
+            max-width: 400px;
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            background: var(--gray-50);
+        }
+
+        .search input {
+            width: 100%;
+            border: none;
+            outline: none;
+            height: 38px;
+            background: transparent;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 60px 80px;
+            align-items: center;
+        }
+
+        .image-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+        }
+
+        .info h1 {
+            font-family: var(--font-serif);
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        .desc {
+            color: var(--gray-600);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 10px;
+            background: var(--black);
+            color: white;
+            cursor: pointer;
+            width: 200px;
+            font-weight: 500;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">SHOP</div>
+
+        <div class="search">
+            <input placeholder="Search products...">
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="image-box">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+            <p>No image available</p>
+            {% endif %}
+        </div>
+
+        <div class="info">
+            <h1>{{ product.name }}</h1>
+
+            <div class="desc">
+                {{ product.description }}
+            </div>
+            <!-- prettier-ignore -->
+            <div class="price">
+                {% if product.prices.all %}
+                ${{ product.prices.first.value }}
+                {% else %}
+                No price
+                {% endif %}
+            </div>
+
+            <button>
+                Buy Now
+            </button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
