@@ -165,6 +165,7 @@
             <div class="desc">
                 {{ product.description }}
             </div>
+            {% if product.status == "ACTIVE" %}
             <!-- prettier-ignore -->
             <div class="price">
                 {% if product.prices.all %}
@@ -174,9 +175,14 @@
                 {% endif %}
             </div>
 
+
             <button>
                 Buy Now
             </button>
+            {% else %}
+            <p>Currently unavailable</p>
+            {% endif %}
+
         </div>
 
     </div>
