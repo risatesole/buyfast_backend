@@ -1,5 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from ...product.models.model_product import Product
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from ...product.models.model_product import Product
+from ..services.sell_product import sell_product
 
 def storefront_product_page(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -9,13 +13,6 @@ def storefront_product_page(request, product_id):
     })
 
 
-
-from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-
-from ...product.models.model_product import Product
-from ..services.sell_product import sell_product
 
 @login_required
 def store_front_buy_product(request, product_id):
