@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from ...product.models.model_product import Product
+from ....product.models.model_product import Product
 from django.shortcuts import get_object_or_404
 
 def storefront_product_page(request, product_id):

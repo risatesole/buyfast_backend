@@ -3,7 +3,7 @@ from django.conf import settings
 from django.urls import path
 
 # storefront views
-from .modules.store.views.product_view import storefront_product_page
+from .modules.store.views.product.product_view import storefront_product_page
 from .modules.store.views.actions.buy_product import store_front_buy_product
 from .modules.store.views.categories.categories_view import categories_view
 from .modules.store.views.storefront.storefront import storefront_view
