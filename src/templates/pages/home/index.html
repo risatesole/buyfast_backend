@@ -759,6 +759,11 @@
       <!-- Dropdown menu -->
       <div class="dropdown-menu" id="dropdownMenu">
         <a href="/account" class="dropdown-item">Account</a>
+
+        {% if user.role == "employee" %}
+          <a href="/backoffice" class="dropdown-item">Backoffice</a>
+        {% endif %}
+
         <a href="/settings" class="dropdown-item">Settings</a>
         <div class="dropdown-divider"></div>
         <a href="/signout" class="dropdown-item dropdown-logout">Logout</a>

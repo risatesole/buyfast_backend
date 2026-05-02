@@ -20,6 +20,8 @@ def backoffice_view(request):
     """HANDLE POST ACTIONS"""
     return render(request, "backoffice/page.html", backoffice_view_context_handler())
 
+@login_required
+@user_passes_test(is_employee)
 def backoffice_create_product_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
