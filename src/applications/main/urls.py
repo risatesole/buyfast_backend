@@ -14,14 +14,15 @@ from .modules.account.user.views import signin_view, signout_view, signup_view
 from .modules.account.user.views.view_web_preferences import preferences_user_view
 
 # backoffice/intranet views
-from .modules.backoffice.views.backoffice_view import(
-     backoffice_create_product_view, 
+from .modules.backoffice.views.backoffice_view import( 
     backoffice_customer_edit_view, backoffice_create_employee_view, 
     backoffice_edit_product_view, backoffice_edit_employee_view, 
     backoffice_create_provider, backoffice_edit_provider
 )
 from .modules.backoffice.views.dashboard.dashboard_view import backoffice_dashboard_view
 from .modules.backoffice.views.actions.add_product_backoffice import backoffice_add_stock_entry_view
+from .modules.backoffice.views.create_product.create_product_view import backoffice_create_product_view
+
 urlpatterns = [
 
     # storefront related views
