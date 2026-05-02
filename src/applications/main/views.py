@@ -15,7 +15,7 @@ def home_context_handler():
     context = {
         "storename": "Petal",
         "hero": hero_section,
-        "categories": product.getAllCategories()
+        "categories": product.getAllCategories()[:10]
 
     }
     return context
