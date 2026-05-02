@@ -10,7 +10,7 @@ def storefront_product_page(request, product_id):
 
 
 
-from django.db import transaction, models
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -46,7 +46,7 @@ def store_front_buy_product(request, product_id):
                 movement_type="customer_sell",
                 quantity=quantity_sold,
                 balance=new_balance,
-                document_reference=f"BUY-{product.id}-{request.user.id}",
+                document_reference=f"BUY-{product.id}-{request.user.id}", # type: ignore
             )
 
             # deactivate product if no stock left
@@ -54,4 +54,4 @@ def store_front_buy_product(request, product_id):
                 product.status = "DEACTIVATED"
                 product.save()
 
-    return redirect("product_page", product_id=product.id)
+    return redirect("product_page", product_id=product.id) # type: ignore
