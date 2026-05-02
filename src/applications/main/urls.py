@@ -7,7 +7,7 @@ from .modules.store.views.product.product_view import storefront_product_page
 from .modules.store.views.actions.buy_product import store_front_buy_product
 from .modules.store.views.categories.categories_view import categories_view
 from .modules.store.views.storefront.storefront import storefront_view
-from .modules.store.views.category_view import store_category_view
+from .modules.store.views.category.category_view import store_category_view
 
 # account related views
 from .modules.account.user.views import signin_view, signout_view, signup_view
