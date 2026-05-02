@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from ..services.user_service import UserService, emailExistsError
+from ..services.user.user_service import UserService, emailExistsError
 
 def form_action_signup(request, first_name, last_name, email, password):
     """SIGNUP USER WITH CUSTOMER ROLE"""
