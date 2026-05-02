@@ -3,4 +3,4 @@ from django.shortcuts import redirect
 
 def signout_view(request):
     logout(request)
-    return redirect("home")  # or "home"
+    return redirect("storefront")

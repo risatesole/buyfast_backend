@@ -10,7 +10,7 @@ def form_action_signup(request, first_name, last_name, email, password):
             first_name, last_name, email, password
         )
         login(request, user)
-        return redirect("home")
+        return redirect("storefront")
 
     except emailExistsError:
         print("Email already exists")
@@ -21,7 +21,7 @@ def form_action_signup(request, first_name, last_name, email, password):
 def signup_view(request):
     """ENTRY POINT FOR SIGNUP"""
     if request.user.is_authenticated:
-        return redirect("home")
+        return redirect("storefront")
 
     if request.method == "POST":
         first_name = request.POST.get("first_name")

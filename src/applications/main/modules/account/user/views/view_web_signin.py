@@ -19,7 +19,7 @@ def signin_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect("home")
+            return redirect("storefront")
         else:
             error = "Invalid email or password"
 
