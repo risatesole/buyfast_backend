@@ -1,24 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from ...product.models.model_product import Product
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from ...product.models.model_product import Product
-from ..services.sell_product import sell_product
+from django.shortcuts import get_object_or_404
 
 def storefront_product_page(request, product_id):
+    """View that renders a product detail page by fetching a Product by ID or returning 404 if not found."""
     product = get_object_or_404(Product, id=product_id)
-
     return render(request, "store/product/product_page.html", {
         "product": product
     })
-
-
-
-@login_required
-def store_front_buy_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
-    if request.method == "POST":
-        sell_product(product, request.user)
-
-    return redirect("product_page", product_id=product.id)  # type: ignore
