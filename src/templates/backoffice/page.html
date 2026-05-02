@@ -912,8 +912,52 @@
               <h2>Orders</h2>
             </div>
           </div>
+
           <div class="card">
+            {% if customer.orders %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>User</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for order in customer.orders %}
+                <tr>
+                  <td>#{{ order.id }}</td>
+                  <td>{{ order.user }}</td>
+                  <td>{{ order.status }}</td>
+                  <td>${{ order.total_amount }}</td>
+                  <td>{{ order.created_at }}</td>
+
+                  <td>
+                    {% if order.items %}
+                    <ul>
+                      {% for item in order.items %}
+                      <li>
+                        {{ item.product }} x{{ item.quantity }} ({{
+                        item.subtotal }})
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    {% else %}
+                    <span>No items</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            {% else %}
             <div class="empty">No orders to display.</div>
+            {% endif %}
           </div>
         </div>
 
@@ -1202,8 +1246,6 @@
           </div>
         </div>
 
-        
-        
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
@@ -1222,7 +1264,7 @@
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
-        
+
         <!-- ═══ INVENTORY MOVEMENT ═══ -->
         <div id="inventorymovement" class="section">
           <div class="page-header">
@@ -1232,38 +1274,38 @@
           </div>
           <div class="card">
             <table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Product</th>
-      <th>Type</th>
-      <th>Quantity</th>
-      <th>Unit</th>
-      <th>Provider</th>
-      <th>Date</th>
-      <th>Note</th>
-    </tr>
-  </thead>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Type</th>
+                  <th>Quantity</th>
+                  <th>Unit</th>
+                  <th>Provider</th>
+                  <th>Date</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
 
-  <tbody>
-    {% for movement in stock_movement %}
-    <tr>
-      <td>{{ movement.id }}</td>
-      <td>{{ movement.product }}</td>
-      <td>{{ movement.movement_type }}</td>
-      <td>{{ movement.quantity }}</td>
-      <td>{{ movement.product.metric_unit }}</td>
-      <td>{{ movement.provider|default:"—" }}</td>
-      <td>{{ movement.date_time }}</td>
-      <td>{{ movement.note|default:"—" }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="9">No stock movements found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+              <tbody>
+                {% for movement in stock_movement %}
+                <tr>
+                  <td>{{ movement.id }}</td>
+                  <td>{{ movement.product }}</td>
+                  <td>{{ movement.movement_type }}</td>
+                  <td>{{ movement.quantity }}</td>
+                  <td>{{ movement.product.metric_unit }}</td>
+                  <td>{{ movement.provider|default:"—" }}</td>
+                  <td>{{ movement.date_time }}</td>
+                  <td>{{ movement.note|default:"—" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="9">No stock movements found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
         <!-- ================================================================================================================================================================= -->
@@ -1290,7 +1332,7 @@
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
         <!-- ===================================================================== -->
-        
+
         <!-- ═══ SETTINGS ═══ -->
         <div id="settings" class="section">
           <div class="page-header">
@@ -1322,7 +1364,11 @@
       // Track which groups should stay open based on active section
       const groupSections = {
         "group-customers": ["customers", "orders"],
-        "group-inventory": ["inventory", "inventory-entries", "inventorymovement"],
+        "group-inventory": [
+          "inventory",
+          "inventory-entries",
+          "inventorymovement",
+        ],
       };
 
       function showSection(id, btn) {

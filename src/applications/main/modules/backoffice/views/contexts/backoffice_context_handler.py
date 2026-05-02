@@ -4,6 +4,7 @@ from ....product.models.model_product import Product
 from ....product.models.price_model import Price
 from ....inventory.models.provider_model import Provider
 from ....inventory.services.inventory_service import InventoryService
+from ....store.services.get_orders import get_all_orders
 
 def backoffice_view_context_handler():
     customers = Customer_model.objects.select_related("user").all()
@@ -11,6 +12,7 @@ def backoffice_view_context_handler():
 
     products = Product.objects.prefetch_related("prices").all()
     providers = Provider.objects.all()
+    customer_orders = get_all_orders()
 
     # Add current price to products
     for product in products:
@@ -25,8 +27,11 @@ def backoffice_view_context_handler():
         "inventory": InventoryService.get_stock(), 
         "stock_movement":InventoryService.list_stock_movements(),
         "stock_entry": InventoryService.list_stock_entries(),
+        "customer":{
+            "orders": customer_orders
+        },
         "project": {
-            "name": "Duck"
+            "name": "Petal"
         }
     }
 
