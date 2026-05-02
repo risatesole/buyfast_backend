@@ -1,7 +1,7 @@
 from ....product.services.product.product_service import ProductService
 from django.shortcuts import render
 
-def home_context_handler():
+def store_front_context_handler():
     product = ProductService()
 
     hero_section = {
@@ -21,8 +21,8 @@ def home_context_handler():
     return context
 
 
-def home_view(request):
-    context = home_context_handler()
+def storefront_view(request):
+    context = store_front_context_handler()
     return render(request, "pages/home/index.html", context)
 
 

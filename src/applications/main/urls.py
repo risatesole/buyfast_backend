@@ -11,10 +11,10 @@ from .modules.store.views.category_view import store_category_view
 from .views import storefront_electronic_section, storefront_Health_and_Household_section, categories_view
 from .modules.store.views.product_view import storefront_product_page,store_front_buy_product
 
-from .modules.store.views.storefront.storefront import home_view
+from .modules.store.views.storefront.storefront import storefront_view
 
 urlpatterns = [
-    path("", home_view, name="home"),
+    path("", storefront_view, name="storefront"),
     path("backoffice/",backoffice_view, name="backoffice"),
     path("backoffice/createproduct",backoffice_create_product_view, name="backoffice_create_product_view" ),
     path("backoffice/customer/<int:customer_id>/", backoffice_customer_edit_view, name="customer_edit"),
