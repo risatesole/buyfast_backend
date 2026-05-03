@@ -37,6 +37,7 @@ urlpatterns = [
     path("signup/", signup_view, name="signup"),
     path("signout/", signout_view, name="signout"),
     path("settings/",preferences_user_view, name="settings"),
+    path("preferences/",preferences_user_view, name="preferences"),
     path("account/",preferences_user_view, name="account"),
 
     # backoffice/intranet related views
