@@ -1,5 +1,6 @@
 from django.db import transaction
 from ..models.stock_movement import StockMovement_model
+from django.core.exceptions import ValidationError
 
 def stock_decrement(product, quantity, reference=None):
     """Decreases product stock and records a STORE_DECREMENT movement."""
@@ -14,6 +15,11 @@ def stock_decrement(product, quantity, reference=None):
 
         previous_balance = last_movement.balance if last_movement else 0
         new_balance = previous_balance - quantity
+
+        if new_balance <= 0:
+            raise ValidationError(
+                f"Insufficient stock."
+        )
 
         StockMovement_model.objects.create(
             product=product,
