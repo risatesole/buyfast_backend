@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>{{ section_title|default:"Modern Marketplace" }} — Curated Selection</title>
+<title>{{ storename }}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -775,14 +775,6 @@
   </div>
 </nav>
 
-<!-- DELIVERY BAR -->
-<!-- <div class="delivery-bar">
-  Welcome to <strong>{{ section_title|default:"Marketplace" }}</strong> · Free delivery on orders over $35
-  {% if user.is_authenticated and user.first_name %}
-    · Hello, {{ user.first_name }}!
-  {% endif %}
-</div> -->
-
 <!-- PAGE HEADER -->
 <div class="page-header">
   <div class="breadcrumb">Discover › {{ section_title|default:"Marketplace" }}</div>
@@ -803,15 +795,6 @@
   </div>
 </div>
 
-<!-- CATEGORY FILTERS -->
-<!-- <div class="topic-filters">
-  <a href="/?category=all" class="topic-chip active">All items</a>
-  <a href="/?category=electronics" class="topic-chip">Electronics</a>
-  <a href="/?category=grocery" class="topic-chip">Grocery & Gourmet</a>
-  <a href="/?category=home" class="topic-chip">Home & Kitchen</a>
-  <a href="/?category=beauty" class="topic-chip">Beauty & Care</a>
-  <a href="/?category=books" class="topic-chip">Books</a>
-</div> -->
 <!-- CATEGORY GRID SECTION -->
 <div class="section-header">
   <span class="shop-by-category-text">Compra por categorias</span>
