@@ -142,6 +142,9 @@ a:hover {
     <label>Last Name</label>
     <input type="text" name="last_name" value="{{ customer.user.last_name }}" />
 
+    <label>change_password</label>
+    <input type="text" name="password" />
+
     <label>Status</label>
     <select name="status">
       <option value="active" {% if customer.user.status == "active" %}selected{% endif %}>
