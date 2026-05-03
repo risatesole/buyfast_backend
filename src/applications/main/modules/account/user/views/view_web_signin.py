@@ -9,17 +9,17 @@ def signin_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Django does NOT authenticate by email by default
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            print(f"Debug: User doesnt exists")
-
+        # Authenticate user
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
+            if user.status == "deactivated": # type: ignore
+                error = "Account deactivated"
+                return render(request, "user/signin.html", {"error": error})
+
             login(request, user)
             return redirect("storefront")
+
         else:
             error = "Invalid email or password"
 

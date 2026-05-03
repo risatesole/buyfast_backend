@@ -870,9 +870,9 @@
               <thead>
                 <tr>
                   <th>Email</th>
-                  <th>Phone</th>
                   <th>Address</th>
                   <th>Created</th>
+                  <th>status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -881,14 +881,25 @@
                 <tr id="customer-{{ customer.id }}" class="clickable">
                   <td>{{ customer.user.email }}</td>
                   <td style="color: var(--muted)">
-                    {{ customer.phone|default:"—" }}
-                  </td>
-                  <td style="color: var(--muted)">
                     {{ customer.address|default:"—" }}
                   </td>
                   <td style="color: var(--muted)">
                     {{ customer.created_at|date:"M d, Y" }}
                   </td>
+
+                  <td>
+                    {% if customer.user.status == "active" %}
+                    <span class="badge badge-green">
+                      {{ customer.user.get_status_display }}
+                    </span>
+
+                    {% else %}
+                    <span class="badge badge-red">
+                      {{ customer.user.get_status_display }}
+                    </span>
+                    {% endif %}
+                  </td>
+
                   <td>
                     <a href="{% url 'customer_edit' customer.id %}">
                       <button class="btn btn-ghost">Edit</button>
