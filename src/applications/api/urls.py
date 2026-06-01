@@ -6,6 +6,7 @@ from .modules.auth.signout_api_view import signout_api_view
 from .modules.auth.change_password import change_password_api_view
 from .modules.auth.me_api_view import me_api_view
 from .modules.store.buy_product_api_view import buy_product
+from .modules.employee.employee_api_view import create_employee
 
 urlpatterns = [
     path('health/', health),
@@ -14,6 +15,7 @@ urlpatterns = [
     path("signup/",signup_api_view),
     path("signout/", signout_api_view ),
     path("change_password/",change_password_api_view),
+    path("employee/",create_employee),
     path("buy-product/", buy_product),
     path("me/", me_api_view),
 ]

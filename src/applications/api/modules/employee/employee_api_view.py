@@ -1,0 +1,82 @@
+from ....main.modules.employee.models.employee_model import  employee_model, EmployeePosition 
+from ....main.modules.account.user.models.model_user import User, UserRoles
+from ...utils import CsrfExemptSessionAuthentication
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+@api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def create_employee(request):
+    user = request.user
+
+    if not user.is_authenticated:
+        return Response({
+            "status": "error",
+            "message": "Authentication required"
+        }, status=401)
+
+    if user.role != UserRoles.EMPLOYEE.value:
+        return Response({
+            "status": "error",
+            "message": "Only employees can create employee accounts"
+        }, status=403)
+
+    email = request.data.get("email")
+    password = request.data.get("password")
+    first_name = request.data.get("first_name", "")
+    last_name = request.data.get("last_name", "")
+    position = request.data.get("position", EmployeePosition.STORE_MANAGER)
+
+    if not email or not password:
+        return Response({
+            "status": "error",
+            "message": "Email and password are required"
+        }, status=400)
+
+    valid_positions = [choice[0] for choice in EmployeePosition.choices]
+    if position and position not in valid_positions:
+        return Response({
+            "status": "error",
+            "message": f"Invalid position. Valid options: {valid_positions}"
+        }, status=400)
+
+    if User.objects.filter(email=email).exists():
+        return Response({
+            "status": "error",
+            "message": "A user with this email already exists"
+        }, status=409)
+
+    try:
+        new_user = User.objects.create_user( # type: ignore
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            role="employee",
+            is_staff=True,
+        )
+
+        employee = employee_model.objects.create(
+            user=new_user,
+            position=position
+        )
+
+        return Response({
+            "status": "created",
+            "data": {
+                "id": new_user.id,
+                "email": new_user.email,
+                "first_name": new_user.first_name,
+                "last_name": new_user.last_name,
+                "position": employee.position,
+                "hired_at": employee.hired_at,
+            }
+        }, status=201)
+
+    except Exception as e:
+        return Response({
+            "status": "error",
+            "message": str(e)
+        }, status=500)
