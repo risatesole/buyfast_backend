@@ -35,6 +35,7 @@ def signup_api_view(request):
 
         return Response({
             "status": "ok",
+            "message": "signup successfully",
             "data": {
                 "user": {
                     "id": user.id,
