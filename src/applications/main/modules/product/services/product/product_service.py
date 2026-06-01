@@ -16,7 +16,8 @@ class ProductService:
                 "id": product.id,
                 "name": product.name,
                 "description": product.description,
-                "category": product.category
+                "category": product.category,
+                "image": product.image.url if product.image else None,
             }
             for product in products
         ]
@@ -33,44 +34,44 @@ class ProductService:
             "description": product.description,
             "category": product.category
         }
-    
+
     def getAllCategories(self):
         categories = [
             {
                 "name": "FRUITS_AND_VEGETABLES",
                 "slug": "fruits_and_vegetables",
                 "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0XPSTaSDJBgYcbj7VlJDhgNzHNfUpZoneLfT3Zsslt8q8pBb3gfrBn2w&s=10"
-               
+
             },
             {
                 "name": "LACTEOUS",
                 "slug": "lacteous",
                 "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPcFnV0ulelHT__t2Yb35UGvUvi98aEzUCAECtjVmeiSXocZejxfIKH0zJ&s=10"
-              
+
             },
             {
                 "name": "GROCERY_AND_GOURMET",
                 "slug": "grocery_and_gourmet",
                 "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=300&fit=crop"
-           
+
             },
             {
                 "name": "ELECTRONIC_AND_TECH",
                 "slug": "electronic_and_tech",
                 "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ36HpcLFWVQhHC4fz-28itLx81FY0t_eTMmfWM5PMCWuKNuKNV0gJBlEIr&s=10"
-                
+
             },
             {
                 "name": "CLOTHING",
                 "slug": "clothing",
                 "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs-1HItAij1fRS45XMCqpgKd_3Pbo7FcrFbOQwVBkVbdwa0pRNmMX2Eqo&s=10"
-      
+
             },
             {
                 "name": "SHOES",
                 "slug": "shoes",
                 "image": "https://www.campusshoes.com/cdn/shop/files/LEVEL_LEVEL_WHT-L.GRY_07_831c7a2c-ff1b-4011-9268-b11f984219c6.webp?v=1757580207",
-             
+
             },
             {
                 "name": "JEWELRY",
