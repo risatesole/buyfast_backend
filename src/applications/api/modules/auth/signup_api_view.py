@@ -1,38 +1,45 @@
+from django.contrib.auth import login
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from ....main.modules.account.user.services.user.user_service import UserService, emailExistsError
+
+from ....main.modules.account.user.models.model_user import User, UserRoles
+
 
 @api_view(['POST'])
 def signup_api_view(request):
-    service = UserService()
-
     first_name = request.data.get("firstname")
     last_name = request.data.get("lastname")
     email = request.data.get("email")
     password = request.data.get("password")
 
     try:
-        user, customer = service.createCustomer(
+        user = User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
             email=email,
-            password=password
+            password=password,
+            role=UserRoles.CUSTOMER.value,
+            status="active"
         )
 
-        token, _ = Token.objects.get_or_create(user=user)
+        login(request, user)
 
         return Response({
             "status": "ok",
             "data": {
-                "user_id": user.id,
-                "email": user.email,
-                "role": user.role,
-                "token": token.key
+                "user": {
+                    "id": user.id,
+                    "firstname": user.first_name,
+                    "lastname": user.last_name,
+                    "email": user.email,
+                    "role": user.role,
+                    "created_at": user.created_at,
+                    "modified_at": user.updated_at,
+                }
             }
         })
 
-    except emailExistsError as e:
+    except Exception as e:
         return Response({
             "status": "error",
             "message": str(e)
