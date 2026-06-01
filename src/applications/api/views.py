@@ -50,16 +50,3 @@ def products(request):
         "data": product
     }, status=201)
 
-@api_view(['GET'])
-def productcategories(request):
-    categories = [
-        {
-            "value": key,
-            "label": label
-        }
-        for key, label in Product.CATEGORY_CHOICE
-    ]
-    return Response({
-        "status": "ok",
-        "data": categories
-    })
