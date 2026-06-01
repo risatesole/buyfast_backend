@@ -7,8 +7,8 @@ from ....main.modules.account.user.services.user.user_service import UserService
 def signup_api_view(request):
     service = UserService()
 
-    first_name = request.data.get("first_name")
-    last_name = request.data.get("last_name")
+    first_name = request.data.get("firstname")
+    last_name = request.data.get("lastname")
     email = request.data.get("email")
     password = request.data.get("password")
 
