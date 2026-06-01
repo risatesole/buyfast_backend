@@ -35,7 +35,8 @@ def signup_api_view(request):
                     "role": user.role,
                     "created_at": user.created_at,
                     "modified_at": user.updated_at,
-                }
+                },
+                "terms": True
             }
         })
 
