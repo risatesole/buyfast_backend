@@ -15,6 +15,7 @@ def signup_api_view(request):
     last_name = request.data.get("lastname")
     email = request.data.get("email")
     password = request.data.get("password")
+    terms = request.data.get("terms")
 
     try:
         validate_password(password)
