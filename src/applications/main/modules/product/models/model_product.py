@@ -61,7 +61,7 @@ class Product(models.Model):
         null=True,
         blank=True
     )
-    
+
     METRIC_UNIT_CHOICES = [
         ("UNIT", "Unit"),
         ("PAIR", "Shoe pair"),
@@ -73,6 +73,12 @@ class Product(models.Model):
         choices=METRIC_UNIT_CHOICES,
         default="UNIT"
     )
+
+    selling_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
 
     def __str__(self):
         return self.name
