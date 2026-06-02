@@ -25,8 +25,8 @@ def create_employee(request):
 
     email = request.data.get("email")
     password = request.data.get("password")
-    first_name = request.data.get("first_name", "")
-    last_name = request.data.get("last_name", "")
+    first_name = request.data.get("firstname", "")
+    last_name = request.data.get("lastname", "")
     position = request.data.get("position", EmployeePosition.STORE_MANAGER)
 
     if not email or not password:
