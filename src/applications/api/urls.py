@@ -10,21 +10,16 @@ from .modules.store.buy_product_api_view import buy_product
 from .modules.employee.employee_api_view import create_employee
 
 urlpatterns = [
-    path('health/', health),
-    path('products/', products),
-    path('productcategories/',product_categories),
-    path("delete-account/", delete_account),
-    path(
-        "products/set-price/",
-        set_product_price,
-        name="set_product_price"
-    ),
-
-    path("signin/",signin_api_view),
-    path("signup/",signup_api_view),
-    path("signout/", signout_api_view ),
-    path("change_password/",change_password_api_view),
-    path("employee/",create_employee),
-    path("buy-product/", buy_product),
-    path("me/", me_api_view),
+    path('health/',                      health),
+    path("me/",                          me_api_view),
+    path("products/set-price/",          set_product_price),
+    path("signin/",                      signin_api_view),
+    path("signup/",                      signup_api_view),
+    path("signout/",                     signout_api_view ),
+    path("change_password/",             change_password_api_view),
+    path("employee/",                    create_employee),
+    path("delete-account/",              delete_account),
+    path("buy-product/",                 buy_product),
+    path('products/',                    products),
+    path('productcategories/',           product_categories),
 ]
