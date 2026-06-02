@@ -44,8 +44,8 @@ def products(request):
         description=request.data.get("description"),
         category=request.data.get("category"),
         brand=request.data.get("brand"),
-
         selling_price=request.data.get("selling_price"),
+        status = request.data.get("status"),
     )
 
     return Response({

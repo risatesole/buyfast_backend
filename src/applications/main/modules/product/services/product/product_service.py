@@ -19,19 +19,22 @@ class ProductService:
                 "category": product.category,
                 "image": product.image.url if product.image else None,
                 "brand": product.brand,
-                "selling_price": product.selling_price
+                "selling_price": product.selling_price,
+                "status": product.status
             }
             for product in products
         ]
 
-    def setProduct(self, name, description, category, brand,selling_price):
+    def setProduct(self, name, description, category, brand,selling_price, status):
         product = Product.objects.create(
             name=name,
             description=description,
             category=category,
             brand = brand,
-            selling_price = selling_price
+            selling_price = selling_price,
+            status = status
         )
+
         return {
             "id": product.id, # type: ignore
             "name": product.name,
@@ -39,6 +42,7 @@ class ProductService:
             "category": product.category,
             "brand": product.brand,
             "selling_price": selling_price,
+            "status": status
         }
 
     def setProductPrice(self, product_id, selling_price):

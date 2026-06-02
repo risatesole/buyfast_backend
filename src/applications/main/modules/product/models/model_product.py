@@ -48,11 +48,7 @@ class Product(models.Model):
         choices=CATEGORY_CHOICE
     )
 
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="ACTIVE"
-    )
+    status = models.BooleanField(default=True)
 
     brand = models.CharField(max_length=255)
 
