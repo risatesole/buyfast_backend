@@ -42,7 +42,8 @@ def products(request):
     product = service.setProduct(
         name=request.data.get("name"),
         description=request.data.get("description"),
-        category=request.data.get("category")
+        category=request.data.get("category"),
+        brand=request.data.get("brand"),
     )
 
     return Response({

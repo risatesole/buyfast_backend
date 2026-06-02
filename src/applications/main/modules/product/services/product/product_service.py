@@ -18,21 +18,24 @@ class ProductService:
                 "description": product.description,
                 "category": product.category,
                 "image": product.image.url if product.image else None,
+                "brand": product.brand
             }
             for product in products
         ]
 
-    def setProduct(self, name, description, category):
+    def setProduct(self, name, description, category, brand):
         product = Product.objects.create(
             name=name,
             description=description,
-            category=category
+            category=category,
+            brand = brand
         )
         return {
             "id": product.id,
             "name": product.name,
             "description": product.description,
-            "category": product.category
+            "category": product.category,
+            "brand": product.brand,
         }
 
     def getAllCategories(self):
