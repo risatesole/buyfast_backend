@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import health, products, product_categories, set_product_price, delete_account
+from .views import health, products, product_categories, set_product_price
+from .modules.auth.auth import delete_account
 from .modules.auth.signup_api_view import signup_api_view
 from .modules.auth.signin_api_view import signin_api_view
 from .modules.auth.signout_api_view import signout_api_view

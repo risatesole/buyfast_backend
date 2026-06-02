@@ -7,21 +7,6 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 
-
-@api_view(['DELETE'])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def delete_account(request):
-    user = request.user
-    user.delete()
-    return Response({
-        "status": "ok",
-        "message": "Account deleted successfully"
-    })
-
-
-
-
 @api_view(['GET'])
 def health(request):
     return Response({
