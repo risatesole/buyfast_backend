@@ -1,13 +1,15 @@
 from django.urls import path
-from .views import health, products, product_categories, set_product_price
-from .modules.auth.auth import delete_account
-from .modules.auth.signup_api_view import signup_api_view
-from .modules.auth.signin_api_view import signin_api_view
-from .modules.auth.signout_api_view import signout_api_view
-from .modules.auth.change_password import change_password_api_view
 from .modules.auth.me_api_view import me_api_view
 from .modules.store.buy_product_api_view import buy_product
 from .modules.employee.employee_api_view import create_employee
+from .views import (
+    health,                              products, 
+    product_categories,                  set_product_price)
+
+from .modules.auth.auth import (
+    delete_account,                      signup_api_view, 
+    signin_api_view,                     signout_api_view, 
+    change_password_api_view)
 
 urlpatterns = [
     path('health/',                      health),
