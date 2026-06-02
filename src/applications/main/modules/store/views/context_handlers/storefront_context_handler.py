@@ -15,6 +15,9 @@ def hero_section_context():
     return hero_section
 
 
+
+
+
 def store_front_context_handler():
     """
     Builds and returns the storefront context including store name, 
@@ -24,7 +27,7 @@ def store_front_context_handler():
     context = {
         "storename": "Petal",
         "hero": hero_section_context(),
-        "categories": product.getAllCategories()[:10]
+        "categories": "N/A"
 
     }
     return context
