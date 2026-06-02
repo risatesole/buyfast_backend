@@ -15,7 +15,6 @@ def health(request):
 
 @api_view(['GET', 'POST'])
 @authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
 def products(request):
     service = ProductService()
     
