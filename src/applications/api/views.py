@@ -18,12 +18,24 @@ def health(request):
 @permission_classes([IsAuthenticated])
 def products(request):
     service = ProductService()
-
+    
     if request.method == 'GET':
+        sort = request.query_params.get("sort")
+        status = request.query_params.get("status")
+
+        if status == "true":
+            status = True
+        elif status == "false":
+            status = False
+
         return Response({
             "status": "ok",
-            "data": service.getProducts()
+            "data": service.getProductViaQuery(
+                status=status,
+                sort=sort
+            )
         })
+
 
     user = request.user
 
