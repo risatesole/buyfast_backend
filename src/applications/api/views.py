@@ -50,3 +50,98 @@ def products(request):
         "data": product
     }, status=201)
 
+
+
+categories = [
+    {
+        "title": "unknown",
+        "description": "N/A"
+    },
+    {
+        "title": "Electronics",
+        "description": "Devices, gadgets, and electronic accessories."
+    },
+    {
+        "title": "Computers",
+        "description": "Laptops, desktops, components, and peripherals."
+    },
+    {
+        "title": "Smartphones",
+        "description": "Mobile phones and related accessories."
+    },
+    {
+        "title": "Home Appliances",
+        "description": "Appliances for household use and maintenance."
+    },
+    {
+        "title": "Furniture",
+        "description": "Indoor and outdoor furniture for homes and offices."
+    },
+    {
+        "title": "Clothing",
+        "description": "Apparel for men, women, and children."
+    },
+    {
+        "title": "Footwear",
+        "description": "Shoes, sandals, boots, and other footwear."
+    },
+    {
+        "title": "Beauty & Personal Care",
+        "description": "Cosmetics, skincare, and personal hygiene products."
+    },
+    {
+        "title": "Health & Wellness",
+        "description": "Health-related products, supplements, and wellness items."
+    },
+    {
+        "title": "Sports & Fitness",
+        "description": "Equipment, apparel, and accessories for sports and exercise."
+    },
+    {
+        "title": "Books",
+        "description": "Printed books, e-books, and educational materials."
+    },
+    {
+        "title": "Toys & Games",
+        "description": "Toys, board games, puzzles, and entertainment products."
+    },
+    {
+        "title": "Automotive",
+        "description": "Vehicle parts, accessories, and maintenance products."
+    },
+    {
+        "title": "Pet Supplies",
+        "description": "Food, accessories, and care products for pets."
+    },
+    {
+        "title": "Groceries",
+        "description": "Food, beverages, and everyday consumables."
+    },
+    {
+        "title": "Office Supplies",
+        "description": "Products for office work, organization, and productivity."
+    },
+    {
+        "title": "Garden & Outdoor",
+        "description": "Gardening tools, outdoor furniture, and landscaping products."
+    },
+    {
+        "title": "Baby Products",
+        "description": "Products for infants, toddlers, and parents."
+    },
+    {
+        "title": "Jewelry & Accessories",
+        "description": "Jewelry, watches, and fashion accessories."
+    },
+    {
+        "title": "Tools & Hardware",
+        "description": "Hand tools, power tools, and hardware supplies."
+    }
+]
+
+@api_view(['GET'])
+def product_categories(request):
+    return Response({
+        "status": "ok",
+        "data": categories
+    })
