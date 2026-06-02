@@ -18,7 +18,8 @@ class ProductService:
                 "description": product.description,
                 "category": product.category,
                 "image": product.image.url if product.image else None,
-                "brand": product.brand
+                "brand": product.brand,
+                "selling_price": product.selling_price
             }
             for product in products
         ]
@@ -38,4 +39,18 @@ class ProductService:
             "category": product.category,
             "brand": product.brand,
             "selling_price": selling_price,
+        }
+
+    def setProductPrice(self, product_id, selling_price):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return None
+
+        product.selling_price = selling_price
+        product.save()
+
+        return {
+            "id": product.id, # type: ignore
+            "selling_price": product.selling_price
         }

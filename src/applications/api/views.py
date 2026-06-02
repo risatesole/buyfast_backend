@@ -44,7 +44,7 @@ def products(request):
         description=request.data.get("description"),
         category=request.data.get("category"),
         brand=request.data.get("brand"),
-        
+
         selling_price=request.data.get("selling_price"),
     )
 
@@ -54,6 +54,35 @@ def products(request):
     }, status=201)
 
 
+@api_view(['POST'])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def set_product_price(request):
+    user = request.user
+
+    if user.role != UserRoles.EMPLOYEE.value:
+        return Response({
+            "status": "error",
+            "message": "Only employees can update product prices"
+        }, status=403)
+
+    service = ProductService()
+
+    product = service.setProductPrice(
+        product_id=request.data.get("product_id"),
+        selling_price=request.data.get("selling_price")
+    )
+
+    if product is None:
+        return Response({
+            "status": "error",
+            "message": "Product not found"
+        }, status=404)
+
+    return Response({
+        "status": "ok",
+        "data": product
+    })
 
 categories = [
     {
