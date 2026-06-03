@@ -3,10 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from ...utils import CsrfExemptSessionAuthentication
 
-
 @api_view(['GET'])
 @authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
 def me_api_view(request):
     try:
         user = request.user
@@ -27,6 +25,8 @@ def me_api_view(request):
     except Exception as e:
         return Response({
             "status": "error",
-            "message": str(e)
+            "message": str(e),
+            "data": {
+                "user": None
+            }
         }, status=400)
-        
