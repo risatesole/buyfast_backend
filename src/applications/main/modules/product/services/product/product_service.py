@@ -25,18 +25,27 @@ class ProductService:
             for product in products
         ]
 
-    def getProductViaQuery(self, status=None, sort=None) -> list[dict]:
+    def getProductViaQuery(
+        self,
+        status=None,
+        sort=None,
+        limit=None,
+        offset=0
+    ) -> list[dict]:
         products = Product.objects.all()
 
         if status is not None:
             products = products.filter(status=status)
-            
+
         if sort:
             products = products.order_by(sort)
 
+        if limit is not None:
+            products = products[offset:offset + limit]
+
         return [
             {
-                "id": product.id, # type: ignore
+                "id": product.id,
                 "name": product.name,
                 "description": product.description,
                 "category": product.category,
@@ -47,7 +56,6 @@ class ProductService:
             }
             for product in products
         ]
-
 
     def setProduct(self, name, description, category, brand,selling_price, status):
         product = Product.objects.create(
