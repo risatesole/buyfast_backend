@@ -40,7 +40,7 @@ class Product(models.Model):
         ("INDUSTRIAL_AND_SCIENTIFIC", "Industrial & Scientific"),
     ]
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=500)
     description = models.TextField()
 
     category = models.CharField(
@@ -50,14 +50,10 @@ class Product(models.Model):
 
     status = models.BooleanField(default=True)
 
-    brand = models.CharField(max_length=255)
+    brand = models.CharField(max_length=500)
 
-    image = models.ImageField(
-        upload_to="products/",
-        null=True,
-        blank=True
-    )
-
+    image = models.URLField(max_length=1000)
+    
     METRIC_UNIT_CHOICES = [
         ("UNIT", "Unit"),
         ("PAIR", "Shoe pair"),
