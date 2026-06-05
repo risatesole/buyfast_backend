@@ -17,7 +17,7 @@ class ProductService:
                 "name": product.name,
                 "description": product.description,
                 "category": product.category,
-                "image": product.image.url if product.image else None,
+                "image": product.image if product.image else None,
                 "brand": product.brand,
                 "selling_price": product.selling_price,
                 "status": product.status
@@ -49,7 +49,7 @@ class ProductService:
                 "name": product.name,
                 "description": product.description,
                 "category": product.category,
-                "image": product.image.url if product.image else None,
+                "image": product.image if product.image else None,
                 "brand": product.brand,
                 "selling_price": product.selling_price,
                 "status": product.status
