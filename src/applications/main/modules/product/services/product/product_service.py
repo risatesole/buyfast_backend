@@ -32,6 +32,8 @@ class ProductService:
         limit=None,
         offset=0
     ) -> list[dict]:
+        MAX_LIMIT = 100
+
         products = Product.objects.all()
 
         if status is not None:
@@ -41,6 +43,7 @@ class ProductService:
             products = products.order_by(sort)
 
         if limit is not None:
+            limit = min(limit, MAX_LIMIT)
             products = products[offset:offset + limit]
 
         return [
