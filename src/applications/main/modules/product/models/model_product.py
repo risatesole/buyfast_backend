@@ -52,7 +52,7 @@ class Product(models.Model):
 
     brand = models.CharField(max_length=500)
 
-    image = models.URLField(max_length=1000)
+    image = models.CharField(max_length=1000)
     
     METRIC_UNIT_CHOICES = [
         ("UNIT", "Unit"),
