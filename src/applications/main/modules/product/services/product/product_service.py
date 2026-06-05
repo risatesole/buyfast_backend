@@ -1,4 +1,5 @@
 from .....models import Product
+from django.db.models import Q
 
 class ProductService:
     """
@@ -30,7 +31,8 @@ class ProductService:
         status=None,
         sort=None,
         limit=None,
-        offset=0
+        offset=0,
+        search=None,
     ) -> list[dict]:
         MAX_LIMIT = 100
         DEFAULT_LIMIT = 20
@@ -39,6 +41,13 @@ class ProductService:
 
         if status is not None:
             products = products.filter(status=status)
+
+        if search:
+            products = products.filter(
+                Q(name__icontains=search) |
+                Q(brand__icontains=search) |
+                Q(category__icontains=search)
+            )
 
         if sort:
             products = products.order_by(sort)

@@ -17,10 +17,11 @@ def health(request):
 @authentication_classes([CsrfExemptSessionAuthentication])
 def products(request):
     service = ProductService()
+    
     if request.method == 'GET':
         sort = request.query_params.get("sort")
         status = request.query_params.get("status")
-
+        search = request.query_params.get("search")
         limit = request.query_params.get("limit")
         offset = request.query_params.get("offset", 0)
 
@@ -35,7 +36,8 @@ def products(request):
                 status=status,
                 sort=sort,
                 limit=int(limit) if limit else None,
-                offset=int(offset)
+                offset=int(offset),
+                search=search,
             )
         })
 
