@@ -24,7 +24,7 @@ class ProductService:
             }
             for product in products
         ]
-
+    
     def getProductViaQuery(
         self,
         status=None,
@@ -33,6 +33,7 @@ class ProductService:
         offset=0
     ) -> list[dict]:
         MAX_LIMIT = 100
+        DEFAULT_LIMIT = 20
 
         products = Product.objects.all()
 
@@ -42,9 +43,8 @@ class ProductService:
         if sort:
             products = products.order_by(sort)
 
-        if limit is not None:
-            limit = min(limit, MAX_LIMIT)
-            products = products[offset:offset + limit]
+        limit = min(limit, MAX_LIMIT) if limit is not None else DEFAULT_LIMIT
+        products = products[offset:offset + limit]
 
         return [
             {
