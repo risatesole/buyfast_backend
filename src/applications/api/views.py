@@ -30,6 +30,9 @@ def products(request):
         elif status == "false":
             status = False
 
+        tags = request.query_params.get("tags")
+        tags = tags.split(",") if tags else None  # "electronics,phones" -> ["electronics", "phones"]
+
         return Response({
             "status": "ok",
             "data": service.getProductViaQuery(
@@ -38,9 +41,9 @@ def products(request):
                 limit=int(limit) if limit else None,
                 offset=int(offset),
                 search=search,
+                tags=tags,
             )
         })
-
 
     user = request.user
 
@@ -62,7 +65,8 @@ def products(request):
         category=request.data.get("category"),
         brand=request.data.get("brand"),
         selling_price=request.data.get("selling_price"),
-        status = request.data.get("status"),
+        status=request.data.get("status"),
+        tags=request.data.get("tags", []),
     )
 
     return Response({

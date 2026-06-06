@@ -32,6 +32,7 @@ class ProductService:
         sort=None,
         limit=None,
         offset=0,
+        tags=None,
         search=None,
     ) -> list[dict]:
         MAX_LIMIT = 100
@@ -48,8 +49,12 @@ class ProductService:
             products = products.filter(
                 Q(name__icontains=search) |
                 Q(brand__icontains=search) |
-                Q(category__icontains=search)
-            )
+                Q(category__icontains=search) |
+                Q(tags__name__icontains=search)
+            ).distinct()
+
+        if tags:
+            products = products.filter(tags__name__in=tags).distinct()
 
         if sort:
             field = sort.lstrip("-")
@@ -69,20 +74,24 @@ class ProductService:
                 "image": product.image if product.image else None,
                 "brand": product.brand,
                 "selling_price": product.selling_price,
-                "status": product.status
+                "status": product.status,
+                "tags": list(product.tags.values_list("name", flat=True)),
             }
             for product in products
         ]
 
-    def setProduct(self, name, description, category, brand,selling_price, status):
+    def setProduct(self, name, description, category, brand, selling_price, status, tags):
         product = Product.objects.create(
             name=name,
             description=description,
             category=category,
-            brand = brand,
-            selling_price = selling_price,
-            status = status
+            brand=brand,
+            selling_price=selling_price,
+            status=status,
         )
+
+        if tags:
+            product.tags.set(tags)
 
         return {
             "id": product.id, # type: ignore
@@ -90,8 +99,9 @@ class ProductService:
             "description": product.description,
             "category": product.category,
             "brand": product.brand,
-            "selling_price": selling_price,
-            "status": status
+            "selling_price": product.selling_price,
+            "status": product.status,
+            "tags": list(product.tags.names()),
         }
 
     def setProductPrice(self, product_id, selling_price):
