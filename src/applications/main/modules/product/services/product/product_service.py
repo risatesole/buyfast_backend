@@ -36,13 +36,15 @@ class ProductService:
     ) -> list[dict]:
         MAX_LIMIT = 100
         DEFAULT_LIMIT = 20
+        MAX_OFFSET = 10_000
+        ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "category", "brand"}
 
         products = Product.objects.all()
 
         if status is not None:
             products = products.filter(status=status)
 
-        if search:
+        if search and len(search) >= 2:
             products = products.filter(
                 Q(name__icontains=search) |
                 Q(brand__icontains=search) |
@@ -50,9 +52,12 @@ class ProductService:
             )
 
         if sort:
-            products = products.order_by(sort)
+            field = sort.lstrip("-")
+            if field in ALLOWED_SORT_FIELDS:
+                products = products.order_by(sort)
 
         limit = min(limit, MAX_LIMIT) if limit is not None else DEFAULT_LIMIT
+        offset = min(int(offset), MAX_OFFSET)
         products = products[offset:offset + limit]
 
         return [
