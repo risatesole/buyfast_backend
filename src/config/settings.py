@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+    'taggit',
     
     "src.applications.main",
     'src.applications.api',

@@ -1,4 +1,5 @@
 from django.db import models
+from taggit.managers import TaggableManager
 
 class Product(models.Model):
 
@@ -71,6 +72,7 @@ class Product(models.Model):
         decimal_places=2
     )
 
+    tags = TaggableManager(blank=True)
 
     def __str__(self):
         return self.name
