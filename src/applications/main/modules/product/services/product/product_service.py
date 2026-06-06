@@ -1,31 +1,9 @@
 from .....models import Product
+from .....modules.product.models.category_model import Category
 from django.db.models import Q
 
 class ProductService:
-    """
-    Service layer for handling Product-related operations.
 
-    This class provides methods to retrieve and create Products
-    using the underlying Product model.
-    """
-
-    def getProducts(self) -> list[dict]:
-        products = Product.objects.all()
-
-        return [
-            {
-                "id": product.id, # type: ignore
-                "name": product.name,
-                "description": product.description,
-                "category": product.category,
-                "image": product.image if product.image else None,
-                "brand": product.brand,
-                "selling_price": product.selling_price,
-                "status": product.status
-            }
-            for product in products
-        ]
-    
     def getProductViaQuery(
         self,
         status=None,
@@ -34,22 +12,26 @@ class ProductService:
         offset=0,
         tags=None,
         search=None,
+        category_id=None,
     ) -> list[dict]:
         MAX_LIMIT = 100
         DEFAULT_LIMIT = 20
         MAX_OFFSET = 10_000
-        ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "category", "brand"}
+        ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "category__name", "brand"}
 
-        products = Product.objects.all()
+        products = Product.objects.select_related("category").all()
 
         if status is not None:
             products = products.filter(status=status)
+
+        if category_id is not None:
+            products = products.filter(category__id=category_id)
 
         if search and len(search) >= 2:
             products = products.filter(
                 Q(name__icontains=search) |
                 Q(brand__icontains=search) |
-                Q(category__icontains=search) |
+                Q(category__name__icontains=search) |
                 Q(tags__name__icontains=search)
             ).distinct()
 
@@ -65,22 +47,17 @@ class ProductService:
         offset = min(int(offset), MAX_OFFSET)
         products = products[offset:offset + limit]
 
-        return [
-            {
-                "id": product.id,
-                "name": product.name,
-                "description": product.description,
-                "category": product.category,
-                "image": product.image if product.image else None,
-                "brand": product.brand,
-                "selling_price": product.selling_price,
-                "status": product.status,
-                "tags": list(product.tags.values_list("name", flat=True)),
-            }
-            for product in products
-        ]
+        return [self._serialize(product) for product in products]
 
-    def setProduct(self, name, description, category, brand, selling_price, status, tags):
+    def setProduct(self, name, description, category_id, brand, selling_price, status, tags):
+        if not category_id:
+            raise ValueError("category_id is required")
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            raise ValueError(f"Category with id {category_id} does not exist")
+
         product = Product.objects.create(
             name=name,
             description=description,
@@ -93,16 +70,7 @@ class ProductService:
         if tags:
             product.tags.set(tags)
 
-        return {
-            "id": product.id, # type: ignore
-            "name": product.name,
-            "description": product.description,
-            "category": product.category,
-            "brand": product.brand,
-            "selling_price": product.selling_price,
-            "status": product.status,
-            "tags": list(product.tags.names()),
-        }
+        return self._serialize(product)
 
     def setProductPrice(self, product_id, selling_price):
         try:
@@ -114,6 +82,25 @@ class ProductService:
         product.save()
 
         return {
-            "id": product.id, # type: ignore
+            "id": product.id,
             "selling_price": product.selling_price
+        }
+
+    def _serialize(self, product) -> dict:
+        return {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "category": {
+                "id": product.category.id,
+                "name": product.category.name,
+                "slug": product.category.slug,
+                "image": product.category.image or None,
+                "status": product.category.status,
+            } if product.category else None,
+            "image": product.image or None,
+            "brand": product.brand,
+            "selling_price": product.selling_price,
+            "status": product.status,
+            "tags": list(product.tags.names()),
         }

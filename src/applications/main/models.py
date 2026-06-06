@@ -1,6 +1,7 @@
 from .modules.account.user.models.model_user import User  as User
 from .modules.account.user.models.model_user import UserRoles as UserRoles
 from .modules.product.models.model_product import Product as Product 
+from .modules.product.models.category_model import Category as Category
 from .modules.customer.models.customer_model import Customer_model as Customer_model
 from .modules.employee.models.employee_model import employee_model as employee_model
 from .modules.inventory.models.provider_model import Provider as Provider
