@@ -1,5 +1,5 @@
-from ..main.modules.product.services.product.product_service import ProductService
-from ..main.modules.product.services.product.category_service import CategoryService
+from products.products import ProductService
+from products.products import CategoryService
 from ..main.models import UserRoles
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response

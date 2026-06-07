@@ -1,8 +1,6 @@
-from ....main.modules.product.services.product.product_service import ProductService
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from src.applications.api.utils import CsrfExemptSessionAuthentication 
-from src.applications.main.models import UserRoles
+from ...utils import CsrfExemptSessionAuthentication 
 from .handlers.products_handler_get import products_get_handler_get
 from .handlers.products_handler_post import products_get_handler_post
 

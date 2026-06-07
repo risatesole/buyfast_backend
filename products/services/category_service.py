@@ -1,4 +1,4 @@
-from .....modules.product.models.category_model import Category
+from ..models import Category
 
 class CategoryService:
 

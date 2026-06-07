@@ -1,5 +1,4 @@
-from .....models import Product
-from .....modules.product.models.category_model import Category
+from ..models import Category,Product
 from django.db.models import Q
 
 class ProductService:
@@ -11,7 +10,7 @@ class ProductService:
             return None
 
         return {
-            "id": product.id,
+            "id": product.id, # type: ignore
             "name": product.name,
             "description": product.description,
             "image": product.image or None,
@@ -20,7 +19,7 @@ class ProductService:
             "status": product.status,
             "tags": [tag.name for tag in product.tags.all()],
             "category": {
-                "id": product.category.id,
+                "id": product.category.id, # type: ignore
                 "name": product.category.name,
                 "slug": product.category.slug,
                 "image": product.category.image,
@@ -106,7 +105,7 @@ class ProductService:
         product.save()
 
         return {
-            "id": product.id,
+            "id": product.id, # type: ignore
             "selling_price": product.selling_price
         }
 

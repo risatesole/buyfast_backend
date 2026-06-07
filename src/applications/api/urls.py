@@ -1,6 +1,5 @@
 from django.urls import path
 from .modules.auth.me_api_view import me_api_view
-from .modules.store.buy_product_api_view import buy_product
 from .modules.employee.employee_api_view import create_employee
 from .modules.products.products_api_view import products
 from .modules.system.health_api_view import health
@@ -23,7 +22,6 @@ urlpatterns = [
     path("change_password/",             change_password_api_view),
     path("employee/",                    create_employee),
     path("delete-account/",              delete_account),
-    path("buy-product/",                 buy_product),
     path('products/',                    products),
     path('productcategories/',           product_categories),
     path('products/<int:product_id>/', product_detail),

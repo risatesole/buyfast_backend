@@ -1,4 +1,4 @@
-from src.applications.main.modules.product.services.product.product_service import ProductService
+from products.products import ProductService
 
 def products_get_handler_get(request):
     service = ProductService()
