@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from ...utils import CsrfExemptSessionAuthentication
 from ....main.models import UserRoles
+from .handlers.products_handler_get import products_get_handler
 
 @api_view(['GET', 'POST'])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -10,35 +11,8 @@ def products(request):
     service = ProductService()
 
     if request.method == 'GET':
-        sort = request.query_params.get("sort")
-        status = request.query_params.get("status")
-        search = request.query_params.get("search")
-        limit = request.query_params.get("limit")
-        offset = request.query_params.get("offset", 0)
-        category_id = request.query_params.get("category_id")
+        return Response(products_get_handler(request))
 
-        if status == "true":
-            status = True
-        elif status == "false":
-            status = False
-        else:
-            status = None
-
-        tags = request.query_params.get("tags")
-        tags = tags.split(",") if tags else None
-
-        return Response({
-            "status": "ok",
-            "data": service.getProductViaQuery(
-                status=status,
-                sort=sort,
-                limit=int(limit) if limit else None,
-                offset=int(offset),
-                search=search,
-                tags=tags,
-                category_id=int(category_id) if category_id else None,
-            )
-        })
 
     user = request.user
 
