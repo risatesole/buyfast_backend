@@ -4,7 +4,8 @@ from .modules.store.buy_product_api_view import buy_product
 from .modules.employee.employee_api_view import create_employee
 from .views import (
     health,                              products, 
-    product_categories,                  set_product_price)
+    product_categories,                  set_product_price,
+    product_detail)
 
 from .modules.auth.auth import (
     delete_account,                      signup_api_view, 
@@ -24,4 +25,5 @@ urlpatterns = [
     path("buy-product/",                 buy_product),
     path('products/',                    products),
     path('productcategories/',           product_categories),
+    path('products/<int:product_id>/', product_detail),
 ]

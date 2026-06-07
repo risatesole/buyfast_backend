@@ -124,3 +124,14 @@ def product_categories(request):
         status=request.data.get("status", True),
     )
     return Response({"status": "created", "data": category}, status=201)
+
+
+@api_view(['GET'])
+def product_detail(request, product_id):
+    service = ProductService()
+    product = service.getProductDetails(product_id) # (product_id)  # you may need to check the exact method name in your ProductService
+
+    if product is None:
+        return Response({"status": "error", "message": "Product not found"}, status=404)
+
+    return Response({"status": "ok", "data": product})

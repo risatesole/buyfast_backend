@@ -4,6 +4,30 @@ from django.db.models import Q
 
 class ProductService:
 
+    def getProductDetails(self, id):
+        try:
+            product = Product.objects.select_related("category").get(id=id)
+        except Product.DoesNotExist:
+            return None
+
+        return {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "image": product.image or None,
+            "brand": product.brand,
+            "selling_price": float(product.selling_price),
+            "status": product.status,
+            "tags": [tag.name for tag in product.tags.all()],
+            "category": {
+                "id": product.category.id,
+                "name": product.category.name,
+                "slug": product.category.slug,
+                "image": product.category.image,
+                "status": product.category.status,
+            } if product.category else None,
+        }
+
     def getProductViaQuery(
         self,
         status=None,
