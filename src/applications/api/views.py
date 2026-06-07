@@ -1,15 +1,10 @@
 from ..main.modules.product.services.product.product_service import ProductService
 from ..main.modules.product.services.product.category_service import CategoryService
-from ..main.modules.product.models.model_product import Product
 from ..main.models import UserRoles
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
-@api_view(['GET'])
-def health(request):
-    return Response({"status": "ok"})
 
 @api_view(['POST'])
 @authentication_classes([CsrfExemptSessionAuthentication])
