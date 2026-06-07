@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     
     "src.applications.main",
     'src.applications.api',
+    'products'
 ]
 
 MIDDLEWARE = [
