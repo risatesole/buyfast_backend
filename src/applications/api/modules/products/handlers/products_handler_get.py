@@ -1,6 +1,6 @@
 from src.applications.main.modules.product.services.product.product_service import ProductService
 
-def products_get_handler(request):
+def products_get_handler_get(request):
     service = ProductService()
 
     sort = request.query_params.get("sort")
