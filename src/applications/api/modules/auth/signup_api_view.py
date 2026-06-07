@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
-from ....main.modules.account.user.models.model_user import User, UserRoles
+from accounts.accounts import User, UserRoles
 
 @api_view(['POST'])
 @authentication_classes([])

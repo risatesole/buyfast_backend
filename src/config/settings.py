@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     
     "src.applications.main",
     'src.applications.api',
-    'products'
+    'products',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -143,7 +144,7 @@ STATIC_URL = 'static/'
 
 # custom settings:
 # custom user table
-AUTH_USER_MODEL = "main.User"
+AUTH_USER_MODEL = "accounts.User"
 
 LOGIN_URL = "/signin"
 MEDIA_URL = "/media/"

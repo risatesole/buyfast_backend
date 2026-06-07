@@ -1,5 +1,5 @@
-from ....main.modules.employee.models.employee_model import  employee_model, EmployeePosition 
-from ....main.modules.account.user.models.model_user import User, UserRoles
+from accounts.accounts import  employee_model, EmployeePosition 
+from accounts.accounts import User, UserRoles
 from ...utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes

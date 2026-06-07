@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from src.applications.main.models import UserRoles
+from accounts.accounts import UserRoles
 from products.products import ProductService
 def products_get_handler_post(request):
     user = request.user

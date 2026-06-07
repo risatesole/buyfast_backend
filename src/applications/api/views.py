@@ -1,6 +1,6 @@
 from products.products import ProductService
 from products.products import CategoryService
-from ..main.models import UserRoles
+from accounts.accounts import UserRoles
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
