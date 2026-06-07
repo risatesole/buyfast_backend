@@ -35,7 +35,7 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="products"
+        related_name="product"
     )
     status = models.BooleanField(default=True)
     brand = models.CharField(max_length=500)
@@ -50,6 +50,8 @@ class Product(models.Model):
         decimal_places=2
     )
     tags = TaggableManager(blank=True)
+    class Meta:
+            db_table = "product"
 
     def __str__(self):
         return self.name
