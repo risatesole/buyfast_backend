@@ -61,8 +61,6 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # 'src.applications.main.middleware.DeactivatedUserMiddleware', # custom middleware
 ]
 
 REST_FRAMEWORK = {
@@ -71,7 +69,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-ROOT_URLCONF = 'src.config.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -88,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'src.config.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
         'default': {
