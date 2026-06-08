@@ -9,6 +9,21 @@ def me_api_view(request):
     try:
         user = request.user
 
+        if not user.is_authenticated:
+            return Response({
+                "status": "ok",
+                "data": {
+                    "user": {
+                        "id": None,
+                        "firstname": None,
+                        "lastname": None,
+                        "email": None,
+                        "role": None,
+                        "profilepicture": None
+                    }
+                }
+            })
+
         return Response({
             "status": "ok",
             "data": {
