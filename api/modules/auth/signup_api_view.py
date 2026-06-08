@@ -36,7 +36,7 @@ def signup_api_view(request):
                 },
                 "terms": True
             }
-        })
+        }, status=201)
 
     except Exception as e:
         return Response({
