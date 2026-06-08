@@ -16,7 +16,7 @@ class StockMovement_model(models.Model):
     quantity = models.IntegerField()
     balance = models.IntegerField()
     class Meta:
-            db_table = "stock_movement"
+            db_table = "core_stock_movement"
 
     def __str__(self):
         return f"{self.product} - {self.movement_type} ({self.quantity})"

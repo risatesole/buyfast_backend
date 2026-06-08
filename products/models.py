@@ -1,7 +1,6 @@
 from django.db import models
 from taggit.managers import TaggableManager
 
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
@@ -14,6 +13,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
+        db_table = "core_product_category"
 
 
 class Product(models.Model):
@@ -51,7 +51,7 @@ class Product(models.Model):
     )
     tags = TaggableManager(blank=True)
     class Meta:
-            db_table = "product"
+            db_table = "core_product"
 
     def __str__(self):
         return self.name

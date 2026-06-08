@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
-
-
-
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -54,6 +51,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+    class Meta:
+        db_table = "core_user"
+
 
     def __str__(self):
         return self.email
@@ -70,6 +70,8 @@ class Customer_model(models.Model):
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = "core_customer"
 
     def __str__(self):
         return f"Customer: {self.user.email}"
@@ -99,6 +101,8 @@ class employee_model(models.Model):
 
     hired_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    class Meta:
+        db_table = "core_employee"
 
     def __str__(self):
         return f"Employee: {self.user.email} ({self.position})"
