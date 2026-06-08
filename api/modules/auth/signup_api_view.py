@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
-from accounts.accounts import User, UserRoles
+from accounts.accounts import create_account , AccountRole, AccountStatus
 
 @api_view(['POST'])
 @authentication_classes([])
@@ -19,21 +19,10 @@ def signup_api_view(request):
 
     try:
         validate_password(password)
-        user = User.objects.create_user(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            password=password,
-            role=UserRoles.CUSTOMER.value,
-            status="active"
-        )
-
-        # 4. Enforce session-based login securely
+        
+        user = create_account(first_name,last_name,email,password,AccountRole.CUSTOMER.value,  AccountStatus.ACTIVE.value)
         login(request, user)
-
-        # 5. Tell Django to skip post-login token validation for this response
         request.META["CSRF_COOKIE_USED"] = True
-
         return Response({
             "status": "ok",
             "message": "signup successfully",

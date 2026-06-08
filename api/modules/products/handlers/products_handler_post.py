@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from accounts.accounts import UserRoles
+from accounts.accounts import AccountRole
 from products.products import ProductService
 def products_get_handler_post(request):
     user = request.user
@@ -9,7 +9,7 @@ def products_get_handler_post(request):
     if not user.is_authenticated:
         return Response({"status": "error", "message": "Authentication required"}, status=401)
 
-    if user.role != UserRoles.EMPLOYEE.value:
+    if user.role != AccountRole.EMPLOYEE.value:
         return Response({"status": "error", "message": "Only employees can create products"}, status=403)
 
     try:

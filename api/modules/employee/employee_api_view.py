@@ -1,5 +1,5 @@
 from accounts.accounts import  employee_model, EmployeePosition 
-from accounts.accounts import User, UserRoles
+from accounts.accounts import User, AccountRole
 from ...utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -17,7 +17,7 @@ def create_employee(request):
             "message": "Authentication required"
         }, status=401)
 
-    if user.role != UserRoles.EMPLOYEE.value:
+    if user.role != AccountRole.EMPLOYEE.value:
         return Response({
             "status": "error",
             "message": "Only employees can create employee accounts"
@@ -54,7 +54,7 @@ def create_employee(request):
             password=password,
             first_name=first_name,
             last_name=last_name,
-            role="employee",
+            role=AccountRole.EMPLOYEE.value,
             is_staff=True,
         )
 

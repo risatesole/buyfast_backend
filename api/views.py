@@ -1,6 +1,6 @@
 from products.products import ProductService
 from products.products import CategoryService
-from accounts.accounts import UserRoles
+from accounts.accounts import AccountRole
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 def set_product_price(request):
     user = request.user
 
-    if user.role != UserRoles.EMPLOYEE.value:
+    if user.role != AccountRole.EMPLOYEE.value:
         return Response({"status": "error", "message": "Only employees can update product prices"}, status=403)
 
     service = ProductService()
@@ -46,7 +46,7 @@ def product_categories(request):
     user = request.user
     if not user.is_authenticated:
         return Response({"status": "error", "message": "Authentication required"}, status=401)
-    if user.role != UserRoles.EMPLOYEE.value:
+    if user.role != AccountRole.EMPLOYEE.value:
         return Response({"status": "error", "message": "Only employees can create categories"}, status=403)
 
     category = service.setCategory(
