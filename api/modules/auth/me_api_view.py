@@ -35,7 +35,8 @@ def me_api_view(request):
                     "lastname": user.last_name,
                     "email": user.email,
                     "role": getattr(user, "role", None),
-                    "profilepicture": "https://example.com/avatar.png"
+                    "profilepicture": "https://example.com/avatar.png",
+                    "is_authenticated": True
                 }
             }
         })
