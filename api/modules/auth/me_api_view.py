@@ -14,12 +14,14 @@ def me_api_view(request):
                 "status": "ok",
                 "data": {
                     "user": {
+                       
                         "id": None,
                         "firstname": None,
                         "lastname": None,
                         "email": None,
                         "role": None,
-                        "profilepicture": None
+                        "profilepicture": None,
+                        "is_authenticated": False
                     }
                 }
             })

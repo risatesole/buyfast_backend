@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from products.products import ProductService
-def products_get_handler_post(request):
+def products_post_handler(request):
     user = request.user
 
     service = ProductService()
@@ -21,6 +21,7 @@ def products_get_handler_post(request):
             selling_price=request.data.get("selling_price"),
             status=request.data.get("status"),
             tags=request.data.get("tags", []),
+            imageurl=request.data.get("imageurl"),
         )
     except ValueError as e:
         return Response({"status": "error", "message": str(e)}, status=400)

@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from ...utils import CsrfExemptSessionAuthentication 
 from .handlers.products_handler_get import products_get_handler_get
-from .handlers.products_handler_post import products_get_handler_post
+from .handlers.products_handler_post import products_post_handler
 
 @api_view(['GET', 'POST'])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -11,4 +11,4 @@ def products(request):
         return Response(products_get_handler_get(request))
     
     if request.method == 'POST':
-        return products_get_handler_post(request)
+        return products_post_handler(request)

@@ -4,7 +4,7 @@ from django.db.models import Q
 class ProductService:
 
     def getProductDetails(self, id):
-        try:
+        try: 
             product = Product.objects.select_related("category").get(id=id)
         except Product.DoesNotExist:
             return None
@@ -72,7 +72,7 @@ class ProductService:
 
         return [self._serialize(product) for product in products]
 
-    def setProduct(self, name, description, category_id, brand, selling_price, status, tags):
+    def setProduct(self, name, description, category_id, brand, selling_price, status, tags, imageurl):
         if not category_id:
             raise ValueError("category_id is required")
 
@@ -88,6 +88,7 @@ class ProductService:
             brand=brand,
             selling_price=selling_price,
             status=status,
+            image=imageurl 
         )
 
         if tags:
