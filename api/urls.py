@@ -1,9 +1,8 @@
 from django.urls import path
 from accounts.views.employee_api_view import create_employee
-from products.views.products_api_view import products
-from products.views.products_api_view import product_detail
+from products.products import products, product_detail ,product_categories
 from .modules.system.health_api_view import health
-from .views import product_categories, set_product_price
+from .views import set_product_price
 from accounts.accounts import (
     delete_account,                      signup_api_view, 
     signin_api_view,                     signout_api_view, 
