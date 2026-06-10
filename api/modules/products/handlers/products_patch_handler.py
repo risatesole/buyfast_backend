@@ -34,6 +34,12 @@ def products_patch_handler(request, product_id):
 
     service = ProductService()
 
+
+    raw_tags = request.data.getlist("tags")
+    tags = []
+    for t in raw_tags:
+        tags.extend([x.strip() for x in t.split(",") if x.strip()])
+
     try:
         product = service.updateProduct(
             product_id=product_id,
@@ -43,7 +49,7 @@ def products_patch_handler(request, product_id):
             brand=request.data.get("brand"),
             selling_price=request.data.get("selling_price"),
             status=status,
-            tags=request.data.get("tags"),
+            tags=tags or None,
             images=images or None,
         )
     except ValueError as e:

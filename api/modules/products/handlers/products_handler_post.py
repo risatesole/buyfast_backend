@@ -33,6 +33,13 @@ def products_post_handler(request):
 
     service = ProductService()
 
+
+
+    raw_tags = request.data.getlist("tags")
+    tags = []
+    for t in raw_tags:
+        tags.extend([x.strip() for x in t.split(",") if x.strip()])
+        
     try:
         product = service.setProduct(
             name=request.data.get("name"),
@@ -41,7 +48,7 @@ def products_post_handler(request):
             brand=request.data.get("brand"),
             selling_price=request.data.get("selling_price"),
             status=status,
-            tags=request.data.get("tags", []),
+            tags=tags,
             images=images
         )
 
