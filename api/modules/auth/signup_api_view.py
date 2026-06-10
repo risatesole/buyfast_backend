@@ -6,6 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
 from accounts.accounts import create_account , AccountRole, AccountStatus
 
+from drf_spectacular.utils import extend_schema
+from .signup_api_view_serializer import SignupSerializer
+
+@extend_schema(
+    request=SignupSerializer,
+    responses={201: SignupSerializer},
+)
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([AllowAny])
