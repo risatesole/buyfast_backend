@@ -59,12 +59,20 @@ def product_categories(request):
     return Response({"status": "created", "data": category}, status=201)
 
 
-@api_view(['GET'])
+from .modules.products.handlers.products_patch_handler import products_patch_handler
+
+@api_view(['GET', 'PATCH'])
+@authentication_classes([CsrfExemptSessionAuthentication])
 def product_detail(request, product_id):
-    service = ProductService()
-    product = service.getProductDetails(product_id) # (product_id)  # you may need to check the exact method name in your ProductService
+    if request.method == 'GET':
+        service = ProductService()
+        product = service.getProductDetails(product_id)
 
-    if product is None:
-        return Response({"status": "error", "message": "Product not found"}, status=404)
+        if product is None:
+            return Response({"status": "error", "message": "Product not found"}, status=404)
 
-    return Response({"status": "ok", "data": product})
+        return Response({"status": "ok", "data": product})
+
+    if request.method == 'PATCH':
+        return products_patch_handler(request, product_id)
+    

@@ -115,3 +115,45 @@ class ProductService:
 
             "tags": list(product.tags.names())
         }
+
+
+    def updateProduct(self, product_id, name=None, description=None,
+                    category_id=None, brand=None, selling_price=None,
+                    status=None, tags=None, images=None):
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise ValueError(f"Product with id {product_id} does not exist")
+
+        if name is not None:
+            product.name = name
+        if description is not None:
+            product.description = description
+        if brand is not None:
+            product.brand = brand
+        if selling_price is not None:
+            product.selling_price = selling_price
+        if status is not None:
+            product.status = status
+
+        if category_id is not None:
+            try:
+                product.category = Category.objects.get(id=category_id)
+            except Category.DoesNotExist:
+                raise ValueError(f"Category with id {category_id} does not exist")
+
+        product.save()
+
+        if tags is not None:
+            product.tags.set(tags)
+
+        if images:
+            for img in images:
+                ProductImage.objects.update_or_create(
+                    product=product,
+                    image_type=img.get("type"),
+                    defaults={"image": img.get("url")},
+                )
+
+        return self._serialize(product)
