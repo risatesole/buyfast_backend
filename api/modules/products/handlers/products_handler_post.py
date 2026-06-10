@@ -1,16 +1,23 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from products.products import ProductService
+
 def products_post_handler(request):
     user = request.user
 
-    service = ProductService()
-
     if not user.is_authenticated:
-        return Response({"status": "error", "message": "Authentication required"}, status=401)
+        return Response(
+            {"status": "error", "message": "Authentication required"},
+            status=401
+        )
 
     if user.role != AccountRole.EMPLOYEE.value:
-        return Response({"status": "error", "message": "Only employees can create products"}, status=403)
+        return Response(
+            {"status": "error", "message": "Only employees can create products"},
+            status=403
+        )
+
+    service = ProductService()
 
     try:
         product = service.setProduct(
@@ -21,9 +28,16 @@ def products_post_handler(request):
             selling_price=request.data.get("selling_price"),
             status=request.data.get("status"),
             tags=request.data.get("tags", []),
-            imageurl=request.data.get("imageurl"),
+            images=request.data.get("images", [])
         )
-    except ValueError as e:
-        return Response({"status": "error", "message": str(e)}, status=400)
 
-    return Response({"status": "created", "data": product}, status=201)
+    except ValueError as e:
+        return Response(
+            {"status": "error", "message": str(e)},
+            status=400
+        )
+
+    return Response(
+        {"status": "created", "data": product},
+        status=201
+    )
