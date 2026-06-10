@@ -2,10 +2,16 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+include = []   # ← include nothing, this project has no importable packages
+
+[tool.uv.sources]
+mediaupload = { path = "packages/mediaupload", editable = true }
+
 [project]
 name = "backend"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "asgiref==3.11.1",
     "attrs==26.1.0",
@@ -28,6 +34,5 @@ dependencies = [
     "typing-extensions==4.15.0",
     "tzdata==2026.1",
     "uritemplate==4.2.0",
-    # local packages
-    "file_storage @ file:///./packages/file_storage",
+    "mediaupload",
 ]

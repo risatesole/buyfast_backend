@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from products.products import ProductService
-from file_storage import upload_file  
-
+from mediaupload import upload_file  
+ 
 def products_post_handler(request):
     user = request.user
 
