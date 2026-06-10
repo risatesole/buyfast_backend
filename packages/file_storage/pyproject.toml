@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "file_storage"
+version = "0.1.0"
+description = "Upload a Django request file to Supabase Storage and get back the public URL."
+requires-python = ">=3.11"
+dependencies = [
+    "Django>=5.0",
+    "supabase>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["file_storage*"]
