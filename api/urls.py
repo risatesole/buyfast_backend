@@ -3,9 +3,8 @@ from .modules.auth.me_api_view import me_api_view
 from .modules.employee.employee_api_view import create_employee
 from .modules.products.products_api_view import products
 from .modules.system.health_api_view import health
-from .views import (
-    product_categories,                  set_product_price,
-    product_detail)
+from .views import product_categories, set_product_price
+from .modules.products.products_api_view import product_detail
 
 from .modules.auth.auth import (
     delete_account,                      signup_api_view, 
