@@ -39,7 +39,6 @@ class Product(models.Model):
     )
     status = models.BooleanField(default=True)
     brand = models.CharField(max_length=500)
-    image = models.CharField(max_length=1000)
     metric_unit = models.CharField(
         max_length=10,
         choices=METRIC_UNIT_CHOICES,
@@ -56,3 +55,33 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
+class ProductImage(models.Model):
+    IMAGE_TYPES = [
+        ("HERO", "Hero"),
+        ("SCALE", "Scale"),
+        ("PACKING", "Packing"),
+        ("FLATLAY", "Flatlay"),
+        ("FREEZE_FRAME", "Freeze Frame"),
+    ]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+
+    image = models.CharField(max_length=1000)
+
+    image_type = models.CharField(
+        max_length=20,
+        choices=IMAGE_TYPES
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "image_type"],
+                name="unique_image_type_per_product"
+            )
+        ]
