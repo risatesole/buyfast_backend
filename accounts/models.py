@@ -18,6 +18,11 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("status", "active")
         extra_fields.setdefault("role", "employee")
 
+        if not extra_fields.get("first_name"):
+            raise ValueError("Superuser must have a first name")
+        if not extra_fields.get("last_name"):
+            raise ValueError("Superuser must have a last name")
+
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -50,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name"]
     class Meta:
         db_table = "core_user"
 
