@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.decorators import api_view, permission_classes,authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ...utils import CsrfExemptSessionAuthentication
+from api.utils import CsrfExemptSessionAuthentication
 
 User = get_user_model()
 
