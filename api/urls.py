@@ -1,5 +1,5 @@
 from django.urls import path
-from .modules.employee.employee_api_view import create_employee
+from accounts.views.employee_api_view import create_employee
 from products.views.products_api_view import products
 from products.views.products_api_view import product_detail
 from .modules.system.health_api_view import health
