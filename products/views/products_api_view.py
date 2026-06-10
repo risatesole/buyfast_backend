@@ -1,10 +1,10 @@
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from ...utils import CsrfExemptSessionAuthentication 
-from .handlers.products_handler_get import products_get_handler_get
-from .handlers.products_handler_post import products_post_handler
+from api.utils import CsrfExemptSessionAuthentication 
+from products.handlers.products_handler_get import products_get_handler_get
+from products.handlers.products_handler_post import products_post_handler
 
-from .handlers.products_patch_handler import products_patch_handler
+from products.handlers.products_patch_handler import products_patch_handler
 from products.products import ProductService
 
 @api_view(['GET', 'POST'])
