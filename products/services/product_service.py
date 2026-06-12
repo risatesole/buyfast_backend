@@ -27,7 +27,6 @@ class ProductService:
         if tags:
             product.tags.set(tags)
 
-        # ✅ handle images
         if images:
             for img in images:
                 ProductImage.objects.create(
@@ -50,22 +49,42 @@ class ProductService:
                            offset=0, tags=None, search=None,
                            category_id=None):
 
+        qs = self.getProductQueryset(
+            status=status,
+            sort=sort,
+            search=search,
+            tags=tags,
+            category_id=category_id,
+        )
+
         MAX_LIMIT = 100
         DEFAULT_LIMIT = 20
         MAX_OFFSET = 10000
 
+        limit = min(limit, MAX_LIMIT) if limit else DEFAULT_LIMIT
+        offset = min(int(offset), MAX_OFFSET)
+
+        return [self._serialize(p) for p in qs[offset:offset + limit]]
+
+    def getProductQueryset(self, status=None, sort=None, search=None,
+                           tags=None, category_id=None):
+        """
+        Returns a filtered, ordered QuerySet of Product instances.
+        Does NOT slice — used by cursor pagination and getProductViaQuery.
+        Always includes -id as a stable tie-breaker for consistent pagination.
+        """
         ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "brand", "category__name"}
 
-        products = Product.objects.select_related("category").all()
+        qs = Product.objects.select_related("category").prefetch_related("images", "tags")
 
         if status is not None:
-            products = products.filter(status=status)
+            qs = qs.filter(status=status)
 
         if category_id is not None:
-            products = products.filter(category_id=category_id)
+            qs = qs.filter(category_id=category_id)
 
         if search and len(search) >= 2:
-            products = products.filter(
+            qs = qs.filter(
                 Q(name__icontains=search) |
                 Q(brand__icontains=search) |
                 Q(category__name__icontains=search) |
@@ -73,18 +92,23 @@ class ProductService:
             ).distinct()
 
         if tags:
-            products = products.filter(tags__name__in=tags).distinct()
+            qs = qs.filter(tags__name__in=tags).distinct()
 
         if sort:
             field = sort.lstrip("-")
             if field in ALLOWED_SORT_FIELDS:
-                products = products.order_by(sort)
+                # Always append -id as a tie-breaker so cursor position is stable
+                qs = qs.order_by(sort, "-id")
+        else:
+            qs = qs.order_by("-id")
 
-        limit = min(limit, MAX_LIMIT) if limit else DEFAULT_LIMIT
-        offset = min(int(offset), MAX_OFFSET)
+        return qs
 
-        products = products[offset:offset + limit]
-
+    def serializeProducts(self, products):
+        """
+        Serializes a list or queryset slice of Product instances.
+        Reuses _serialize so the shape is identical to getProductViaQuery.
+        """
         return [self._serialize(p) for p in products]
 
     def _serialize(self, product):
@@ -104,7 +128,6 @@ class ProductService:
                 "status": product.category.status,
             } if product.category else None,
 
-            # ✅ MULTIPLE IMAGES
             "images": [
                 {
                     "url": img.image,
@@ -115,7 +138,6 @@ class ProductService:
 
             "tags": list(product.tags.names())
         }
-
 
     def updateProduct(self, product_id, name=None, description=None,
                     category_id=None, brand=None, selling_price=None,
@@ -157,3 +179,4 @@ class ProductService:
                 )
 
         return self._serialize(product)
+    
