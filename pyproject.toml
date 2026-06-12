@@ -34,5 +34,6 @@ dependencies = [
     "typing-extensions==4.15.0",
     "tzdata==2026.1",
     "uritemplate==4.2.0",
+    "django-cors-headers==4.9.0",
     "mediaupload",
 ]
