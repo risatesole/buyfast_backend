@@ -3,6 +3,7 @@ from accounts.views.employee_api_view import create_employee
 from products.products import products, product_detail ,product_categories, ProductByTagView
 from .modules.system.health_api_view import health
 from .views import set_product_price
+from cart.cart import cart_api_view
 from accounts.accounts import (
     delete_account,                      signup_api_view, 
     signin_api_view,                     signout_api_view, 
@@ -21,6 +22,7 @@ urlpatterns = [
     path('products/',                    products),
     path('productcategories/',           product_categories),
     path('products/<int:product_id>/', product_detail),
+    path('cart/', cart_api_view),
     path(
         "products/tag/<str:tag>/",
         ProductByTagView.as_view(),
