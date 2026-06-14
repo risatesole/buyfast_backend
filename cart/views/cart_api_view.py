@@ -28,10 +28,34 @@ def cart_api_view(request):
                 "data": {
                     "items": [
                         {
-                            "id": item.id,
-                            "product_id": item.product.id,
+                        "id": item.id,
+                        "product": {
+                            "id": item.product.id,
                             "name": item.product.name,
-                            "quantity": item.quantity,
+                            "description": item.product.description,
+                            "brand": item.product.brand,
+                            "selling_price": item.product.selling_price,
+                            "status": item.product.status,
+                            "category":{
+                                "id": item.product.category.id,
+                                "name": item.product.category.name,
+                                "slug": item.product.category.slug,
+                                "image": item.product.category.image,
+                                "status": item.product.category.status,
+                            },
+                            "images": [
+                                {
+                                    "url": image.image,
+                                    "type": image.image_type,
+                                }
+                                for image in item.product.images.all()
+                            ],
+                            "tags": [
+                                tag.name
+                                for tag in item.product.tags.all()
+                            ],
+                        },
+                        "quantity": item.quantity,
                         }
                         for item in items
                     ]
