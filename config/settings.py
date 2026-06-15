@@ -110,8 +110,18 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# settings.py - add this after your DEBUG setting
+# settings.py - add this after your DEBUG setting
+
+if DEBUG:
+    # Development: Use local static files
+    STATIC_URL = "static/"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+else:
+    STATIC_URL = os.getenv("STATIC_URL", "https://your-cdn.com/static/")
+    if not STATIC_URL.endswith("/"):
+        STATIC_URL += "/"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Custom settings
 AUTH_USER_MODEL = "accounts.User"
