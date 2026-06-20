@@ -30,5 +30,4 @@ urlpatterns = [
         ProductByTagView.as_view(),
         name="products-by-tag"
     ),
-
 ]
