@@ -21,7 +21,8 @@ def me_api_view(request):
                         "email": None,
                         "role": None,
                         "profilepicture": None,
-                        "is_authenticated": False
+                        "is_authenticated": False,
+                        "permisions": None
                     }
                 }
             })
@@ -36,7 +37,12 @@ def me_api_view(request):
                     "email": user.email,
                     "role": getattr(user, "role", None),
                     "profilepicture": "https://example.com/avatar.png",
-                    "is_authenticated": True
+                    "is_authenticated": True,
+                    "permisions": [
+                        perm.split(".")[1]
+                        for perm in request.user.get_all_permissions()
+                        if perm.startswith("accounts.")
+                    ]
                 }
             }
         })
