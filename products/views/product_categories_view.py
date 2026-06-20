@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from api.utils import CsrfExemptSessionAuthentication
-from ..services.category_service import CategoryService
+from ..services.category_service import CategoryService, CategoryAlreadyExistsError
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 
@@ -25,11 +25,18 @@ def product_categories(request):
     if user.role != AccountRole.EMPLOYEE.value:
         return Response({"status": "error", "message": "Only employees can create categories"}, status=403)
 
-    category = service.setCategory(
-        name=request.data.get("name"),
-        slug=request.data.get("slug"),
-        description=request.data.get("description", ""),
-        image=request.data.get("image", ""),
-        status=request.data.get("status", True),
-    )
-    return Response({"status": "created", "data": category}, status=201)
+    try:
+        category = service.setCategory(
+            name=request.data.get("name"),
+            slug=request.data.get("slug"),
+            description=request.data.get("description", ""),
+            image=request.data.get("image", ""),
+            status=request.data.get("status", True),
+        )
+        return Response({"status": "created", "data": category}, status=201)
+    except ValueError as e:
+        return Response({"status": "error", "message": str(e)}, status=400)
+    except CategoryAlreadyExistsError as e:
+        return Response({"status": "error", "message": str(e)}, status=409)
+    except Exception as e:
+        return Response({"status": "error", "message": "An error occurred while creating the category"}, status=500)

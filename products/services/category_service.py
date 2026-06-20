@@ -1,7 +1,15 @@
+from django.db import IntegrityError
+
 from ..models import Category
 
-class CategoryService:
 
+class CategoryAlreadyExistsError(Exception):
+    """Raised when a category already exists."""
+
+    pass
+
+
+class CategoryService:
     def getCategories(self, status=None) -> list[dict]:
         categories = Category.objects.all()
         if status is not None:
@@ -9,14 +17,22 @@ class CategoryService:
         return [self._serialize(c) for c in categories]
 
     def setCategory(self, name, slug, description="", image="", status=True) -> dict:
-        category = Category.objects.create(
-            name=name,
-            slug=slug,
-            description=description,
-            image=image,
-            status=status,
-        )
-        return self._serialize(category)
+        try:
+            category = Category.objects.create(
+                name=name,
+                slug=slug,
+                description=description,
+                image=image,
+                status=status,
+            )
+            return self._serialize(category)
+
+        except IntegrityError as e:
+            if "slug" in str(e).lower():
+                raise CategoryAlreadyExistsError(
+                    f"Category with slug '{slug}' already exists."
+                ) from e
+            raise
 
     def _serialize(self, category) -> dict:
         return {
