@@ -20,7 +20,7 @@ urlpatterns = [
     path("employee/",                    create_employee),
     path("delete-account/",              delete_account),
     path('products/',                    products),
-    path('productcategories/',           product_categories),
+    path('products/categories',           product_categories),
     path('products/<int:product_id>/', product_detail),
     path('cart/', cart_api_view),
     path(
