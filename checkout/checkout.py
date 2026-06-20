@@ -1,1 +1,2 @@
 from .views.checkout_timeslots_api_view import checkout_timeslots_api_view as checkout_timeslots_api_view
+from .views.checkout_api_view import checkout_api_view as checkout_api_view
