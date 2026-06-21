@@ -1,5 +1,6 @@
 from django.urls import path
 from accounts.views.employee_api_view import create_employee
+from accounts.views.admin.users_api_view import users
 from products.products import products, product_detail ,product_categories, ProductByTagView
 from .modules.system.health_api_view import health
 from .views import set_product_price
@@ -26,6 +27,7 @@ urlpatterns = [
     path('cart/', cart_api_view),
     path("checkout/",checkout_api_view),
     path("checkout/timeslots/",checkout_timeslots_api_view),
+    path("users/",users),
     path(
         "products/tag/<str:tag>/",
         ProductByTagView.as_view(),
