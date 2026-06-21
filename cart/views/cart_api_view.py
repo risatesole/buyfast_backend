@@ -77,7 +77,12 @@ def cart_api_view(request):
                     status=400,
                 )
 
-            product = Product.objects.get(id=product_id)
+            try:
+                product = Product.objects.get(id=int(product_id))
+            except Product.DoesNotExist:
+                return Response(
+                    {"status": "error", "message": "Product not found"}, status=404
+                )
 
             cart_item, created = CartItem.objects.get_or_create(
                 user=user, product=product, defaults={"quantity": quantity}
@@ -116,6 +121,14 @@ def cart_api_view(request):
                 )
 
             try:
+                product_id = int(product_id)
+            except (ValueError, TypeError):
+                return Response(
+                    {"status": "error", "message": "product_id must be a valid integer"},
+                    status=400,
+                )
+
+            try:
                 quantity = int(quantity)
             except (ValueError, TypeError):
                 return Response(
@@ -144,7 +157,7 @@ def cart_api_view(request):
                     "status": "ok",
                     "message": "Item quantity updated",
                     "data": {
-                        "product_id": int(product_id),
+                        "product_id": product_id,
                         "quantity": cart_item.quantity,
                     },
                 }
@@ -152,11 +165,27 @@ def cart_api_view(request):
 
         if request.method == "DELETE":
             product_id = request.data.get("product_id")
-            quantity = int(request.data.get("quantity", 1))
 
             if not product_id:
                 return Response(
                     {"status": "error", "message": "product_id is required"}, status=400
+                )
+
+            try:
+                product_id = int(product_id)
+            except (ValueError, TypeError):
+                return Response(
+                    {"status": "error", "message": "product_id must be a valid integer"},
+                    status=400,
+                )
+
+            quantity = request.data.get("quantity", 1)
+            try:
+                quantity = int(quantity)
+            except (ValueError, TypeError):
+                return Response(
+                    {"status": "error", "message": "quantity must be a valid integer"},
+                    status=400,
                 )
 
             if quantity < 1:
@@ -181,7 +210,7 @@ def cart_api_view(request):
                     {
                         "status": "ok",
                         "message": "Item removed from cart",
-                        "data": {"product_id": int(product_id), "quantity": 0},
+                        "data": {"product_id": product_id, "quantity": 0},
                     }
                 )
 
@@ -192,14 +221,11 @@ def cart_api_view(request):
                     "status": "ok",
                     "message": "Item quantity updated",
                     "data": {
-                        "product_id": int(product_id),
+                        "product_id": product_id,
                         "quantity": cart_item.quantity,
                     },
                 }
             )
-
-    except Product.DoesNotExist:
-        return Response({"status": "error", "message": "Product not found"}, status=404)
 
     except ProgrammingError:
         return Response(
