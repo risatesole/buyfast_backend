@@ -167,7 +167,36 @@ def checkout_handler_post(request):
                 items
             )
 
-        return order
+        order_items = [
+            {
+                "id": item.id,
+                "product": {
+                    "id": item.product.id,
+                    "name": item.product.name,
+                },
+                "quantity": item.quantity,
+                "price_per_item": item.price_per_item,
+                "tax_amount": item.tax_amount,
+                "subtotal": item.subtotal,
+            }
+            for item in order.items.select_related("product").all()
+        ]
+
+        return Response(
+                    {
+                        "success": True,
+                        "status": "ok",
+                        "message": "Checkout successful",
+                        "data": {
+                            "order": {
+                                "id": order.id,
+                                "pickuptime": pickuptime,
+                                "items": order_items,
+                            }
+                        }
+                    }
+                )
+
     except InvalidCreditCardError as e:
         return Response({"success": False, "message": "Invalid credit card","error":{"message":"invalid credit card"}},status=status.HTTP_400_BAD_REQUEST)
 

@@ -42,7 +42,7 @@ class OrderItem(models.Model):
 
     @property
     def subtotal(self):
-        return (self.price_per_item + self.taxamount) * self.quantity
+        return (self.price_per_item + self.tax_amount) * self.quantity
 
 
 class OrderPayment(models.Model):
