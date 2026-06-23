@@ -27,10 +27,11 @@ def process_payment(
     billing_address shape: { street, apartment, city, state, postal_code, country }
     """
 
-    provider = PaymentProvider.objects.filter(name="default").first()
+    provider = PaymentProvider.objects.filter(is_default=True).first()
     if not provider:
         raise ValueError("No payment provider configured")
 
+    
     # TODO: replace with real gateway call (Stripe, Azul, etc.)
     # response = gateway.charge(
     #     card_number=card_number,
