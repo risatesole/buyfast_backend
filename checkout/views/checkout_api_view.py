@@ -11,6 +11,65 @@ from accounts.models import User
 from .validators.validate_product_available import validation_product_avialability
 from payment.payment import validate_credit_card, InvalidCreditCardError
 from inventory.inventory import ProductUnavailableException
+
+from payment.payment import validate_credit_card, InvalidCreditCardError, process_payment, PaymentDeclinedException
+
+
+
+
+
+def build_line_items(items) -> tuple[list, float, float]:
+    """
+    Returns (line_items, total_amount, total_tax)
+    Tax logic is a placeholder — add p.tax_rate to Product model later.
+    """
+    product_ids = [item["productid"] for item in items]
+    products = Product.objects.filter(id__in=product_ids)
+    price_map = {p.id: p.selling_price for p in products}
+    name_map  = {p.id: p.name for p in products}
+
+    line_items = []
+    total_amount = 0.0
+    total_tax = 0.0
+
+    for item in items:
+        pid      = item["productid"]
+        qty      = item["quantity"]
+        unit_price = float(price_map.get(pid, 0))
+
+        # TODO: replace with p.tax_rate once added to Product model
+        tax_rate = 0.18
+        unit_tax  = round(unit_price * tax_rate, 2)
+        subtotal  = round((unit_price + unit_tax) * qty, 2)
+
+        line_items.append({
+            "product_id": pid,
+            "name":       name_map.get(pid, "Unknown product"),
+            "quantity":   qty,
+            "unit_price": unit_price,
+            "unit_tax":   unit_tax,
+            "subtotal":   subtotal,
+        })
+
+        total_amount += unit_price * qty
+        total_tax    += unit_tax   * qty
+
+    return line_items, round(total_amount, 2), round(total_tax, 2)
+
+
+
+def calculate_total(items) -> float:
+    product_ids = [item["productid"] for item in items]
+    products = Product.objects.filter(id__in=product_ids)
+    price_map = {p.id: p.selling_price for p in products}
+
+    total = sum(
+        price_map[item["productid"]] * item["quantity"]
+        for item in items
+        if item["productid"] in price_map
+    )
+    return float(total)
+
 def create_order(
     billing_contact_firstname,
     billing_contact_lastname,
@@ -36,6 +95,18 @@ def create_order(
         card_information_cvv
     )
     is_product_avialable = validation_product_avialability(items)
+    
+
+    line_items, total_amount, total_tax = build_line_items(items)
+    transaction = process_payment(
+        card_number=card_information_card_number,
+        expiry_month=card_information_expiry_month,
+        expiry_year=card_information_expiry_year,
+        cvv=card_information_cvv,
+        amount=total_amount,
+        tax=total_tax,
+        items=line_items,
+    )
 
 
     
