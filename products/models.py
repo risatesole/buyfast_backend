@@ -52,6 +52,12 @@ class Product(models.Model):
     class Meta:
             db_table = "core_product"
 
+    tax_rate = models.DecimalField(
+            max_digits=5,
+            decimal_places=4,
+            default=0.18
+        )
+
     def __str__(self):
         return self.name
 

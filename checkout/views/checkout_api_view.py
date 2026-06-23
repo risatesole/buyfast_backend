@@ -15,32 +15,25 @@ from inventory.inventory import ProductUnavailableException
 from payment.payment import validate_credit_card, InvalidCreditCardError, process_payment, PaymentDeclinedException
 
 
-
-
-
 def build_line_items(items) -> tuple[list, float, float]:
-    """
-    Returns (line_items, total_amount, total_tax)
-    Tax logic is a placeholder — add p.tax_rate to Product model later.
-    """
     product_ids = [item["productid"] for item in items]
     products = Product.objects.filter(id__in=product_ids)
-    price_map = {p.id: p.selling_price for p in products}
-    name_map  = {p.id: p.name for p in products}
+    price_map    = {p.id: p.selling_price for p in products}
+    name_map     = {p.id: p.name          for p in products}
+    tax_rate_map = {p.id: p.tax_rate      for p in products}  # ← from Product model
 
     line_items = []
     total_amount = 0.0
     total_tax = 0.0
 
     for item in items:
-        pid      = item["productid"]
-        qty      = item["quantity"]
+        pid        = item["productid"]
+        qty        = item["quantity"]
         unit_price = float(price_map.get(pid, 0))
+        tax_rate   = float(tax_rate_map.get(pid, 0))  # ← no more hardcoded 0.18
 
-        # TODO: replace with p.tax_rate once added to Product model
-        tax_rate = 0.18
-        unit_tax  = round(unit_price * tax_rate, 2)
-        subtotal  = round((unit_price + unit_tax) * qty, 2)
+        unit_tax = round(unit_price * tax_rate, 2)
+        subtotal = round((unit_price + unit_tax) * qty, 2)
 
         line_items.append({
             "product_id": pid,
@@ -108,9 +101,7 @@ def create_order(
         items=line_items,
     )
 
-
-    
-    return {   # WARNING: use dto
+    return {   
         "success": True,
         "message": "Order can be created",
         "items": items
