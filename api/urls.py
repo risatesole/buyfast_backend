@@ -1,7 +1,7 @@
 from django.urls import path
 from accounts.views.employee_api_view import create_employee
 from accounts.views.admin.users_api_view import users
-from products.products import products, product_detail ,product_categories, ProductByTagView
+from products.products import products, product_detail ,product_categories, ProductByTagView, product_category_detail
 from .modules.system.health_api_view import health
 from .views import set_product_price
 from cart.cart import cart_api_view
@@ -33,4 +33,5 @@ urlpatterns = [
         ProductByTagView.as_view(),
         name="products-by-tag"
     ),
+    path('products/categories/<int:category_id>/', product_category_detail, name='product-category-detail'),
 ]
