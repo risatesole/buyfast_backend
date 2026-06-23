@@ -1,3 +1,4 @@
+# orders/models.py
 from django.db import models
 from accounts.models import User
 from products.models import Product
@@ -5,11 +6,22 @@ from payment.models import PaymentProvider, PaymentProviderTransaction
 
 
 class Order(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        FULFILLED = "fulfilled", "Fulfilled"
+        RETURNED = "returned", "Returned"
+    
     customer = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         related_name="orders"
     )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    pickup_time = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -62,7 +74,7 @@ class OrderPayment(models.Model):
         related_name="order_payments"
     )
     amount = models.FloatField()
-    tax_amount  = models.FloatField(default=0)
+    tax_amount = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -70,4 +82,3 @@ class OrderPayment(models.Model):
 
     def __str__(self):
         return f"Payment for Order #{self.order.id} — ${self.amount}"
-
