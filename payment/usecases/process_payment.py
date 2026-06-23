@@ -14,12 +14,17 @@ def process_payment(
     expiry_year: int,
     cvv: str,
     amount: float,
-    tax: float = 0,
+    tax_amount: float = 0,
     items: list = [],
+    cardholder_name: str = "",
+    billing_address: dict = {},
 ) -> PaymentProviderTransaction:
     """
     Sends payment to the provider and records the transaction.
     Raises PaymentDeclinedException if the bank declines.
+
+    items shape: [{ product_id, name, quantity, unit_price, unit_tax, subtotal }]
+    billing_address shape: { street, apartment, city, state, postal_code, country }
     """
 
     provider = PaymentProvider.objects.filter(name="default").first()
@@ -32,10 +37,12 @@ def process_payment(
     #     expiry_month=expiry_month,
     #     expiry_year=expiry_year,
     #     cvv=cvv,
+    #     cardholder_name=cardholder_name,
+    #     billing_address=billing_address,
     #     currency="DOP",
     #     amount=amount,
-    #     tax=tax,
-    #     line_items=items,  # [{ product_id, name, quantity, unit_price, unit_tax, subtotal }]
+    #     tax=tax_amount,
+    #     line_items=items,
     # )
     # if not response.approved:
     #     raise PaymentDeclinedException(response.decline_reason)
@@ -46,7 +53,7 @@ def process_payment(
         payment_provider=provider,
         reference_document=reference,
         amount=amount,
-        tax=tax,
+        tax=tax_amount,
     )
 
     return transaction

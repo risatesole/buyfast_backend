@@ -88,7 +88,6 @@ def create_order(
         card_information_cvv
     )
     is_product_avialable = validation_product_avialability(items)
-    
 
     line_items, total_amount, total_tax = build_line_items(items)
     transaction = process_payment(
@@ -97,8 +96,17 @@ def create_order(
         expiry_year=card_information_expiry_year,
         cvv=card_information_cvv,
         amount=total_amount,
-        tax=total_tax,
+        tax_amount=total_tax,
         items=line_items,
+        cardholder_name=f"{billing_contact_firstname} {billing_contact_lastname}",
+        billing_address={
+            "street":      billing_address_street,
+            "apartment":   billing_address_apartment,
+            "city":        billing_address_city,
+            "state":       billing_address_state,
+            "postal_code": billing_address_postal_code,
+            "country":     billing_address_country,
+        }
     )
 
     return {   
