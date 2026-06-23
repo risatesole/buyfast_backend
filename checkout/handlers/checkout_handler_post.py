@@ -111,6 +111,7 @@ def create_order_checkout(
             customer=user,
             line_items=line_items,
             payment_transaction=payment_transaction,
+            pickuptime = pickuptime,
         )
 
         sell_products(

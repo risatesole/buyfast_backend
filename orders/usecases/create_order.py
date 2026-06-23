@@ -2,7 +2,7 @@ from django.db import transaction
 from ..models import Order, OrderItem, OrderPayment
 
 
-def create_order(customer, line_items, payment_transaction):
+def create_order(customer, line_items, payment_transaction,pickuptime):
     """
     Creates the order, order items, and order payment atomically.
     If anything fails the entire thing is rolled back.
@@ -13,7 +13,7 @@ def create_order(customer, line_items, payment_transaction):
     """
 
     with transaction.atomic():
-        order = Order.objects.create(customer=customer)
+        order = Order.objects.create(customer=customer,pickup_time=pickuptime)
 
         for item in line_items:
             OrderItem.objects.create(
