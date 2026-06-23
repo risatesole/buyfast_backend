@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "checkout",
     "payment",
     "orders",
+    "seed",
 ]
 
 MIDDLEWARE = [
