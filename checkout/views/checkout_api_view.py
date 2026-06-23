@@ -1,11 +1,112 @@
 from django.db import ProgrammingError
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from rest_framework import status
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
 from products.models import Product
 from accounts.models import User
+from .validators.validate_product_available import validation_product_avialability
+from payment.payment import validate_credit_card, InvalidCreditCardError
+from inventory.inventory import ProductUnavailableException
+def create_order(
+    billing_contact_firstname,
+    billing_contact_lastname,
+    billing_contact_email,
+    billing_contact_phone_number,
+    billing_address_street,
+    billing_address_apartment,
+    billing_address_city,
+    billing_address_country,
+    billing_address_postal_code,
+    billing_address_state,
+    card_information_card_number,
+    card_information_expiry_month,
+    card_information_expiry_year,
+    card_information_cvv,
+    pickuptime,
+    items
+):
+    is_card_valid = validate_credit_card(
+        card_information_card_number,
+        card_information_expiry_month,
+        card_information_expiry_year,
+        card_information_cvv
+    )
+    is_product_avialable = validation_product_avialability(items)
+
+
+    
+    return {   # WARNING: use dto
+        "success": True,
+        "message": "Order can be created",
+        "items": items
+    }
+
+
+
+def checkout_handler_post(request):
+    # billing contact
+    billing_contact_firstname = request.data["billing_contact"]["firstname"]
+    billing_contact_lastname =  request.data["billing_contact"]["lastname"]
+    billing_contact_email=  request.data["billing_contact"]["email"]
+    billing_contact_phone_number=  request.data["billing_contact"]["phone_number"]
+
+    billing_address_street = request.data["billing_address"]["street"]
+    billing_address_apartment =request.data["billing_address"]["apartment"] 
+    billing_address_city = request.data["billing_address"]["city"] 
+    billing_address_country = request.data["billing_address"]["country"]
+    billing_address_postal_code = request.data["billing_address"]["postal_code"]
+    billing_address_state = request.data["billing_address"]["state"]
+
+    card_information_card_number = request.data["card_information"]["card_number"]
+    card_information_expiry_month = request.data["card_information"]["expiry_month"]
+    card_information_expiry_year = request.data["card_information"]["expiry_year"]
+    card_information_cvv = request.data["card_information"]["cvv"]
+
+    pickuptime = request.data["pickuptime"]
+
+    items = request.data.get("items", [])
+
+    try:
+        order = create_order(
+                billing_contact_firstname,
+                billing_contact_lastname,
+                billing_contact_email,
+                billing_contact_phone_number,
+                billing_address_street,
+                billing_address_apartment,
+                billing_address_city,
+                billing_address_country,
+                billing_address_postal_code,
+                billing_address_state,
+                card_information_card_number,
+                card_information_expiry_month,
+                card_information_expiry_year,
+                card_information_cvv,
+                pickuptime,
+                items
+            )
+
+        return order
+    except InvalidCreditCardError as e:
+        return Response({"success": False, "message": "Invalid credit card","error":{"message":"invalid credit card"}},status=status.HTTP_400_BAD_REQUEST)
+
+    except ProductUnavailableException as e:
+        return Response(
+            {
+                "success": False,
+                "status": "error",
+                "error": {
+                    "message": "some products are unavialable"
+                }
+            },
+            status=200
+        )
+
+
 
 @api_view(["GET", "POST", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -78,46 +179,20 @@ def checkout_api_view(request):
             })
 
         if request.method == "POST":
-            product_id = request.data.get("product_id")
-            quantity = int(request.data.get("quantity", 1))
+            return checkout_handler_post(request)
+            
 
-            if not product_id:
-                return Response({
-                    "status": "error",
-                    "message": "product_id is required"
-                }, status=400)
 
-            if quantity < 1:
-                return Response({
-                    "status": "error",
-                    "message": "quantity must be greater than 0"
-                }, status=400)
 
-            product = Product.objects.get(id=product_id)
 
-            cart_item, created = CartItem.objects.get_or_create(
-                user=user,
-                product=product,
-                defaults={
-                    "quantity": quantity
-                }
-            )
 
-            if not created:
-                cart_item.quantity += quantity
-                cart_item.save()
 
-            return Response({
-                "status": "ok",
-                "message": "Item added to cart",
-                "data": {
-                    "item": {
-                        "id": cart_item.id,
-                        "product_id": product.id,
-                        "quantity": cart_item.quantity
-                    }
-                }
-            })
+
+
+
+
+
+
 
         if request.method == "DELETE":
             product_id = request.data.get("product_id")
