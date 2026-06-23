@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
+from django.db import transaction
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
@@ -10,10 +11,9 @@ from products.models import Product
 from accounts.models import User
 from .validators.validate_product_available import validation_product_avialability
 from payment.payment import validate_credit_card, InvalidCreditCardError
-from inventory.inventory import ProductUnavailableException
-
 from payment.payment import validate_credit_card, InvalidCreditCardError, process_payment, PaymentDeclinedException
-
+from inventory.inventory import ProductUnavailableException, sell_products
+from orders.orders import create_order
 
 def build_line_items(items) -> tuple[list, float, float]:
     product_ids = [item["productid"] for item in items]
@@ -63,7 +63,8 @@ def calculate_total(items) -> float:
     )
     return float(total)
 
-def create_order(
+def create_order_checkout(
+    user,
     billing_contact_firstname,
     billing_contact_lastname,
     billing_contact_email,
@@ -90,7 +91,7 @@ def create_order(
     is_product_avialable = validation_product_avialability(items)
 
     line_items, total_amount, total_tax = build_line_items(items)
-    transaction = process_payment(
+    payment_transaction = process_payment(
         card_number=card_information_card_number,
         expiry_month=card_information_expiry_month,
         expiry_year=card_information_expiry_year,
@@ -109,16 +110,23 @@ def create_order(
         }
     )
 
-    return {   
-        "success": True,
-        "message": "Order can be created",
-        "items": items
-    }
+    with transaction.atomic():
+        order = create_order(
+            customer=user,
+            line_items=line_items,
+            payment_transaction=payment_transaction,
+        )
 
+        sell_products(
+            items=[{"product_id": item["product_id"], "quantity": item["quantity"]} for item in line_items],
+            order_reference=order.id,
+        )
 
+    return order
 
 def checkout_handler_post(request):
     # billing contact
+    user = request.user
     billing_contact_firstname = request.data["billing_contact"]["firstname"]
     billing_contact_lastname =  request.data["billing_contact"]["lastname"]
     billing_contact_email=  request.data["billing_contact"]["email"]
@@ -139,9 +147,9 @@ def checkout_handler_post(request):
     pickuptime = request.data["pickuptime"]
 
     items = request.data.get("items", [])
-
     try:
-        order = create_order(
+        order = create_order_checkout(
+                user,
                 billing_contact_firstname,
                 billing_contact_lastname,
                 billing_contact_email,
@@ -173,7 +181,7 @@ def checkout_handler_post(request):
                     "message": "some products are unavialable"
                 }
             },
-            status=200
+            status=400
         )
 
 
