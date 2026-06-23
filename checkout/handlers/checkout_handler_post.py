@@ -9,6 +9,7 @@ from products.models import Product
 from accounts.models import User
 from rest_framework.response import Response
 from rest_framework import status
+from cart.cart import clear_cart
 
 def build_line_items(items) -> tuple[list, float, float]:
     product_ids = [item["productid"] for item in items]
@@ -117,6 +118,7 @@ def create_order_checkout(
             order_reference=order.id,
         )
 
+        clear_cart(user)
     return order
 
 
