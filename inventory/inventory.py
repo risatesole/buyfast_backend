@@ -1,2 +1,3 @@
 from .exceptions.Product_unavialable_exeption import ProductUnavailableException as ProductUnavailableException
 from .usecases.sell_product import sell_products as sell_products
+from .usecases.create_initial_inventory import create_initial_inventory as create_initial_inventory

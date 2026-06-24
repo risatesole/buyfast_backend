@@ -1,8 +1,10 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from products.products import ProductService
+from inventory.inventory import create_initial_inventory
 from mediaupload import upload_file  
- 
+from ..models import Product
+
 def products_post_handler(request):
     user = request.user
 
@@ -40,6 +42,8 @@ def products_post_handler(request):
     for t in raw_tags:
         tags.extend([x.strip() for x in t.split(",") if x.strip()])
         
+    initial_inventory: int = request.data.get("initialinventory")
+    
     try:
         product = service.setProduct(
             name=request.data.get("name"),
@@ -52,6 +56,10 @@ def products_post_handler(request):
             images=images
         )
 
+        if initial_inventory is not None:
+            product_instance = Product.objects.get(id=product["id"])
+            create_initial_inventory(product_instance, int(initial_inventory))
+            
     except ValueError as e:
         return Response(
             {"status": "error", "message": str(e)},
