@@ -137,9 +137,7 @@ def orders(request):
     
     # Check if there are no orders
     if total == 0:
-        return Response({
-            "data": {}
-        })
+        return Response({})  
     
     qs = qs[offset: offset + limit]
 
