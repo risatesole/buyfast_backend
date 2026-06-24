@@ -4,7 +4,7 @@ from payment.models import PaymentProvider
 PROVIDERS = [
     {"name": "Los Santos Bank",               "description": "Los Santos Bank payment provider"},
     {"name": "Banco Popular Dominicana",       "description": "Banco Popular Dominicana payment provider"},
-    {"name": "Banreservas",                    "description": "Banco de Reservas de la República Dominicana"},
+    {"name": "Banreservas",                    "description": "Banco de Reservas de la Republica Dominicana"},
 ]
 
 
