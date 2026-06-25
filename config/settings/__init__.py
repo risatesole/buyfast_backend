@@ -1,6 +1,7 @@
 from .base import *
 from .database.database import DATABASES as DATABASES
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
+from .hosts.allowed_hosts import ALLOWED_HOSTS as ALLOWED_HOSTS
 from .installed_apps.installed_apps import INSTALLED_APPS as INSTALLED_APPS
 from .middleware.middleware import MIDDLEWARE as MIDDLEWARE
 from .rest_framework.rest_framework import REST_FRAMEWORK as REST_FRAMEWORK
