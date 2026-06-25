@@ -44,3 +44,4 @@ from .staticfiles.staticfiles import STATIC_URL as STATIC_URL
 from .staticfiles.staticfiles import STATICFILES_DIRS as STATICFILES_DIRS
 from .system.root_urlconf import ROOT_URLCONF as ROOT_URLCONF
 from .system.secret_key import SECRET_KEY as SECRET_KEY
+from .system.web_server_gateway_interface import WSGI_APPLICATION as WSGI_APPLICATION
