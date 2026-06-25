@@ -13,7 +13,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(BASE_DIR))
-TEST_RUNNER = "django.test.runner.DiscoverRunner"
+
 
 SECRET_KEY = "django-insecure-d!0w_bs6g&3xxpm9!i4@y+w%d)$-yuvta7lh&0k6%kyh0=f3wg"
 
