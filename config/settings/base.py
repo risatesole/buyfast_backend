@@ -116,21 +116,3 @@ CSRF_COOKIE_HTTPONLY = False  # JS needs to read it to send as header
 FILE_STORAGE_SUPABASE_PROJECT_ID = os.getenv("SUPABASE_PROJECT_ID")
 FILE_STORAGE_SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
 FILE_STORAGE_SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET")
-
-
-# ============================================================================
-# STATIC FILES - ALWAYS USE CDN
-# ============================================================================
-
-# Always use CDN for static files
-STATIC_URL = os.getenv("STATIC_URL", "https://your-cdn.com/static/")
-if not STATIC_URL.endswith("/"):
-    STATIC_URL += "/"
-
-# Local directory for collected static files
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Where Django looks for static files during development
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
