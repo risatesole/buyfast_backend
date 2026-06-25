@@ -1,3 +1,6 @@
+from .auth.auth_password_validator import (
+    AUTH_PASSWORD_VALIDATORS as AUTH_PASSWORD_VALIDATORS,
+)
 from .base import *
 from .database.database import DATABASES as DATABASES
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
