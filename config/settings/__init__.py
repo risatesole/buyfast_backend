@@ -4,6 +4,30 @@ from .auth.auth_password_validator import (
     AUTH_PASSWORD_VALIDATORS as AUTH_PASSWORD_VALIDATORS,
 )
 from .base import *
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CORS_ALLOW_CREDENTIALS as CORS_ALLOW_CREDENTIALS,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CORS_ALLOWED_ORIGINS as CORS_ALLOWED_ORIGINS,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CSRF_COOKIE_HTTPONLY as CSRF_COOKIE_HTTPONLY,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CSRF_COOKIE_SAMESITE as CSRF_COOKIE_SAMESITE,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CSRF_COOKIE_SECURE as CSRF_COOKIE_SECURE,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    CSRF_TRUSTED_ORIGINS as CSRF_TRUSTED_ORIGINS,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    SESSION_COOKIE_SAMESITE as SESSION_COOKIE_SAMESITE,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
+    SESSION_COOKIE_SECURE as SESSION_COOKIE_SECURE,
+)
 from .database.database import DATABASES as DATABASES
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
 from .hosts.allowed_hosts import ALLOWED_HOSTS as ALLOWED_HOSTS
