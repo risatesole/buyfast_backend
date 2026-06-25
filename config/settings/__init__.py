@@ -1,3 +1,5 @@
+from .auth.auth import AUTH_USER_MODEL as AUTH_USER_MODEL
+from .auth.auth import LOGIN_URL as LOGIN_URL
 from .auth.auth_password_validator import (
     AUTH_PASSWORD_VALIDATORS as AUTH_PASSWORD_VALIDATORS,
 )

@@ -36,12 +36,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
-# Custom settings
-AUTH_USER_MODEL = "accounts.User"
-LOGIN_URL = "/signin"
-
-
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:3000").split(
     ","
 )
