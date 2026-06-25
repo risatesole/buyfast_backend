@@ -3,7 +3,6 @@ from .auth.auth import LOGIN_URL as LOGIN_URL
 from .auth.auth_password_validator import (
     AUTH_PASSWORD_VALIDATORS as AUTH_PASSWORD_VALIDATORS,
 )
-from .base import *
 from .cors_session_and_csfr.cors_session_and_csfr import (
     CORS_ALLOW_CREDENTIALS as CORS_ALLOW_CREDENTIALS,
 )
@@ -54,3 +53,4 @@ from .storage.storage import (
 from .system.root_urlconf import ROOT_URLCONF as ROOT_URLCONF
 from .system.secret_key import SECRET_KEY as SECRET_KEY
 from .system.web_server_gateway_interface import WSGI_APPLICATION as WSGI_APPLICATION
+from .templates.templates import TEMPLATES as TEMPLATES
