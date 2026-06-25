@@ -21,28 +21,6 @@ DEBUG: bool = os.getenv("DJANGO_ENVIRONMENT") == "development"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "corsheaders",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "drf_spectacular",
-    "taggit",
-    "api",
-    "products",
-    "accounts",
-    "cart",
-    "inventory",
-    "checkout",
-    "payment",
-    "orders",
-    "seed",
-]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # ← MUST be first
