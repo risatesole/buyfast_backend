@@ -17,7 +17,6 @@ sys.path.insert(0, str(BASE_DIR))
 
 SECRET_KEY = "django-insecure-d!0w_bs6g&3xxpm9!i4@y+w%d)$-yuvta7lh&0k6%kyh0=f3wg"
 
-DEBUG: bool = os.getenv("DJANGO_ENVIRONMENT") == "development"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
