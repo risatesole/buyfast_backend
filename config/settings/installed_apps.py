@@ -1,4 +1,3 @@
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -21,4 +20,3 @@ INSTALLED_APPS = [
     "orders",
     "seed",
 ]
-
