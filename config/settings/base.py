@@ -29,11 +29,3 @@ TEMPLATES = [
         },
     },
 ]
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-
-# File storage settings
-FILE_STORAGE_SUPABASE_PROJECT_ID = os.getenv("SUPABASE_PROJECT_ID")
-FILE_STORAGE_SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
-FILE_STORAGE_SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET")

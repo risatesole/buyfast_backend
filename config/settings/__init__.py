@@ -42,6 +42,15 @@ from .rest_framework.rest_framework import REST_FRAMEWORK as REST_FRAMEWORK
 from .staticfiles.staticfiles import STATIC_ROOT as STATIC_ROOT
 from .staticfiles.staticfiles import STATIC_URL as STATIC_URL
 from .staticfiles.staticfiles import STATICFILES_DIRS as STATICFILES_DIRS
+from .storage.storage import (
+    FILE_STORAGE_SUPABASE_BUCKET as FILE_STORAGE_SUPABASE_BUCKET,
+)
+from .storage.storage import (
+    FILE_STORAGE_SUPABASE_PROJECT_ID as FILE_STORAGE_SUPABASE_PROJECT_ID,
+)
+from .storage.storage import (
+    FILE_STORAGE_SUPABASE_SECRET_KEY as FILE_STORAGE_SUPABASE_SECRET_KEY,
+)
 from .system.root_urlconf import ROOT_URLCONF as ROOT_URLCONF
 from .system.secret_key import SECRET_KEY as SECRET_KEY
 from .system.web_server_gateway_interface import WSGI_APPLICATION as WSGI_APPLICATION
