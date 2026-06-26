@@ -1,19 +1,4 @@
-"""
-Django settings for main project.
-"""
-
-import os
-import sys
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-sys.path.insert(0, str(BASE_DIR))
-
+from config.settings.base_dir import BASE_DIR
 
 TEMPLATES = [
     {

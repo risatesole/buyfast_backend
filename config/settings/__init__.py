@@ -3,6 +3,7 @@ from .auth.auth import LOGIN_URL as LOGIN_URL
 from .auth.auth_password_validator import (
     AUTH_PASSWORD_VALIDATORS as AUTH_PASSWORD_VALIDATORS,
 )
+from .base_dir import BASE_DIR as BASE_DIR
 from .cors_session_and_csfr.cors_session_and_csfr import (
     CORS_ALLOW_CREDENTIALS as CORS_ALLOW_CREDENTIALS,
 )
@@ -28,6 +29,7 @@ from .cors_session_and_csfr.cors_session_and_csfr import (
     SESSION_COOKIE_SECURE as SESSION_COOKIE_SECURE,
 )
 from .database.database import DATABASES as DATABASES
+from .development.debug import DEBUG as DEBUG
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
 from .hosts.allowed_hosts import ALLOWED_HOSTS as ALLOWED_HOSTS
 from .installed_apps.installed_apps import INSTALLED_APPS as INSTALLED_APPS

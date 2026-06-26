@@ -1,15 +1,10 @@
 import os
-import sys
-from pathlib import Path
 
 from dotenv import load_dotenv
 
+from config.settings.base_dir import BASE_DIR
+
 load_dotenv()
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-sys.path.insert(0, str(BASE_DIR))
-
 
 if os.getenv("DJANGO_DBMS") == "sqlite3":
     DATABASES = {
