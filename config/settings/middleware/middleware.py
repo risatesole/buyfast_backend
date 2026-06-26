@@ -1,7 +1,6 @@
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # ← MUST be first
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ← serve static files on Vercel
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.middleware.common.CommonMiddleware",
