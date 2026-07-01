@@ -7,6 +7,8 @@ from products.models import Product
 from ..handlers.checkout_handler_post import checkout_handler_post
 from ..handlers.checkout_handler_get import checkout_handler_get
 from ..handlers.checkout_handler_delete import checkout_handler_delete
+from data_transfer_objects.ErrorResponse import ErrorResponse
+
 
 @api_view(["GET", "POST", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -15,12 +17,15 @@ def checkout_api_view(request):
         user = request.user
 
         if not user.is_authenticated:
+            error = ErrorResponse("CHECKOUT_LOGIN_REQUIRED","user must log in in order to checkout","error",400)
+            
             return Response({
-                "status": "error",
-                "message": "Authentication required",
+                "status": error.status,
+                "message": error.message,
                 "data": None,
-                "error":{"message":"Authentication required"}
-            }, status=401)
+                "error":{"message":error.message,"code": error.code}
+            }, status=error.http_status)
+
 
         if request.method == "GET":
             return checkout_handler_get(request)
