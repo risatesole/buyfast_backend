@@ -18,7 +18,7 @@ def checkout_api_view(request):
 
         if not user.is_authenticated:
             error = ErrorResponse("CHECKOUT_LOGIN_REQUIRED","user must log in in order to checkout","error",400)
-            return error.django_http_response()
+            return error.http_response()
 
 
         if request.method == "GET":
@@ -32,7 +32,7 @@ def checkout_api_view(request):
 
     except Product.DoesNotExist:
         error = ErrorResponse("PRODUCT_DOESNT_EXISTS","Product user is reaching for doesnt exists","error",404)
-        return error.django_http_response()
+        return error.http_response()
 
     except ProgrammingError:
         return Response({

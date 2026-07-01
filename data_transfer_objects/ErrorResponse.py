@@ -42,7 +42,7 @@ class ErrorResponse:
         if self.details:
             data["details"] = self.details
         return data
-    def django_http_response(self):
+    def http_response(self):
         return Response({
                 "status": self.status,
                 "message": self.message, # TODO: make this none
