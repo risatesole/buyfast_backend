@@ -7,6 +7,8 @@ from .views import set_product_price
 from cart.cart import cart_api_view
 from checkout.checkout import checkout_timeslots_api_view, checkout_api_view
 from orders.orders import orders_admin_view
+from inventory.inventory import StockMovementListView
+
 from accounts.accounts import (
     delete_account,                      signup_api_view, 
     signin_api_view,                     signout_api_view, 
@@ -36,4 +38,5 @@ urlpatterns = [
         name="products-by-tag"
     ),
     path('products/categories/<int:category_id>/', product_category_detail, name='product-category-detail'),
+    path('admin/inventory/stockmovement', StockMovementListView.as_view(), name='stock-movement-list'),
 ]
