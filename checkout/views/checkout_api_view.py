@@ -31,10 +31,8 @@ def checkout_api_view(request):
             checkout_handler_delete(request)
 
     except Product.DoesNotExist:
-        return Response({
-            "status": "error",
-            "message": "Product not found"
-        }, status=404)
+        error = ErrorResponse("PRODUCT_DOESNT_EXISTS","Product user is reaching for doesnt exists","error",404)
+        return error.django_http_response()
 
     except ProgrammingError:
         return Response({

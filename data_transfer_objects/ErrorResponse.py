@@ -9,6 +9,7 @@ class ErrorResponse:
     """
     Error codes list:
     - CHECKOUT_LOGIN_REQUIRED: the user must log in in order to checkout
+    - PRODUCT_DOESNT_EXISTS: Product user is reaching for doesnt exists
     - INVALID_INPUT: invalid input data
     - RESOURCE_NOT_FOUND: requested resource not found
     - UNAUTHORIZED: authentication required
@@ -44,7 +45,7 @@ class ErrorResponse:
     def django_http_response(self):
         return Response({
                 "status": self.status,
-                "message": None,
+                "message": self.message, # TODO: make this none
                 "data": None,
                 "error":{"message":self.message,"code": self.code}
             }, status=self.http_status)
