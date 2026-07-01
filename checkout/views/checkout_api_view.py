@@ -18,13 +18,7 @@ def checkout_api_view(request):
 
         if not user.is_authenticated:
             error = ErrorResponse("CHECKOUT_LOGIN_REQUIRED","user must log in in order to checkout","error",400)
-            
-            return Response({
-                "status": error.status,
-                "message": error.message,
-                "data": None,
-                "error":{"message":error.message,"code": error.code}
-            }, status=error.http_status)
+            return error.django_http_response()
 
 
         if request.method == "GET":

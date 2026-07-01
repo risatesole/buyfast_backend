@@ -1,8 +1,9 @@
+from rest_framework.response import Response
+
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any
 from datetime import datetime
 import uuid
-
 @dataclass
 class ErrorResponse:
     """
@@ -40,7 +41,13 @@ class ErrorResponse:
         if self.details:
             data["details"] = self.details
         return data
-
+    def django_http_response(self):
+        return Response({
+                "status": self.status,
+                "message": None,
+                "data": None,
+                "error":{"message":self.message,"code": self.code}
+            }, status=self.http_status)
 
 
 # # Usage
