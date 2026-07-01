@@ -7,7 +7,7 @@ from products.models import Product
 from ..handlers.checkout_handler_post import checkout_handler_post
 from ..handlers.checkout_handler_get import checkout_handler_get
 from ..handlers.checkout_handler_delete import checkout_handler_delete
-from data_transfer_objects.ErrorResponse import ErrorResponse
+from data_transfer_objects.ErrorResponse import ErrorResponse, ErrorCode
 
 
 @api_view(["GET", "POST", "DELETE"])
@@ -15,9 +15,8 @@ from data_transfer_objects.ErrorResponse import ErrorResponse
 def checkout_api_view(request):
     try:
         user = request.user
-
         if not user.is_authenticated:
-            error = ErrorResponse("CHECKOUT_LOGIN_REQUIRED","user must log in in order to checkout","error",400)
+            error = ErrorResponse(ErrorCode.CHECKOUT_LOGIN_REQUIRED,"user must log in in order to checkout","error",400)
             return error.http_response()
 
 
@@ -31,7 +30,7 @@ def checkout_api_view(request):
             checkout_handler_delete(request)
 
     except Product.DoesNotExist:
-        error = ErrorResponse("PRODUCT_DOESNT_EXISTS","Product user is reaching for doesnt exists","error",404)
+        error = ErrorResponse(ErrorCode.PRODUCT_DOESNT_EXISTS,"Product user is reaching for doesnt exists","error",404)
         return error.http_response()
 
     except ProgrammingError:
