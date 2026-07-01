@@ -19,7 +19,6 @@ def checkout_api_view(request):
             error = ErrorResponse(ErrorCode.CHECKOUT_LOGIN_REQUIRED,"user must log in in order to checkout","error",400)
             return error.http_response()
 
-
         if request.method == "GET":
             return checkout_handler_get(request)
 
@@ -34,17 +33,9 @@ def checkout_api_view(request):
         return error.http_response()
 
     except ProgrammingError:
-        return Response({
-            "status": "error",
-            "message": (
-                "Cart table does not exist. "
-                "Run: python manage.py makemigrations cart && python manage.py migrate"
-            )
-        }, status=500)
+        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,"System needs configuration","error",500)
+        return error.http_response()
 
     except Exception as e:
-        return Response({
-            "status": "error",
-            "message": str(e),
-            "data": None
-        }, status=400)
+        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,"Unknown System error","error",500)
+        return error.http_response()
