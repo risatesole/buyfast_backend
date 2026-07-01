@@ -4,7 +4,7 @@ from cart.models import CartItem
 def checkout_handler_get(request):
     user = request.user
     
-    items = CartItem.objects.filter(user=user).select_related(
+    items = CartItem.objects.filter(user=user, product__status=True).select_related(
         "product", "product__category"
     ).prefetch_related("product__images", "product__tags")
 
