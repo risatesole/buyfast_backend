@@ -1,13 +1,9 @@
 from django.db import ProgrammingError
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from rest_framework import status
 
 from api.utils import CsrfExemptSessionAuthentication
-from cart.models import CartItem
 from products.models import Product
-from accounts.models import User
 from ..handlers.checkout_handler_post import checkout_handler_post
 from ..handlers.checkout_handler_get import checkout_handler_get
 from ..handlers.checkout_handler_delete import checkout_handler_delete
