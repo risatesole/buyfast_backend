@@ -18,7 +18,8 @@ def checkout_api_view(request):
             return Response({
                 "status": "error",
                 "message": "Authentication required",
-                "data": None
+                "data": None,
+                "error":{"message":"Authentication required"}
             }, status=401)
 
         if request.method == "GET":
