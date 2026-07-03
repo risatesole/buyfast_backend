@@ -14,7 +14,7 @@ def me_api_view(request):
                 "status": "ok",
                 "data": {
                     "user": {
-                       
+
                         "id": None,
                         "firstname": None,
                         "lastname": None,
@@ -22,7 +22,8 @@ def me_api_view(request):
                         "role": None,
                         "profilepicture": None,
                         "is_authenticated": False,
-                        "permisions": None
+                        "permisions": None,
+                        "is_active": None,
                     }
                 }
             })
@@ -38,6 +39,10 @@ def me_api_view(request):
                     "role": getattr(user, "role", None),
                     "profilepicture": "https://example.com/avatar.png",
                     "is_authenticated": True,
+                    "is_active": user.is_active,
+                    "is_staff": user.is_staff,
+                    "phone_number": user.phone_number,
+                    "matricula": user.matricula,
                     "permisions": [
                         perm.split(".")[1]
                         for perm in request.user.get_all_permissions()
