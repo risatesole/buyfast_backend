@@ -23,11 +23,13 @@ from products.products import (
 )
 
 from .modules.system.health_api_view import health
-from .views import set_product_price
+from .views import set_product_price, api_root
 
 urlpatterns = [
-    path("health/", health),
-    path("me/", me_api_view),
+    path("", api_root, name="api-root"),
+
+    path("health/", health, name="health"),
+    path("me/", me_api_view,name="me"),
     path("products/set-price/", set_product_price),
     path("signin/", signin_api_view),
     path("signup/", signup_api_view),
