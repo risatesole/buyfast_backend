@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
+# WAENING : mock
 @api_view(['GET'])
 @authentication_classes([])
 @permission_classes([AllowAny])
