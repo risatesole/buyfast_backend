@@ -18,7 +18,7 @@ class SignupSerializer(serializers.Serializer):
         help_text="Account password"
     )
 
-    phonenumber = serializers.CharField(
+    phone = serializers.CharField(
         write_only=True,
         help_text="Phone number"
     )
