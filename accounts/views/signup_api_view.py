@@ -22,12 +22,14 @@ def signup_api_view(request):
     last_name = request.data.get("lastname")
     email = request.data.get("email")
     password = request.data.get("password")
+    phone_number = request.data.get("phone")
+    matricula = request.data.get("matricula")
     terms = request.data.get("terms")
 
     try:
         validate_password(password)
-        
-        user = create_account(first_name,last_name,email,password,AccountRole.CUSTOMER.value,  AccountStatus.ACTIVE.value)
+
+        user = create_account(first_name,last_name,email,password,AccountRole.CUSTOMER.value,  AccountStatus.ACTIVE.value, matricula,phone_number)
         login(request, user)
         request.META["CSRF_COOKIE_USED"] = True
         return Response({
@@ -40,6 +42,8 @@ def signup_api_view(request):
                     "lastname": user.last_name,
                     "email": user.email,
                     "role": user.role,
+                    "phonenumber": user.phone_number,
+                    "matricula": user.matricula,
                 },
                 "terms": True
             }

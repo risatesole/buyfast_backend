@@ -18,6 +18,16 @@ class SignupSerializer(serializers.Serializer):
         help_text="Account password"
     )
 
+    phonenumber = serializers.CharField(
+        write_only=True,
+        help_text="Phone number"
+    )
+
+    matricula = serializers.CharField(
+        write_only=True,
+        help_text="Student matricula"
+    )
+
     terms = serializers.BooleanField(
         help_text="Must be true to create an account"
     )

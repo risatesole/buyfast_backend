@@ -1,7 +1,7 @@
 from ..models import User
 from ..enums import AccountRole
 
-def create_account(first_name, last_name, email, password, role, status):
+def create_account(first_name, last_name, email, password, role, status, matricula, phone_number):
     valid_roles = [r.value for r in AccountRole]
 
     if role not in valid_roles:
@@ -15,7 +15,9 @@ def create_account(first_name, last_name, email, password, role, status):
         email=email,
         password=password,
         role=role,
-        status="active"
+        status="active",
+        matricula = matricula,
+        phone_number = phone_number
     )
 
     return user
