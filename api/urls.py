@@ -25,6 +25,7 @@ from products.products import (
 
 from .modules.system.health_api_view import health
 from .views import set_product_price, api_root
+from orders.views.customers.orders_api_view import orders_api_view
 
 urlpatterns = [
     path("", api_root, name="api-root"),
@@ -54,6 +55,7 @@ urlpatterns = [
         product_category_detail,
         name="product-category-detail",
     ),
+    path("customers/orders/<int:order_id>",orders_api_view,name="orders-api-view"),
     path(
         "admin/inventory/stockmovement",
         StockMovementListView.as_view(),
