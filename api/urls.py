@@ -11,6 +11,7 @@ from accounts.accounts import (
 )
 from accounts.views.admin.users_api_view import users
 from accounts.views.employee_api_view import create_employee
+from books.books import books, book_detail
 from cart.cart import cart_api_view
 from checkout.checkout import checkout_api_view, checkout_timeslots_api_view
 from inventory.inventory import StockMovementListView
@@ -44,6 +45,8 @@ urlpatterns = [
     path("products/", products),
     path("products/categories", product_categories),
     path("products/<int:product_id>/", product_detail),
+    path("books/", books),
+    path("books/<int:book_id>/", book_detail),
     path("cart/", cart_api_view),
     path("checkout/", checkout_api_view),
     path("checkout/timeslots/", checkout_timeslots_api_view),
