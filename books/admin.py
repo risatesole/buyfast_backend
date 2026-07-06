@@ -1,183 +1,131 @@
-# admin.py
 from django.contrib import admin
 from django.utils.html import format_html
-from django.db.models import Count, Avg
-from django import forms
-from . import models
-
-
-class AuthorAdmin(admin.ModelAdmin):
-    list_display = ['id', 'fullname', 'book_count']
-    search_fields = ['fullname']
-    ordering = ['fullname']
-
-    def book_count(self, obj):
-        return obj.books.count()
-    book_count.short_description = 'Number of Books'
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        return queryset.annotate(book_count=Count('books'))
+from .models import Author, Book, BookImage
 
 
 class BookImageInline(admin.TabularInline):
-    model = models.BookImage
+    """Inline admin for BookImage to allow editing images within Book admin."""
+    model = BookImage
     extra = 1
-    max_num = 2
-    fields = ['image', 'image_type', 'image_preview']
-    readonly_fields = ['image_preview']
-
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" style="max-height: 100px; max-width: 100px;" />',
-                obj.image
-            )
-        return "No image"
-    image_preview.short_description = 'Preview'
-
-
-class TaxRateRangeFilter(admin.SimpleListFilter):
-    title = 'Tax Rate'
-    parameter_name = 'tax_rate'
+    fields = ("image", "image_type")
     
-    def lookups(self, request, model_admin):
-        return [
-            ('0-5', '0% - 5%'),
-            ('5-10', '5% - 10%'),
-            ('10-15', '10% - 15%'),
-            ('15-20', '15% - 20%'),
-            ('20+', '20%+'),
-        ]
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.order_by("image_type")
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    """Admin interface for Author model."""
+    list_display = ("fullname", "book_count")
+    search_fields = ("fullname",)
+    list_per_page = 25
     
-    def queryset(self, request, queryset):
-        if self.value():
-            if self.value() == '0-5':
-                return queryset.filter(tax_rate__lte=0.05)
-            elif self.value() == '5-10':
-                return queryset.filter(tax_rate__gt=0.05, tax_rate__lte=0.10)
-            elif self.value() == '10-15':
-                return queryset.filter(tax_rate__gt=0.10, tax_rate__lte=0.15)
-            elif self.value() == '15-20':
-                return queryset.filter(tax_rate__gt=0.15, tax_rate__lte=0.20)
-            elif self.value() == '20+':
-                return queryset.filter(tax_rate__gt=0.20)
-        return queryset
+    def book_count(self, obj):
+        """Display the number of books by this author."""
+        count = obj.books.count()
+        return format_html(
+            '<span style="background-color: #417690; color: white; padding: 3px 8px; border-radius: 3px;">{}</span>',
+            count
+        )
+    book_count.short_description = "Books Published"
 
 
+@admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'title', 'author', 'selling_price',
-        'purchase_cost', 'profit_margin', 'status',
-        'release_date', 'tag_list', 'image_count'
-    ]
-
-    list_filter = [
-        'status',
-        'author',
-        'release_date',
-        'tags',
-        TaxRateRangeFilter,  # Fixed: Use your custom filter
-    ]
-
-    search_fields = [
-        'title',
-        'synopsis',
-        'author__fullname',
-    ]
-
-    readonly_fields = ['profit_margin']
-
+    """Admin interface for Book model."""
+    list_display = ("title", "author", "status_badge", "release_date", "selling_price", "profit_margin")
+    list_filter = ("status", "release_date", "author")
+    search_fields = ("title", "synopsis", "author__fullname")
+    readonly_fields = ("calculated_profit",)
+    inlines = [BookImageInline]
+    
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('title', 'synopsis', 'author', 'tags')
+        ("Book Information", {
+            "fields": ("title", "author", "synopsis", "tags")
         }),
-        ('Pricing', {
-            'fields': ('selling_price', 'purchase_cost', 'tax_rate', 'profit_margin'),
-            'classes': ('wide',)
+        ("Pricing & Cost", {
+            "fields": ("selling_price", "purchase_cost", "tax_rate", "calculated_profit")
         }),
-        ('Status & Dates', {
-            'fields': ('status', 'release_date'),
-            'classes': ('collapse',)
+        ("Publication", {
+            "fields": ("release_date", "status")
         }),
     )
-
-    inlines = [BookImageInline]
-    list_select_related = ['author']
-    list_per_page = 50
-
-    actions = [
-        'activate_books',
-        'deactivate_books',
-        'increase_price_by_percentage',
-        'decrease_price_by_percentage'
-    ]
-
+    
+    def status_badge(self, obj):
+        """Display status as a colored badge."""
+        color = "#28a745" if obj.status == "ACTIVE" else "#dc3545"
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 5px 10px; border-radius: 3px;">{}</span>',
+            color,
+            obj.get_status_display()
+        )
+    status_badge.short_description = "Status"
+    
+    def calculated_profit(self, obj):
+        """Calculate and display profit margin."""
+        if obj.purchase_cost and obj.selling_price:
+            profit = obj.selling_price - obj.purchase_cost
+            profit_percentage = (profit / obj.purchase_cost * 100) if obj.purchase_cost > 0 else 0
+            return format_html(
+                '${} ({}%)',
+                round(profit, 2),
+                round(profit_percentage, 2)
+            )
+        return "—"
+    calculated_profit.short_description = "Profit (Amount & %)"
+    
     def profit_margin(self, obj):
-        if obj.purchase_cost and obj.selling_price > 0:
-            margin = ((obj.selling_price - obj.purchase_cost) / obj.selling_price) * 100
-            return f"{margin:.1f}%"
-        return "N/A"
-    profit_margin.short_description = 'Profit Margin'
-
-    def tag_list(self, obj):
-        return ", ".join([tag.name for tag in obj.tags.all()])
-    tag_list.short_description = 'Tags'
-
-    def image_count(self, obj):
-        count = obj.images.count()
-        return f"{count}/2"
-    image_count.short_description = 'Images'
-
-    def activate_books(self, request, queryset):
-        updated = queryset.update(status='ACTIVE')
-        self.message_user(request, f'{updated} books were activated.')
-    activate_books.short_description = 'Activate selected books'
-
-    def deactivate_books(self, request, queryset):
-        updated = queryset.update(status='DEACTIVATED')
-        self.message_user(request, f'{updated} books were deactivated.')
-    deactivate_books.short_description = 'Deactivate selected books'
-
-    def increase_price_by_percentage(self, request, queryset):
-        percentage = 10
-        for book in queryset:
-            book.selling_price += (book.selling_price * percentage / 100)
-            book.save()
-        self.message_user(request, f'Prices increased by {percentage}% for {queryset.count()} books.')
-    increase_price_by_percentage.short_description = 'Increase price by 10%'
-
-    def decrease_price_by_percentage(self, request, queryset):
-        percentage = 10
-        for book in queryset:
-            book.selling_price -= (book.selling_price * percentage / 100)
-            book.save()
-        self.message_user(request, f'Prices decreased by {percentage}% for {queryset.count()} books.')
-    decrease_price_by_percentage.short_description = 'Decrease price by 10%'
-
-    def save_model(self, request, obj, form, change):
-        if not obj.pk:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
+        """Display profit margin percentage in list view."""
+        if obj.purchase_cost and obj.selling_price:
+            profit = obj.selling_price - obj.purchase_cost
+            profit_percentage = (profit / obj.purchase_cost * 100) if obj.purchase_cost > 0 else 0
+            color = "#28a745" if profit_percentage > 0 else "#dc3545"
+            return format_html(
+                '<span style="color: {}; font-weight: bold;">{}%</span>',
+                color,
+                round(profit_percentage, 2)
+            )
+        return "—"
+    profit_margin.short_description = "Margin %"
 
 
+@admin.register(BookImage)
 class BookImageAdmin(admin.ModelAdmin):
-    list_display = ['id', 'book', 'image_type', 'image_preview']
-    list_filter = ['image_type', 'book__author']
-    search_fields = ['book__title', 'image_type']
-    readonly_fields = ['image_preview']
-
+    """Admin interface for BookImage model."""
+    list_display = ("book", "image_type", "image_preview")
+    list_filter = ("image_type", "book__author")
+    search_fields = ("book__title",)
+    readonly_fields = ("image_preview_large",)
+    
+    fieldsets = (
+        ("Image Details", {
+            "fields": ("book", "image_type", "image")
+        }),
+        ("Preview", {
+            "fields": ("image_preview_large",),
+            "classes": ("collapse",)
+        }),
+    )
+    
     def image_preview(self, obj):
+        """Display a small preview of the image in list view."""
         if obj.image:
             return format_html(
-                '<img src="{}" style="max-height: 150px; max-width: 150px;" />',
-                obj.image
+                '<img src="{}" style="max-width: 50px; max-height: 50px; border-radius: 3px;" alt="{}">',
+                obj.image,
+                obj.book.title
             )
-        return "No image"
-    image_preview.short_description = 'Preview'
-
-
-# Register models with the default admin site
-admin.site.register(models.Author, AuthorAdmin)
-admin.site.register(models.Book, BookAdmin)
-admin.site.register(models.BookImage, BookImageAdmin)
+        return "—"
+    image_preview.short_description = "Preview"
+    
+    def image_preview_large(self, obj):
+        """Display a larger preview in the detail view."""
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-width: 300px; max-height: 400px; border-radius: 5px;" alt="{}">',
+                obj.image,
+                obj.book.title
+            )
+        return "No image available"
+    image_preview_large.short_description = "Image Preview"
