@@ -1,27 +1,77 @@
 from django.db.models import Q
-from ..models import Category, Product, ProductImage
+from ..models import Category, Product, ProductImage, ProductType
 
 
 class ProductService:
 
-    def setProduct(self, name, description, category_id, brand,
-                   selling_price, status, tags=None, images=None):
-
-        if not category_id:
-            raise ValueError("category_id is required")
-
+    def get_category_object(self,id):
         try:
-            category = Category.objects.get(id=category_id)
+            return Category.objects.get(id=id)
         except Category.DoesNotExist:
-            raise ValueError(f"Category with id {category_id} does not exist")
+            return None
+
+    def get_book_product_type(self):
+        obj, created = ProductType.objects.get_or_create(
+            name='book',
+            defaults={
+                'description': 'a book'
+            }
+        )
+        return obj
+
+    def get_book_product_category(self):
+        obj, created = Category.objects.get_or_create(
+            name='books',
+            defaults={
+                'slug': 'books',
+                'description': 'books yeah',
+                'image': 'https://example.com',
+                'status': True
+            }
+        )
+        return obj
+
+
+    def get_default_product_type(self):
+        obj, created = ProductType.objects.get_or_create(
+            name='default',
+            defaults={
+                'description': 'A normal product'
+            }
+        )
+        return obj
+    
+    def get_default_product_category(self):
+        obj, created = Category.objects.get_or_create(
+            name='default',
+            defaults={
+                'slug': 'default',
+                'description': 'default product category',
+                'image': 'https://example.com',
+                'status': True
+            }
+        )
+        return obj
+
+    def setProduct(self, name, description, category: Category = None, brand=None,
+                   selling_price=None, purchase_price =  None, status=None, tags=None, images=None):
+
+        product_type = self.get_default_product_type()
+
+        if category is None:
+            category = self.get_default_product_category()
+        
+        if status is None:
+            status = True
 
         product = Product.objects.create(
             name=name,
             description=description,
             category=category,
             brand=brand,
+            product_type = product_type,
+            status = status,
             selling_price=selling_price,
-            status=status,
         )
 
         if tags:
@@ -34,7 +84,6 @@ class ProductService:
                     image=img.get("url"),
                     image_type=img.get("type", "HERO")
                 )
-
         return self._serialize(product)
 
     def getProductDetails(self, id):

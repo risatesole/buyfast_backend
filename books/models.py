@@ -1,5 +1,6 @@
 from django.db import models
 from taggit.managers import TaggableManager
+from products.models import Product
 
 class Genre(models.Model):
     name = models.CharField(max_length=500)
@@ -27,11 +28,15 @@ class Book(models.Model):
         ("ACTIVE", "Active"),
         ("DEACTIVATED", "Deactivated"),
     ]
+    
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name="books",
+    )
     title = models.CharField(max_length=500)
     synopsis = models.TextField()
     isbn = models.CharField(max_length=17, unique=True)  # ← Added unique=True
-    selling_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # ← Added null=True, blank=True
-    purchase_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # ← Added null=True, blank=True
     tax_rate = models.DecimalField(max_digits=5, decimal_places=4, default=0.18)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="ACTIVE")
     release_date = models.DateField(null=True, blank=True)

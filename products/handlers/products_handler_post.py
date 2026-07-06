@@ -48,9 +48,10 @@ def products_post_handler(request):
         product = service.setProduct(
             name=request.data.get("name"),
             description=request.data.get("description"),
-            category_id=request.data.get("category_id"),
+            category= service.get_category_object(request.data.get("category_id")),
             brand=request.data.get("brand"),
             selling_price=request.data.get("selling_price"),
+            purchase_price = request.data.get("purchase_price"),
             status=status,
             tags=tags,
             images=images

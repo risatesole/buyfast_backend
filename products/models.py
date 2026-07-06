@@ -15,6 +15,11 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
         db_table = "core_product_category"
 
+class ProductType(models.Model):
+    name = models.CharField(max_length=500)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Product(models.Model):
     STATUS_CHOICES = [
@@ -37,6 +42,16 @@ class Product(models.Model):
         blank=True,
         related_name="product"
     )
+
+    product_type = models.ForeignKey(
+        ProductType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products"
+    )
+    
+ 
     status = models.BooleanField(default=True)
     brand = models.CharField(max_length=500)
     metric_unit = models.CharField(

@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from books.services.book_service import BookService
+from products.products import ProductService
+
 from mediaupload import upload_file
 
 
@@ -40,8 +42,21 @@ def books_post_handler(request):
     tags = []
     for t in raw_tags:
         tags.extend([x.strip() for x in t.split(",") if x.strip()])
+    
+    product_service = ProductService()
 
     try:
+        product = product_service.setProduct(
+            title=request.data.get("title"),
+            description= request.data.get("synopsis"),
+            category_id = None, # todo set book product category
+            brand = None,
+            selling_price = request.data.get("selling_price"),
+            status = status,
+            tags=tags,
+            images=None
+        )
+
         book = service.setBook(
             title=request.data.get("title"),
             synopsis=request.data.get("synopsis"),
