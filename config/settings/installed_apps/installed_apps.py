@@ -11,7 +11,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "taggit",
     "api",
-    "products",
+    "products.default",
     "books",
     "accounts",
     "cart",

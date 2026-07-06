@@ -1,6 +1,6 @@
 from inventory.usecases.check_if_product_is_avialable import is_product_available
-from products.products import Product_model
-from products.models import Product
+from products.default.products import Product_model
+from products.default.models import Product
 from inventory.inventory import ProductUnavailableException
 
 def validation_product_avialability(items):

@@ -1,4 +1,4 @@
-from products.products import ProductService
+from products.default.products import ProductService
 from accounts.accounts import AccountRole
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response

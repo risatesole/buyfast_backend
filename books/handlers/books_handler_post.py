@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
 from books.services.book_service import BookService
-from products.products import ProductService
+from products.default.products import ProductService
 
 from mediaupload import upload_file
 

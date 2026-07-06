@@ -5,7 +5,7 @@ from payment.payment import validate_credit_card, InvalidCreditCardError, proces
 from inventory.inventory import ProductUnavailableException, sell_products
 from orders.orders import create_order
 from django.db import transaction
-from products.models import Product
+from products.default.models import Product
 from accounts.models import User
 from rest_framework.response import Response
 from rest_framework import status

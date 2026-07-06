@@ -1,6 +1,6 @@
 from django.db import models
 from taggit.managers import TaggableManager
-from products.models import Product
+from products.default.models import Product
 
 class Genre(models.Model):
     name = models.CharField(max_length=500)

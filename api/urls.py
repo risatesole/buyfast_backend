@@ -16,7 +16,7 @@ from cart.cart import cart_api_view
 from checkout.checkout import checkout_api_view, checkout_timeslots_api_view
 from inventory.inventory import StockMovementListView
 from orders.orders import orders_admin_view
-from products.products import (
+from products.default.products import (
     ProductByTagView,
     product_categories,
     product_category_detail,

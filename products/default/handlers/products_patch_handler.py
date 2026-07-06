@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
-from products.products import ProductService
+from ..products import ProductService
 from mediaupload import upload_file
 
 def products_patch_handler(request, product_id):

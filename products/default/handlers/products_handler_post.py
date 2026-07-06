@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
-from products.products import ProductService
+from ..products import ProductService
 from inventory.inventory import create_initial_inventory
 from mediaupload import upload_file  
 from ..models import Product

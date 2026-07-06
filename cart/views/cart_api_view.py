@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
-from products.models import Product
+from products.default.models import Product
 
 
 @api_view(["GET", "POST", "PATCH", "DELETE"])

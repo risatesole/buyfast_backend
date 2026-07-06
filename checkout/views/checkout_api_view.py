@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 
 from api.utils import CsrfExemptSessionAuthentication
-from products.models import Product
+from products.default.models import Product
 from ..handlers.checkout_handler_post import checkout_handler_post
 from ..handlers.checkout_handler_get import checkout_handler_get
 from ..handlers.checkout_handler_delete import checkout_handler_delete

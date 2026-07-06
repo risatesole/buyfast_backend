@@ -4,7 +4,7 @@
 # ─ Old behaviour (offset/limit) still works when no `cursor` param is sent.
 # ─ New cursor behaviour activates when `cursor` is present in query params.
 
-from products.products import ProductService
+from products.default.products import ProductService
 # The path your view is mounted at — used to build next/previous URLs.
 # Update this if your urls.py uses a different prefix.
 PRODUCTS_URL_PATH = "/api/v1/products/"

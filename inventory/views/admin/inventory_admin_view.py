@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from accounts.models import User
 from inventory.models import StockMovement_model
-from products.models import Product  # Adjust import based on your structure
+from products.default.models import Product  # Adjust import based on your structure
 
 
 class IsEmployee(IsAuthenticated):

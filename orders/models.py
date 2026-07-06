@@ -1,7 +1,7 @@
 # orders/models.py
 from django.db import models
 from accounts.models import User
-from products.models import Product
+from products.default.models import Product
 from payment.models import PaymentProvider, PaymentProviderTransaction
 
 
