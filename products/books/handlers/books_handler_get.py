@@ -1,4 +1,4 @@
-from books.services.book_service import BookService
+from ..services.book_service import BookService
 
 BOOKS_URL_PATH = "/api/v1/books/"
 

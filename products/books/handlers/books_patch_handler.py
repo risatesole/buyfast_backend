@@ -1,12 +1,10 @@
 from rest_framework.response import Response
 from accounts.accounts import AccountRole
-from books.services.book_service import BookService
-from products.default.products import ProductService
-
+from ..services.book_service import BookService
 from mediaupload import upload_file
 
 
-def books_post_handler(request):
+def books_patch_handler(request, book_id):
     user = request.user
 
     if not user.is_authenticated:
@@ -17,17 +15,14 @@ def books_post_handler(request):
 
     if user.role != AccountRole.EMPLOYEE.value:
         return Response(
-            {"status": "error", "message": "Only employees can create books"},
+            {"status": "error", "message": "Only employees can edit books"},
             status=403
         )
 
-    # Handle status: Accept "ACTIVE" or "DEACTIVATED"
-    status = request.data.get("status", "ACTIVE")
-    if status not in ["ACTIVE", "DEACTIVATED"]:
-        status = "ACTIVE"
+    status = request.data.get("status")
+    if status and status not in ["ACTIVE", "DEACTIVATED"]:
+        status = None
 
-    # Build images list from uploaded files
-    # Client sends: images_FRONT_COVER, images_BACK_COVER, etc.
     IMAGE_TYPES = ["FRONT_COVER", "BACK_COVER"]
     images = []
     for image_type in IMAGE_TYPES:
@@ -42,22 +37,10 @@ def books_post_handler(request):
     tags = []
     for t in raw_tags:
         tags.extend([x.strip() for x in t.split(",") if x.strip()])
-    
-    product_service = ProductService()
 
     try:
-        product = product_service.setProduct(
-            title=request.data.get("title"),
-            description= request.data.get("synopsis"),
-            category_id = None, # todo set book product category
-            brand = None,
-            selling_price = request.data.get("selling_price"),
-            status = status,
-            tags=tags,
-            images=None
-        )
-
-        book = service.setBook(
+        book = service.updateBook(
+            book_id=book_id,
             title=request.data.get("title"),
             synopsis=request.data.get("synopsis"),
             isbn=request.data.get("isbn"),
@@ -66,13 +49,12 @@ def books_post_handler(request):
             genre_id=request.data.get("genre_id"),
             selling_price=request.data.get("selling_price"),
             purchase_cost=request.data.get("purchase_cost"),
-            tax_rate=request.data.get("tax_rate", 0.18),
+            tax_rate=request.data.get("tax_rate"),
             status=status,
             release_date=request.data.get("release_date"),
-            tags=tags,
-            images=images
+            tags=tags or None,
+            images=images or None,
         )
-
     except ValueError as e:
         return Response(
             {"status": "error", "message": str(e)},
@@ -80,7 +62,7 @@ def books_post_handler(request):
         )
 
     return Response(
-        {"status": "created", "data": book},
-        status=201
+        {"status": "updated", "data": book},
+        status=200
     )
     

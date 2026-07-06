@@ -1,10 +1,10 @@
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from api.utils import CsrfExemptSessionAuthentication
-from books.handlers.books_handler_get import books_get_handler
-from books.handlers.books_handler_post import books_post_handler
-from books.handlers.books_patch_handler import books_patch_handler
-from books.services.book_service import BookService
+from ..handlers.books_handler_get import books_get_handler
+from ..handlers.books_handler_post import books_post_handler
+from ..handlers.books_patch_handler import books_patch_handler
+from ..services.book_service import BookService
 
 
 @api_view(['GET', 'POST'])
