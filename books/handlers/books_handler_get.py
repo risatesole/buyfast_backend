@@ -11,6 +11,8 @@ def books_get_handler(request):
     status_raw  = request.query_params.get("status")
     search      = request.query_params.get("search")
     author_id   = request.query_params.get("author_id")
+    genre_id    = request.query_params.get("genre_id")
+    publisher_id = request.query_params.get("publisher_id")
     tags_raw    = request.query_params.get("tags")
     limit       = request.query_params.get("limit")
     limit = int(limit) if limit else None
@@ -29,7 +31,6 @@ def books_get_handler(request):
     # Coerce tags
     tags = tags_raw.split(",") if tags_raw else None
 
-    # ── Legacy offset mode (unchanged) ───────────────────────────────────────
     return {
         "status": "ok",
         "data": service.getBookViaQuery(
@@ -40,5 +41,7 @@ def books_get_handler(request):
             search=search,
             tags=tags,
             author_id=int(author_id) if author_id else None,
+            genre_id=int(genre_id) if genre_id else None,
+            publisher_id=int(publisher_id) if publisher_id else None,
         )
     }

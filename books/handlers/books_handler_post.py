@@ -23,7 +23,7 @@ def books_post_handler(request):
     status = request.data.get("status", "ACTIVE")
     if status not in ["ACTIVE", "DEACTIVATED"]:
         status = "ACTIVE"
-    
+
     # Build images list from uploaded files
     # Client sends: images_FRONT_COVER, images_BACK_COVER, etc.
     IMAGE_TYPES = ["FRONT_COVER", "BACK_COVER"]
@@ -40,12 +40,15 @@ def books_post_handler(request):
     tags = []
     for t in raw_tags:
         tags.extend([x.strip() for x in t.split(",") if x.strip()])
-        
+
     try:
         book = service.setBook(
             title=request.data.get("title"),
             synopsis=request.data.get("synopsis"),
+            isbn=request.data.get("isbn"),
             author_id=request.data.get("author_id"),
+            publisher_id=request.data.get("publisher_id"),
+            genre_id=request.data.get("genre_id"),
             selling_price=request.data.get("selling_price"),
             purchase_cost=request.data.get("purchase_cost"),
             tax_rate=request.data.get("tax_rate", 0.18),
@@ -54,7 +57,7 @@ def books_post_handler(request):
             tags=tags,
             images=images
         )
-            
+
     except ValueError as e:
         return Response(
             {"status": "error", "message": str(e)},
@@ -65,3 +68,4 @@ def books_post_handler(request):
         {"status": "created", "data": book},
         status=201
     )
+    

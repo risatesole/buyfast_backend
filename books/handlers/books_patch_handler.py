@@ -43,7 +43,10 @@ def books_patch_handler(request, book_id):
             book_id=book_id,
             title=request.data.get("title"),
             synopsis=request.data.get("synopsis"),
+            isbn=request.data.get("isbn"),
             author_id=request.data.get("author_id"),
+            publisher_id=request.data.get("publisher_id"),
+            genre_id=request.data.get("genre_id"),
             selling_price=request.data.get("selling_price"),
             purchase_cost=request.data.get("purchase_cost"),
             tax_rate=request.data.get("tax_rate"),
@@ -62,3 +65,4 @@ def books_patch_handler(request, book_id):
         {"status": "updated", "data": book},
         status=200
     )
+    

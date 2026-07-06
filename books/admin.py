@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Author, Book, BookImage
+from .models import Author, Publisher, Genre, Book, BookImage
 
 
 class BookImageInline(admin.TabularInline):
@@ -8,7 +8,7 @@ class BookImageInline(admin.TabularInline):
     model = BookImage
     extra = 1
     fields = ("image", "image_type")
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.order_by("image_type")
@@ -20,7 +20,7 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ("fullname", "book_count")
     search_fields = ("fullname",)
     list_per_page = 25
-    
+
     def book_count(self, obj):
         """Display the number of books by this author."""
         count = obj.books.count()
@@ -31,27 +31,64 @@ class AuthorAdmin(admin.ModelAdmin):
     book_count.short_description = "Books Published"
 
 
+@admin.register(Publisher)
+class PublisherAdmin(admin.ModelAdmin):
+    """Admin interface for Publisher model."""
+    list_display = ("name", "book_count")
+    search_fields = ("name",)
+    list_per_page = 25
+
+    def book_count(self, obj):
+        """Display the number of books published by this publisher."""
+        count = obj.books.count()
+        return format_html(
+            '<span style="background-color: #6f42c1; color: white; padding: 3px 8px; border-radius: 3px;">{}</span>',
+            count
+        )
+    book_count.short_description = "Books Published"
+
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    """Admin interface for Genre model."""
+    list_display = ("name", "book_count")
+    search_fields = ("name",)
+    list_per_page = 25
+
+    def book_count(self, obj):
+        """Display the number of books in this genre."""
+        count = obj.books.count()
+        return format_html(
+            '<span style="background-color: #fd7e14; color: white; padding: 3px 8px; border-radius: 3px;">{}</span>',
+            count
+        )
+    book_count.short_description = "Books in Genre"
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     """Admin interface for Book model."""
-    list_display = ("title", "author", "status_badge", "release_date", "selling_price", "profit_margin")
-    list_filter = ("status", "release_date", "author")
-    search_fields = ("title", "synopsis", "author__fullname")
+    list_display = ("title", "author", "publisher", "genre", "isbn", "status_badge", "release_date", "selling_price", "profit_margin")
+    list_filter = ("status", "release_date", "author", "publisher", "genre")
+    search_fields = ("title", "synopsis", "author__fullname", "publisher__name", "genre__name", "isbn")
     readonly_fields = ("calculated_profit",)
     inlines = [BookImageInline]
-    
+
     fieldsets = (
         ("Book Information", {
-            "fields": ("title", "author", "synopsis", "tags")
+            "fields": ("title", "author", "isbn", "synopsis", "tags")
+        }),
+        ("Publication Details", {
+            "fields": ("publisher", "genre", "release_date")
         }),
         ("Pricing & Cost", {
             "fields": ("selling_price", "purchase_cost", "tax_rate", "calculated_profit")
         }),
-        ("Publication", {
-            "fields": ("release_date", "status")
+        ("Status", {
+            "fields": ("status",)
         }),
     )
-    
+
     def status_badge(self, obj):
         """Display status as a colored badge."""
         color = "#28a745" if obj.status == "ACTIVE" else "#dc3545"
@@ -61,7 +98,7 @@ class BookAdmin(admin.ModelAdmin):
             obj.get_status_display()
         )
     status_badge.short_description = "Status"
-    
+
     def calculated_profit(self, obj):
         """Calculate and display profit margin."""
         if obj.purchase_cost and obj.selling_price:
@@ -74,7 +111,7 @@ class BookAdmin(admin.ModelAdmin):
             )
         return "—"
     calculated_profit.short_description = "Profit (Amount & %)"
-    
+
     def profit_margin(self, obj):
         """Display profit margin percentage in list view."""
         if obj.purchase_cost and obj.selling_price:
@@ -97,7 +134,7 @@ class BookImageAdmin(admin.ModelAdmin):
     list_filter = ("image_type", "book__author")
     search_fields = ("book__title",)
     readonly_fields = ("image_preview_large",)
-    
+
     fieldsets = (
         ("Image Details", {
             "fields": ("book", "image_type", "image")
@@ -107,7 +144,7 @@ class BookImageAdmin(admin.ModelAdmin):
             "classes": ("collapse",)
         }),
     )
-    
+
     def image_preview(self, obj):
         """Display a small preview of the image in list view."""
         if obj.image:
@@ -118,7 +155,7 @@ class BookImageAdmin(admin.ModelAdmin):
             )
         return "—"
     image_preview.short_description = "Preview"
-    
+
     def image_preview_large(self, obj):
         """Display a larger preview in the detail view."""
         if obj.image:
