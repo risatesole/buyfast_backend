@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     "taggit",
     "api",
     "products",
+    "books",
     "accounts",
     "cart",
     "inventory",
