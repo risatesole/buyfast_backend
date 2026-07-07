@@ -185,16 +185,16 @@ class ProductService:
             "id": product.id,
             "name": product.name,
             "thumbnail": product.thumbnail,
-        }
-
-        product_attribute = {
-            "type": product.product_type.name
+            "type": {
+                "name": product.product_type.name,
+                "description": product.product_type.description,
+                "slug": product.product_type.slug,
+            }
         }
 
         return {
             "info": product_serialize,
             "category": product_category_serialize,
-            "attributes": product_attribute,
             "images": product_images,
         }
 
