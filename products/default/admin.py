@@ -54,7 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
             "fields": ("name", "description", "brand")
         }),
         ("Classification", {
-            "fields": ("category", "product_type")
+            "fields": ("category", "product_type", "tags")
         }),
         ("Pricing & Metrics", {
             "fields": ("selling_price", "metric_unit", "tax_rate")

@@ -55,7 +55,6 @@ class Book(models.Model):
         on_delete=models.PROTECT,
         related_name="books"
     )
-    tags = TaggableManager(blank=True)
     class Meta:
         db_table = "book"
     def __str__(self):
