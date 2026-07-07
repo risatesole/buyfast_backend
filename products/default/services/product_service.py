@@ -1,5 +1,5 @@
 from django.db.models import Q
-from ..models import Category, Product, ProductImage, ProductType
+from ..models import Category, Product, ProductType
 
 
 class ProductService:
@@ -77,13 +77,6 @@ class ProductService:
         if tags:
             product.tags.set(tags)
 
-        if images:
-            for img in images:
-                ProductImage.objects.create(
-                    product=product,
-                    image=img.get("url"),
-                    image_type=img.get("type", "HERO")
-                )
         return self._serialize(product)
 
     def getProductDetails(self, id):
@@ -228,14 +221,5 @@ class ProductService:
 
         if tags is not None:
             product.tags.set(tags)
-
-        if images:
-            for img in images:
-                ProductImage.objects.update_or_create(
-                    product=product,
-                    image_type=img.get("type"),
-                    defaults={"image": img.get("url")},
-                )
-
         return self._serialize(product)
     
