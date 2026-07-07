@@ -65,6 +65,7 @@ class Product(models.Model):
         decimal_places=2
     )
     tags = TaggableManager(blank=True)
+    thumbnail = models.CharField(max_length=1000)
     class Meta:
             db_table = "core_product"
 
