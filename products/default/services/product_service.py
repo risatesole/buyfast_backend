@@ -161,18 +161,6 @@ class ProductService:
         return [self._serialize(p) for p in products]
 
     def _serialize(self, product):
-
-        ###############
-        product_images = {}
-
-        for img in product.images.all():
-            product_images[img.image_type.lower()] = {
-                "original": img.image,
-                "small": img.image_small,
-                "medium": img.image_medium,
-                "large": img.image_large,
-            }
-
         product_category_serialize = {
             "id": product.category.id,
             "name": product.category.name,
@@ -207,7 +195,6 @@ class ProductService:
         return {
             "info": product_serialize,
             "category": product_category_serialize,
-            "images": product_images,
             "book": product_book
         }
 
