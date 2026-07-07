@@ -36,9 +36,7 @@ class Book(models.Model):
     )
     title = models.CharField(max_length=500)
     synopsis = models.TextField()
-    isbn = models.CharField(max_length=17, unique=True)  # ← Added unique=True
-    tax_rate = models.DecimalField(max_digits=5, decimal_places=4, default=0.18)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="ACTIVE")
+    isbn = models.CharField(max_length=17, unique=True)
     release_date = models.DateField(null=True, blank=True)
     publisher = models.ForeignKey(
         Publisher,
