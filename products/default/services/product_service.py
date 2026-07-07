@@ -161,32 +161,48 @@ class ProductService:
         return [self._serialize(p) for p in products]
 
     def _serialize(self, product):
+        hero = product.images.filter(image_type="HERO").first()
+
         return {
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "brand": product.brand,
-            "selling_price": float(product.selling_price),
-            "status": product.status,
+            "product":{
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "brand": product.brand,
+                "selling_price": float(product.selling_price),
+                "status": product.status,
+                "type": product.product_type.name,
+                "category": {
+                    "id": product.category.id,
+                    "name": product.category.name,
+                    "slug": product.category.slug,
+                    "image": product.category.image,
+                    "status": product.category.status,
+                } if product.category else None,
 
-            "category": {
-                "id": product.category.id,
-                "name": product.category.name,
-                "slug": product.category.slug,
-                "image": product.category.image,
-                "status": product.category.status,
-            } if product.category else None,
-
-            "images": [
-                {
-                    "url": img.image,
-                    "type": img.image_type
+                "tags": list(product.tags.names())
+            },
+            "images":{
+                "userinterface":{
+                    "coverphoto":{
+                        "original":hero.image if hero else None,
+                        "small":hero.image if hero else None,
+                        "medium": hero.image if hero else None,
+                        "large": hero.image if hero else None,
+                    }
+                },
+                "product":{
+                    "images": [
+                        {
+                            "url": img.image,
+                            "type": img.image_type
+                        }
+                        for img in product.images.all()
+                    ],
                 }
-                for img in product.images.all()
-            ],
-
-            "tags": list(product.tags.names())
-        }
+            },
+            "attributes": None
+            }
 
     def updateProduct(self, product_id, name=None, description=None,
                     category_id=None, brand=None, selling_price=None,
