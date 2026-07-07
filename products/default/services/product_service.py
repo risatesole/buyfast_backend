@@ -184,6 +184,7 @@ class ProductService:
         product_serialize = {
             "id": product.id,
             "name": product.name,
+            "thumbnail": product.thumbnail,
         }
 
         product_attribute = {
