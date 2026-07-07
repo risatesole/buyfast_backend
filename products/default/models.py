@@ -18,6 +18,7 @@ class Category(models.Model):
 class ProductType(models.Model):
     name = models.CharField(max_length=500)
     description = models.TextField()
+    slug = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -80,6 +81,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     IMAGE_TYPES = [
         ("HERO", "Hero"),
+        ("ORIGINAL", "Original"),
         ("SCALE", "Scale"),
         ("PACKING", "Packing"),
         ("FLATLAY", "Flatlay"),
@@ -93,6 +95,10 @@ class ProductImage(models.Model):
     )
 
     image = models.CharField(max_length=1000)
+
+    image_small = models.CharField(max_length=1000)
+    image_medium = models.CharField(max_length=1000)
+    image_large = models.CharField(max_length=1000)
 
     image_type = models.CharField(
         max_length=20,

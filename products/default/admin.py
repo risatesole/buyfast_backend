@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Category, Product, ProductImage
+from .models import Category, ProductType, Product, ProductImage
 
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1
+    extra = 0
 
 
 @admin.register(Category)
@@ -24,12 +24,24 @@ class CategoryAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(ProductType)
+class ProductTypeAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("name",)
+    ordering = ("name",)
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "category",
         "brand",
+        "category",
+        "product_type",
         "selling_price",
         "metric_unit",
         "status",
@@ -37,6 +49,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = (
         "status",
         "category",
+        "product_type",
         "metric_unit",
     )
     search_fields = (
@@ -44,7 +57,14 @@ class ProductAdmin(admin.ModelAdmin):
         "brand",
         "description",
     )
-    autocomplete_fields = ("category",)
+    autocomplete_fields = (
+        "category",
+        "product_type",
+    )
+    list_select_related = (
+        "category",
+        "product_type",
+    )
     inlines = [ProductImageInline]
 
 
@@ -53,11 +73,10 @@ class ProductImageAdmin(admin.ModelAdmin):
     list_display = (
         "product",
         "image_type",
-        "image",
     )
     list_filter = ("image_type",)
     search_fields = (
         "product__name",
         "image",
     )
-    
+    autocomplete_fields = ("product",)
