@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "api",
     "products.default",
     "products.books",
+    "products.notebooks",
     "accounts",
     "cart",
     "inventory",
