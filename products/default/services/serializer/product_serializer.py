@@ -8,18 +8,6 @@ def product_serializer(product):
         "status": product.category.status,
     }if product.category else None
 
-    product_serialize = {
-        "id": product.id,
-        "name": product.name,
-        "thumbnail": product.thumbnail,
-        "tags": [tag.name for tag in product.tags.all()],
-        "type": {
-            "name": product.product_type.name,
-            "description": product.product_type.description,
-            "slug": product.product_type.slug,
-        }
-    }
-    
     product_book = {
         "title": product.books.first().title,
         "synopsis": product.books.first().synopsis,
@@ -32,7 +20,11 @@ def product_serializer(product):
     } if product.books.exists() else None
 
     return {
-        "info": product_serialize,
+        "name": product.name,
+        "type": product.product_type.slug,
+        "tags": [tag.name for tag in product.tags.all()],
         "category": product_category_serialize,
+        "thumbnail": product.thumbnail,
         "book": product_book,
+        "generic": None,
     }
