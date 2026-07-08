@@ -1,13 +1,7 @@
 from django.db import models
 from taggit.managers import TaggableManager
 from .category_model import Category
-
-class ProductType(models.Model):
-    name = models.CharField(max_length=500)
-    description = models.TextField()
-    slug = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+from .product_type_model import ProductType
 
 class Product(models.Model):
     STATUS_CHOICES = [
