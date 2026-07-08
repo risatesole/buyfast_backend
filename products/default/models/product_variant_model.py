@@ -1,20 +1,10 @@
 from django.db import models
-from .products_model import Product
-
 
 class ProductVariant(models.Model):
     """
     Represents a specific variant of a product (e.g., Red/Medium T-shirt).
     Each variant has its own SKU, price, and stock.
     """
-
-    # Link to the parent product
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name="variants"
-    )
-
     # Unique identifier for this specific variant
     sku = models.CharField(
         max_length=100,
@@ -54,10 +44,9 @@ class ProductVariant(models.Model):
     class Meta:
         db_table = "core_product_variant"
         verbose_name = "Product Variant"
-        verbose_name_plural = "Product Variants"        
+        verbose_name_plural = "Product Variants"
         indexes = [
             models.Index(fields=["sku"]),
-            models.Index(fields=["product", "is_active"]),
             models.Index(fields=["stock_quantity"]),
         ]
 

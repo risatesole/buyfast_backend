@@ -19,6 +19,13 @@ def product_serializer(product):
 
     } if product.books.exists() else None
 
+    product_base = {
+        "id": product.products_base.first().id,
+        "name": product.products_base.first().name,
+        "description": product.products_base.first().description,
+        "sku": product.products_base.first().sku,
+    } if product.products_base.exists() else None
+
     return {
         "name": product.name,
         "type": product.product_type.slug,
