@@ -28,11 +28,7 @@ class Product(models.Model):
     )
     tags = TaggableManager(blank=True)
     thumbnail = models.CharField(max_length=1000)
-    tax_rate = models.DecimalField(
-            max_digits=5,
-            decimal_places=4,
-            default=0.18
-        )
+    
     class Meta:
             db_table = "core_product"
 
