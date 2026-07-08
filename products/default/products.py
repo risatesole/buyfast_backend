@@ -8,3 +8,4 @@ from .models import Product as Product_model
 from .views.product_categories_view import product_category_detail as product_category_detail
 
 from .usecases.categories.get_category_default import get_category_default_model_object as get_category_default_model_object
+from .usecases.categories.get_category_books import get_category_books_model_object as get_category_books_model_object
