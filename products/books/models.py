@@ -1,6 +1,6 @@
 from django.db import models
 from taggit.managers import TaggableManager
-from products.default.models import Product
+from products.default.models import Product,ProductVariant
 
 class Genre(models.Model):
     name = models.CharField(max_length=500)
@@ -28,9 +28,9 @@ class Book(models.Model):
         ("ACTIVE", "Active"),
         ("DEACTIVATED", "Deactivated"),
     ]
-    
-    product = models.ForeignKey(
-        Product,
+
+    product_variant = models.ForeignKey(
+        ProductVariant,
         on_delete=models.PROTECT,
         related_name="books",
     )
