@@ -25,7 +25,7 @@ class ProductService:
             defaults={
                 'slug': 'books',
                 'description': 'books yeah',
-                'image': 'https://example.com',
+                'image': None,
                 'status': True
             }
         )
@@ -47,7 +47,7 @@ class ProductService:
             defaults={
                 'slug': 'default',
                 'description': 'default product category',
-                'image': 'https://example.com',
+                'image': None,
                 'status': True
             }
         )
@@ -117,7 +117,7 @@ class ProductService:
         """
         ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "brand", "category__name"}
 
-        qs = Product.objects.select_related("category").prefetch_related("images", "tags")
+        qs = Product.objects.select_related("category").prefetch_related("tags")
 
         if status is not None:
             qs = qs.filter(status=status)
@@ -158,7 +158,7 @@ class ProductService:
             "id": product.category.id,
             "name": product.category.name,
             "slug": product.category.slug,
-            "image": product.category.image,
+            "image": None,
             "status": product.category.status,
         }if product.category else None
 
@@ -222,4 +222,3 @@ class ProductService:
         if tags is not None:
             product.tags.set(tags)
         return self._serialize(product)
-    
