@@ -3,11 +3,11 @@ from django.utils.text import slugify
 
 def get_category_default_model_object():
     category, created = Category.objects.get_or_create(
-        name="Electronics",
+        name="default",
         defaults={
-            'slug': slugify("Electronics"),
-            'description': "All electronic devices and gadgets",
-            'image': "https://example.com/electronics-category.jpg",
+            'slug': slugify("default"),
+            'description': "basic default category",
+            'image': "https://example.com/default-category.jpg",
             'status': True
         }
     )
