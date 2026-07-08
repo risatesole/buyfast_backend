@@ -21,4 +21,5 @@ INSTALLED_APPS = [
     "payment",
     "orders",
     "seed",
+    "products.base",
 ]
