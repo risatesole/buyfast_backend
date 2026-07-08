@@ -26,5 +26,5 @@ def product_serializer(product):
         "category": product_category_serialize,
         "thumbnail": product.thumbnail,
         "book": product_book,
-        "generic": None,
+        "base": None,
     }
