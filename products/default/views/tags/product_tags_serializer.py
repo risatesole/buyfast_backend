@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 
-from ...models import Product, ProductImage, Category
+from ...models import Product, Category
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -15,19 +15,19 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = [
-            "id",
-            "image",
-            "image_type",
-        ]
+# class ProductImageSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         # model = ProductImage
+#         fields = [
+#             "id",
+#             "image",
+#             "image_type",
+#         ]
 
 
 class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
+    # images = ProductImageSerializer(many=True, read_only=True)
     tags = TagListSerializerField(read_only=True)
 
     class Meta:
@@ -42,5 +42,4 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
             "status",
             "category",
             "tags",
-            "images",
         ]
