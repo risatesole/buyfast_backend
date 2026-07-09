@@ -40,6 +40,7 @@ class ProductAttributesNormal(ProductAttributes):
 
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    id: Optional[int] = None  
 
     def __post_init__(self):
         pass

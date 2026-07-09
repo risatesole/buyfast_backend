@@ -9,3 +9,4 @@ from .interfaces.product_attributes_interface import ProductAttributes
 @dataclass
 class ProductVariant(ABC):
     attributes:ProductAttributes
+    id: Optional[int] = None  

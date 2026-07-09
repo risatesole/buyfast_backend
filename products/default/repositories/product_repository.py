@@ -46,6 +46,7 @@ tags = None
 # Create 3 variants with different attributes
 # Variant 1 - Small Apples
 attributes1 = ProductAttributesNormal(
+    id=None,
     name=ProductName("Small Apples"),
     description=ProductDescription("Small fresh apples, perfect for snacking"),
     SellingPrice=SellingPrice(Decimal("2.99")),
@@ -61,6 +62,7 @@ attributes1 = ProductAttributesNormal(
 
 # Variant 2 - Medium Apples
 attributes2 = ProductAttributesNormal(
+    id=None,
     name=ProductName("Medium Apples"),
     description=ProductDescription("Medium-sized fresh apples, great for baking"),
     SellingPrice=SellingPrice(Decimal("3.99")),
@@ -76,6 +78,7 @@ attributes2 = ProductAttributesNormal(
 
 # Variant 3 - Large Apples
 attributes3 = ProductAttributesNormal(
+    id=None,
     name=ProductName("Large Apples"),
     description=ProductDescription("Large fresh apples, perfect for pies and cooking"),
     SellingPrice=SellingPrice(Decimal("4.99")),
@@ -90,12 +93,13 @@ attributes3 = ProductAttributesNormal(
 )
 
 # Create variant objects
-variant1 = ProductVariant(attributes=attributes1)
-variant2 = ProductVariant(attributes=attributes2)
-variant3 = ProductVariant(attributes=attributes3)
+variant1 = ProductVariant(id=None,attributes=attributes1)
+variant2 = ProductVariant( id=None,attributes=attributes2)
+variant3 = ProductVariant( id=None,attributes=attributes3)
 
 # Create entity with all 3 variants
 entity = ProductEntity(
+    id=1,
     name=name,
     category=category,
     tags=tags,
