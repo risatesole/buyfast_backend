@@ -1,4 +1,3 @@
-# products/default/usecases/products/create_product.py
 from ...models import Category, ProductType, ProductVariant, Product
 from products.base.models import BaseProduct
 from typing import List, Optional
