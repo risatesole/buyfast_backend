@@ -1,3 +1,3 @@
-from .models import Product as Product
-from .models import ProductVariant as ProductVariant
-from .models import ProductImage as ProductImage
+from .product_model import Product as Product
+from .product_variant_model import ProductVariant as ProductVariant
+from .product_image_model import ProductImage as ProductImage
