@@ -12,8 +12,6 @@ INSTALLED_APPS = [
     "taggit",
     "api",
     "products.default",
-    "products.books",
-    "products.notebooks",
     "accounts",
     "cart",
     "inventory",
@@ -21,5 +19,4 @@ INSTALLED_APPS = [
     "payment",
     "orders",
     "seed",
-    "products.base",
 ]

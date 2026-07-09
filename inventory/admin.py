@@ -4,7 +4,7 @@ from .models import StockMovement_model
 @admin.register(StockMovement_model)
 class StockMovementAdmin(admin.ModelAdmin):
     list_display = (
-        "product",
+        "product_variant",
         "movement_type",
         "quantity",
         "balance",
@@ -18,7 +18,9 @@ class StockMovementAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "product__name",
+        "product_variant__product__name",
+        "product_variant__name",
+        "product_variant__sku",
         "document_reference",
     )
 

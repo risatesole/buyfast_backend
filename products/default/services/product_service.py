@@ -1,112 +1,24 @@
 from django.db.models import Q
-from ..models import Category, Product, ProductType
+# from ..models import Category, Product, ProductType
 from .serializer.product_serializer import product_serializer
 
 class ProductService:
 
-    def get_category_object(self,id):
-        try:
-            return Category.objects.get(id=id)
-        except Category.DoesNotExist:
-            return None
 
-    def get_book_product_type(self):
-        obj, created = ProductType.objects.get_or_create(
-            name='book',
-            defaults={
-                'description': 'a book'
-            }
-        )
-        return obj
-
-    def get_book_product_category(self):
-        obj, created = Category.objects.get_or_create(
-            name='books',
-            defaults={
-                'slug': 'books',
-                'description': 'books yeah',
-                'image': None,
-                'status': True
-            }
-        )
-        return obj
-
-
-    def get_default_product_type(self):
-        obj, created = ProductType.objects.get_or_create(
-            name='default',
-            defaults={
-                'description': 'A normal product'
-            }
-        )
-        return obj
-    
-    def get_default_product_category(self):
-        obj, created = Category.objects.get_or_create(
-            name='default',
-            defaults={
-                'slug': 'default',
-                'description': 'default product category',
-                'image': None,
-                'status': True
-            }
-        )
-        return obj
-
-    def setProduct(self, name, description, category: Category = None, brand=None,
+    def setProduct(self, name, description, category = None, brand=None,
                    selling_price=None, purchase_price =  None, status=None, tags=None, images=None):
+        pass
 
-        product_type = self.get_default_product_type()
-
-        if category is None:
-            category = self.get_default_product_category()
-        
-        if status is None:
-            status = True
-
-        product = Product.objects.create(
-            name=name,
-            description=description,
-            category=category,
-            brand=brand,
-            product_type = product_type,
-            status = status,
-            selling_price=selling_price,
-        )
-
-        if tags:
-            product.tags.set(tags)
-
-        return self._serialize(product)
 
     def getProductDetails(self, id):
-        try:
-            product = Product.objects.select_related("category").get(id=id)
-        except Product.DoesNotExist:
-            return None
+        pass
 
-        return self._serialize(product)
 
     def getProductViaQuery(self, status=None, sort=None, limit=None,
                            offset=0, tags=None, search=None,
                            category_id=None):
+        pass
 
-        qs = self.getProductQueryset(
-            status=status,
-            sort=sort,
-            search=search,
-            tags=tags,
-            category_id=category_id,
-        )
-
-        MAX_LIMIT = 100
-        DEFAULT_LIMIT = 20
-        MAX_OFFSET = 10000
-
-        limit = min(limit, MAX_LIMIT) if limit else DEFAULT_LIMIT
-        offset = min(int(offset), MAX_OFFSET)
-
-        return [self._serialize(p) for p in qs[offset:offset + limit]]
 
     def getProductQueryset(self, status=None, sort=None, search=None,
                            tags=None, category_id=None):
@@ -116,35 +28,35 @@ class ProductService:
         Always includes -id as a stable tie-breaker for consistent pagination.
         """
         ALLOWED_SORT_FIELDS = {"id", "name", "selling_price", "brand", "category__name"}
+        pass
+        # qs = Product.objects.select_related("category").prefetch_related("tags")
 
-        qs = Product.objects.select_related("category").prefetch_related("tags")
+        # if status is not None:
+        #     qs = qs.filter(status=status)
 
-        if status is not None:
-            qs = qs.filter(status=status)
+        # if category_id is not None:
+        #     qs = qs.filter(category_id=category_id)
 
-        if category_id is not None:
-            qs = qs.filter(category_id=category_id)
+        # if search and len(search) >= 2:
+        #     qs = qs.filter(
+        #         Q(name__icontains=search) |
+        #         Q(brand__icontains=search) |
+        #         Q(category__name__icontains=search) |
+        #         Q(tags__name__icontains=search)
+        #     ).distinct()
 
-        if search and len(search) >= 2:
-            qs = qs.filter(
-                Q(name__icontains=search) |
-                Q(brand__icontains=search) |
-                Q(category__name__icontains=search) |
-                Q(tags__name__icontains=search)
-            ).distinct()
+        # if tags:
+        #     qs = qs.filter(tags__name__in=tags).distinct()
 
-        if tags:
-            qs = qs.filter(tags__name__in=tags).distinct()
+        # if sort:
+        #     field = sort.lstrip("-")
+        #     if field in ALLOWED_SORT_FIELDS:
+        #         # Always append -id as a tie-breaker so cursor position is stable
+        #         qs = qs.order_by(sort, "-id")
+        # else:
+        #     qs = qs.order_by("-id")
 
-        if sort:
-            field = sort.lstrip("-")
-            if field in ALLOWED_SORT_FIELDS:
-                # Always append -id as a tie-breaker so cursor position is stable
-                qs = qs.order_by(sort, "-id")
-        else:
-            qs = qs.order_by("-id")
-
-        return qs
+        # return qs
 
     def serializeProducts(self, products):
         """
@@ -159,31 +71,32 @@ class ProductService:
     def updateProduct(self, product_id, name=None, description=None,
                     category_id=None, brand=None, selling_price=None,
                     status=None, tags=None, images=None):
+        pass
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            raise ValueError(f"Product with id {product_id} does not exist")
+        # try:
+        #     product = Product.objects.get(id=product_id)
+        # except Product.DoesNotExist:
+        #     raise ValueError(f"Product with id {product_id} does not exist")
 
-        if name is not None:
-            product.name = name
-        if description is not None:
-            product.description = description
-        if brand is not None:
-            product.brand = brand
-        if selling_price is not None:
-            product.selling_price = selling_price
-        if status is not None:
-            product.status = status
+        # if name is not None:
+        #     product.name = name
+        # if description is not None:
+        #     product.description = description
+        # if brand is not None:
+        #     product.brand = brand
+        # if selling_price is not None:
+        #     product.selling_price = selling_price
+        # if status is not None:
+        #     product.status = status
 
-        if category_id is not None:
-            try:
-                product.category = Category.objects.get(id=category_id)
-            except Category.DoesNotExist:
-                raise ValueError(f"Category with id {category_id} does not exist")
+        # if category_id is not None:
+        #     try:
+        #         product.category = Category.objects.get(id=category_id)
+        #     except Category.DoesNotExist:
+        #         raise ValueError(f"Category with id {category_id} does not exist")
 
-        product.save()
+        # product.save()
 
-        if tags is not None:
-            product.tags.set(tags)
-        return self._serialize(product)
+        # if tags is not None:
+        #     product.tags.set(tags)
+        # return self._serialize(product)

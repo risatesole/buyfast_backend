@@ -9,11 +9,11 @@ class CartItem(models.Model):
         related_name="cart_items"
     )
 
-    product = models.ForeignKey(
-        "products.Product",
-        on_delete=models.CASCADE,
-        related_name="cart_items"
-    )
+    # product = models.ForeignKey(
+    #     "products.Product",
+    #     on_delete=models.CASCADE,
+    #     related_name="cart_items"
+    # )
 
     quantity = models.PositiveIntegerField(default=1)
 
@@ -21,7 +21,8 @@ class CartItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ("user", "product")
+        # unique_together = ("user", "product")
+        pass
 
     def __str__(self):
         return f"{self.user} - {self.product} ({self.quantity})"
