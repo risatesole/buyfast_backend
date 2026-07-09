@@ -1,4 +1,5 @@
 from ..entities.product_entity import ProductEntity
+from ..models import Product
 
 class ProductRepository:
     def save(self, productentity: ProductEntity):
@@ -7,12 +8,23 @@ class ProductRepository:
         tags = productentity.tags
         created_at = productentity.created_at
         updated_at = productentity.updated_at
+        product_type = productentity.product_type
+
+        product_db = Product.objects.create(
+            name = name,
+            category=category,
+            tags = tags,
+            thumbnail = "https://example.com",
+            product_type = product_type,
+        )
+        print(f"db name = {product_db.name}")
 
         print(f"product name: {name}")
         print(f"product category: {category}")
         print(f"product tags: {tags}")
         print(f"product created_at: {created_at}")
         print(f"product updated_at: {updated_at}")
+        print(f"product type:{product_type}")
 
         # Handle multiple variants
         for idx, variant in enumerate(productentity.variants, 1):

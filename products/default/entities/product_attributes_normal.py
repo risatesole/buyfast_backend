@@ -35,12 +35,10 @@ class ProductAttributesNormal(ProductAttributes):
     image_gallery: str | None = None
     image_lifestyle: str | None = None
 
-    # Product type is locked to "normal" - hidden from constructor
-    product_type: ProductType = field(default_factory=lambda: ProductType("normal"), init=False)
 
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    id: Optional[int] = None  
+    id: Optional[int] = None
 
     def __post_init__(self):
         pass
