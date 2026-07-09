@@ -1,9 +1,24 @@
 from ..entities.product_entity import ProductEntity
+
 class ProductRepository:
-    def save(self, productentity:ProductEntity):
-        print(type(productentity))
+    def save(self, productentity: ProductEntity):
+        name = productentity.name.value
+        category = productentity.category.value
+        tags = productentity.tags
+        created_at = productentity.created_at
+        updated_at = productentity.updated_at
 
+        print(f"product name: {name}")
+        print(f"product category: {category}")
+        print(f"product tags: {tags}")
+        print(f"product created_at: {created_at}")
+        print(f"product updated_at: {updated_at}")
 
+        # Handle multiple variants
+        for idx, variant in enumerate(productentity.variants, 1):
+            print(f"product variant {idx} description: {variant.attributes.description.value}")
+            print(f"product variant {idx} SKU: {variant.attributes.sku.value}")
+            print(f"product variant {idx} price: {variant.attributes.SellingPrice}")
 
 
 # debug:
@@ -23,50 +38,72 @@ from ..entities.product_entity import ProductEntity
 
 from decimal import Decimal
 
-name = ProductName("apples")
-description = ProductDescription("Apple tastes good")
-sellingprice = SellingPrice
-tax_rate = TaxRate(Decimal("0.10"))
-
-SKU = SKU("12345")
-slug = Slug("appleslug")
+# Create base product info
+name = ProductName("Apples")
 category = ProductCategory("food")
-
 tags = None
 
-
-attributes = ProductAttributesNormal(
-    name = name,
-    description = description,
-    SellingPrice = sellingprice,
-    tax_rate=tax_rate,
-    sku=SKU,
-    slug=slug,
-    image_hero=None,
-    image_details=None,
-    image_thumbnail=None,
-    image_gallery=None,
-    image_lifestyle=None,
+# Create 3 variants with different attributes
+# Variant 1 - Small Apples
+attributes1 = ProductAttributesNormal(
+    name=ProductName("Small Apples"),
+    description=ProductDescription("Small fresh apples, perfect for snacking"),
+    SellingPrice=SellingPrice(Decimal("2.99")),
+    tax_rate=TaxRate(Decimal("0.10")),
+    sku=SKU("APPLE-SMALL-001"),
+    slug=Slug("small-apples"),
+    image_hero="small-apples-hero.jpg",
+    image_thumbnail="small-apples-thumb.jpg",
+    image_gallery="small-apples-gallery.jpg",
     created_at=None,
     updated_at=None,
 )
 
-
-variant = ProductVariant(
-    attributes = attributes,
+# Variant 2 - Medium Apples
+attributes2 = ProductAttributesNormal(
+    name=ProductName("Medium Apples"),
+    description=ProductDescription("Medium-sized fresh apples, great for baking"),
+    SellingPrice=SellingPrice(Decimal("3.99")),
+    tax_rate=TaxRate(Decimal("0.10")),
+    sku=SKU("APPLE-MEDIUM-002"),
+    slug=Slug("medium-apples"),
+    image_hero="medium-apples-hero.jpg",
+    image_thumbnail="medium-apples-thumb.jpg",
+    image_gallery="medium-apples-gallery.jpg",
+    created_at=None,
+    updated_at=None,
 )
 
+# Variant 3 - Large Apples
+attributes3 = ProductAttributesNormal(
+    name=ProductName("Large Apples"),
+    description=ProductDescription("Large fresh apples, perfect for pies and cooking"),
+    SellingPrice=SellingPrice(Decimal("4.99")),
+    tax_rate=TaxRate(Decimal("0.10")),
+    sku=SKU("APPLE-LARGE-003"),
+    slug=Slug("large-apples"),
+    image_hero="large-apples-hero.jpg",
+    image_thumbnail="large-apples-thumb.jpg",
+    image_gallery="large-apples-gallery.jpg",
+    created_at=None,
+    updated_at=None,
+)
+
+# Create variant objects
+variant1 = ProductVariant(attributes=attributes1)
+variant2 = ProductVariant(attributes=attributes2)
+variant3 = ProductVariant(attributes=attributes3)
+
+# Create entity with all 3 variants
 entity = ProductEntity(
-    name = name,
-    category = category,
-    tags = tags,
-    variants = variant,
+    name=name,
+    category=category,
+    tags=tags,
+    variants=[variant1, variant2, variant3],  # List of variants
     created_at=None,
     updated_at=None,
 )
 
+# Save
 repository = ProductRepository()
-
-repository.save(
-    productentity=entity
-)
+repository.save(productentity=entity)
