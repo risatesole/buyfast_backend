@@ -9,12 +9,12 @@ def create_base_product(
     status: bool,
     selling_price: float,
     tags: Optional[List[str]],
-    category_name: str,
+    category_slug: str,
     thumbnail_url: str,
     sku: str,
     low_stock_threshold: int
 ) -> Product:
-    category_object = Category.objects.get(name=category_name)
+    category_object = Category.objects.get(slug=category_slug)
     product_type_object, created = ProductType.objects.get_or_create(
         name="base",
         defaults={
