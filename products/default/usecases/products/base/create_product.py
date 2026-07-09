@@ -25,6 +25,7 @@ def create_base_product(
     )
 
     product_variant_object = ProductVariant.objects.create(
+        slug= slugify(name),
         price=selling_price,
         low_stock_threshold=low_stock_threshold,
         is_active=status,
