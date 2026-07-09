@@ -1,5 +1,6 @@
 from ..entities.product_entity import ProductEntity
-from ..models import Product
+from ..models import Product, ProductVariant as ProductVariantModel
+from ..entities.product_variant import ProductVariant as ProductVariantEntity
 
 class ProductRepository:
     def save(self, productentity: ProductEntity):
@@ -17,6 +18,7 @@ class ProductRepository:
             thumbnail = "https://example.com",
             product_type = product_type,
         )
+
         print(f"db name = {product_db.name}")
 
         print(f"product name: {name}")
@@ -28,9 +30,33 @@ class ProductRepository:
 
         # Handle multiple variants
         for idx, variant in enumerate(productentity.variants, 1):
-            print(f"product variant {idx} description: {variant.attributes.description.value}")
-            print(f"product variant {idx} SKU: {variant.attributes.sku.value}")
-            print(f"product variant {idx} price: {variant.attributes.SellingPrice}")
+            variant_name = variant.attributes.name.value
+            variant_description = variant.attributes.description.value
+            variant_sku = variant.attributes.sku.value
+            variant_slug = variant.attributes.slug.value
+            variant_price = variant.attributes.SellingPrice.value
+            variant_tax_rate = variant.attributes.tax_rate.value
+
+            productvariant_db = ProductVariantModel.objects.create(
+                product=product_db,
+                name=variant_name,
+                description=variant_description,
+                slug=variant_slug,
+                sku=variant_sku,
+                selling_price=variant_price,
+                tax_rate=variant_tax_rate,
+            )
+
+            print(f"{productvariant_db.slug}")
+            print(f"product variant name: {productvariant_db.name}")
+            print(f"product variant description: {productvariant_db.description}")
+            print(f"product variant slug: {productvariant_db.slug}")
+            print(f"product variant sku: {productvariant_db.sku}")
+            print(f"product variant sku: {productvariant_db.sku}")
+            print(f"product variant selling_price: {productvariant_db.selling_price}")
+            print(f"product variant tax_rate: {productvariant_db.tax_rate}")
+
+
 
 
 # debug:
@@ -45,8 +71,6 @@ from ..value_objects.product_taxrate import TaxRate
 from ..value_objects.product_tags import Tags
 
 from ..entities.product_attributes_normal import ProductAttributesNormal
-from ..entities.product_variant import ProductVariant
-from ..entities.product_entity import ProductEntity
 
 from decimal import Decimal
 
@@ -105,9 +129,9 @@ attributes3 = ProductAttributesNormal(
 )
 
 # Create variant objects
-variant1 = ProductVariant(id=None,attributes=attributes1)
-variant2 = ProductVariant( id=None,attributes=attributes2)
-variant3 = ProductVariant( id=None,attributes=attributes3)
+variant1 = ProductVariantEntity(id=None, attributes=attributes1)
+variant2 = ProductVariantEntity(id=None, attributes=attributes2)
+variant3 = ProductVariantEntity(id=None, attributes=attributes3)
 
 # Create entity with all 3 variants
 entity = ProductEntity(
@@ -115,7 +139,7 @@ entity = ProductEntity(
     name=name,
     category=category,
     tags=tags,
-    variants=[variant1, variant2, variant3],  # List of variants
+    variants=[variant1, variant2, variant3],
     created_at=None,
     updated_at=None,
 )
