@@ -6,7 +6,7 @@ class ProductType:
     value: str
     
     def __post_init__(self):
-        valid_types = ['electronics', 'clothing', 'books', 'home', 'toys', 'food', 'other']
+        valid_types = ['normal','electronics', 'clothing', 'books', 'home', 'toys', 'food', 'other']
         if self.value not in valid_types:
             raise ValueError(f"Invalid variant. Must be one of: {', '.join(valid_types)}")
     
