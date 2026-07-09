@@ -51,4 +51,4 @@ def create_base_product(
     if tags:
         product.tags.add(*tags)
 
-    return base_product
+    return product
