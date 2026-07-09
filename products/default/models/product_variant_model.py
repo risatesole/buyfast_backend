@@ -5,7 +5,7 @@ class ProductVariant(models.Model):
     Represents a specific variant of a product (e.g., Red/Medium T-shirt).
     Each variant has its own SKU, price, and stock.
     """
-
+    slug = models.CharField(max_length=500)
     # Pricing - overrides parent product price if set
     price = models.DecimalField(
         max_digits=10,
