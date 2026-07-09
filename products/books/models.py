@@ -4,6 +4,7 @@ from products.default.models import Product,ProductVariant
 
 class Genre(models.Model):
     name = models.CharField(max_length=500)
+    slug = models.CharField(max_length=500)
     class Meta:
         db_table = "genre"
     def __str__(self):
