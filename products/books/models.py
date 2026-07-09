@@ -12,6 +12,7 @@ class Genre(models.Model):
 
 class Author(models.Model):
     fullname = models.CharField(max_length=500)
+    slug = models.CharField(max_length=500)
     class Meta:
         db_table = "author"
     def __str__(self):
