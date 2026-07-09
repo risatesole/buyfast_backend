@@ -1,4 +1,4 @@
-from ...models import Category, ProductType, ProductVariant, Product
+from ....models import Category, ProductType, ProductVariant, Product
 from products.base.models import BaseProduct
 from typing import List, Optional
 from django.utils.text import slugify
