@@ -22,10 +22,6 @@ class ProductVariant(models.Model):
     )
 
     # Inventory
-    stock_quantity = models.PositiveIntegerField(
-        default=0
-    )
-
     low_stock_threshold = models.PositiveIntegerField(
         default=5,
         help_text="Alert when stock falls below this number"
@@ -47,15 +43,10 @@ class ProductVariant(models.Model):
         verbose_name_plural = "Product Variants"
         indexes = [
             models.Index(fields=["sku"]),
-            models.Index(fields=["stock_quantity"]),
         ]
 
     def __str__(self):
         variant_name = f"{self.product.name}"
-        if self.color:
-            variant_name += f" - {self.color}"
-        if self.size:
-            variant_name += f" ({self.size})"
         return variant_name
 
     @property
