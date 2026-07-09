@@ -1,5 +1,6 @@
 # products/default/usecases/products/create_product.py
 from ...models import Category, ProductType, ProductVariant, Product
+from products.base.models import BaseProduct
 from typing import List, Optional
 from django.utils.text import slugify
 
@@ -23,11 +24,18 @@ def create_base_product(
             "slug": slugify("base"),
         }
     )
+
     product_variant_object = ProductVariant.objects.create(
-        sku=sku,
         price=selling_price,
         low_stock_threshold=low_stock_threshold,
         is_active=status,
+    )
+
+    base_product = BaseProduct.objects.create(
+        product_variant = product_variant_object,
+        name = name,
+        description = description,
+        sku=sku,
     )
 
     product = Product.objects.create(
@@ -43,4 +51,4 @@ def create_base_product(
     if tags:
         product.tags.add(*tags)
 
-    return product
+    return base_product

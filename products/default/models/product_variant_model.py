@@ -5,12 +5,6 @@ class ProductVariant(models.Model):
     Represents a specific variant of a product (e.g., Red/Medium T-shirt).
     Each variant has its own SKU, price, and stock.
     """
-    # Unique identifier for this specific variant
-    sku = models.CharField(
-        max_length=100,
-        unique=True,
-        db_index=True
-    )
 
     # Pricing - overrides parent product price if set
     price = models.DecimalField(
@@ -41,9 +35,6 @@ class ProductVariant(models.Model):
         db_table = "core_product_variant"
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
-        indexes = [
-            models.Index(fields=["sku"]),
-        ]
 
     def __str__(self):
         variant_name = f"{self.product.name}"
