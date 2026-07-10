@@ -20,8 +20,3 @@ class ProductDetailView(APIView):
     def patch(self, request, pk=None):
         """PATCH /api/products/<id>/"""
         return Response({'message': 'Updated'})
-
-
-# Export for backward compatibility
-# WARNING: deprecated to delete
-products = ProductDetailView
