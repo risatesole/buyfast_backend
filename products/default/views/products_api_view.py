@@ -78,7 +78,31 @@ class ProductDetailView(APIView):
 
     def post(self, request, pk=None):
         """POST /api/products/ - Create a new product"""
-        return Response({'message': 'Created'}, status=status.HTTP_201_CREATED)
+        
+        # Extract main product data
+        product_name = request.data["data"]["name"]
+        product_category = request.data["data"]["category"]
+        product_tags = request.data["data"]["tags"]
+                
+        # Extract all variant fields for processing
+        for variant in request.data["data"]["variants"]:
+            variant_name = variant["name"]
+            variant_description = variant["description"]
+            variant_sku = variant["sku"]
+            variant_slug = variant["slug"]
+            variant_price = variant["selling_price"]
+            variant_tax = variant["tax_rate"]
+            variant_hero = variant["image_hero"]
+            variant_thumb = variant["image_thumbnail"]
+            variant_gallery = variant["image_gallery"]
+            print(f"{variant_name}")
+                    
+        return Response({
+            "message": "Product created successfully",
+            "product_name": product_name,
+            "category": product_category,
+            "tags": product_tags
+        }, status=status.HTTP_201_CREATED)
 
     def patch(self, request, pk=None):
         """PATCH /api/products/<id>/ - Update a product"""
