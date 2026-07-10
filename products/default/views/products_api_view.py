@@ -70,6 +70,29 @@ class ProductDetailView(APIView):
         else:
             try:
                 from ..models import Product
+
+                repository = ProductRepository()
+
+
+                query_param_sort_by = request.GET.get('sort')
+                query_param_status = request.GET.get('status')
+                query_param_limit = int(request.GET.get('limit'))
+                query_param_offset = int(request.GET.get('offset'))
+                query_param_tag = request.GET.get('tag')
+                query_param_category = request.GET.get('category')
+                query_param_search = request.GET.get('search')
+
+                if query_param_status:
+                    if query_param_status is "true":
+                        query_param_status = True
+                    if query_param_status is "false":
+                        query_param_status = False
+                    if query_param_status is None:
+                        query_param_status = None
+                        
+
+                repository_products = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
+                
                 products = Product.objects.all()
 
                 products_data = [

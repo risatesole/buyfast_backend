@@ -16,6 +16,9 @@ from ..value_objects.product_updated_at import UpdatedAt
 
 from ..entities.product_attributes_normal import ProductAttributesNormal
 
+import json
+from django.db.models import Q
+
 class ProductRepository:
     def save(self, productentity: ProductEntity):
         name = productentity.name.value
@@ -127,3 +130,54 @@ class ProductRepository:
         )
 
         return product_entity
+
+    def get_product_via_query(self, sort:str=None, status:bool=None, limit:int=None, 
+                            offset:int=None, tag:str=None, category:str=None, 
+                            search:str=None):
+        """
+        get products via query parameters
+        """
+
+        print(f"{status}")
+        filter_params = {}
+        q_objects = Q()
+
+        if category:
+            filter_params['category'] = category
+        
+        if tag:
+            # TaggableManager search
+            filter_params['tags__name__icontains'] = tag
+        
+        if search:
+            q_objects |= Q(name__icontains=search)
+        
+        # Apply filters
+        products = Product.objects.filter(**filter_params)
+        
+        if q_objects:
+            products = products.filter(q_objects)
+        
+        if sort:
+            products = products.order_by(sort)
+        
+        if limit:
+            if offset:
+                products = products[offset:offset+limit]
+            else:
+                products = products[:limit]
+        
+        # Convert to JSON with all fields
+        product_data = list(products.values(
+            'id', 'name', 'category', 'product_type', 
+            'thumbnail', 'created_at', 'updated_at'
+        ))
+        
+        # Print as JSON
+        print("=" * 60)
+        print("PRODUCT DATA")
+        print("=" * 60)
+        print(json.dumps(product_data, indent=2, default=str))
+        print("=" * 60)
+        
+        return product_data

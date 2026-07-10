@@ -13,6 +13,7 @@ class SKU:
             raise ValueError("SKU cannot exceed 50 characters")
         cleaned = self.value.strip().upper()
         if not re.match(r'^[A-Z0-9\-]+$', cleaned):
+            print(f"{self.value}")
             raise ValueError("SKU must contain only uppercase letters, numbers, and hyphens")
         object.__setattr__(self, 'value', cleaned)
 
