@@ -1,6 +1,7 @@
 from django.urls import path
 from .views_sandbox import ApiSandboxView
 
+from products.default.views.products_api_view import ProductDetailView
 from accounts.accounts import (
     change_password_api_view,
     delete_account,
@@ -15,13 +16,6 @@ from cart.cart import cart_api_view
 from checkout.checkout import checkout_api_view, checkout_timeslots_api_view
 from inventory.inventory import StockMovementListView
 from orders.orders import orders_admin_view
-from products.default.products import (
-    ProductByTagView,
-    product_categories,
-    product_category_detail,
-    product_detail,
-    products,
-)
 
 from .modules.system.health_api_view import health
 from .views import set_product_price, api_root
@@ -41,20 +35,14 @@ urlpatterns = [
     path("change_password/", change_password_api_view),
     path("employee/", create_employee),
     path("delete-account/", delete_account),
-    path("products/", products),
-    path("products/categories", product_categories),
-    path("products/<int:product_id>/", product_detail),
+    path('products/', ProductDetailView.as_view(), name='product-list'),
+    path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
+
     path("cart/", cart_api_view),
     path("checkout/", checkout_api_view),
     path("checkout/timeslots/", checkout_timeslots_api_view),
     path("users/", users),
     path("admin/orders/", orders_admin_view),
-    path("products/tag/<str:tag>/", ProductByTagView.as_view(), name="products-by-tag"),
-    path(
-        "products/categories/<int:category_id>/",
-        product_category_detail,
-        name="product-category-detail",
-    ),
     path("customers/orders/<int:order_id>",orders_api_view,name="orders-api-view"),
     path(
         "admin/inventory/stockmovement",
