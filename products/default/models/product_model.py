@@ -30,7 +30,6 @@ class Product(models.Model):
         blank=True,
         null=True
     )
-    
     product_type = models.CharField(
         max_length=50,
         choices=ProductType.choices,
@@ -41,6 +40,9 @@ class Product(models.Model):
     thumbnail = models.CharField(max_length=1000)
     tags = TaggableManager(blank=True)
     name = models.CharField(max_length=255)
+    
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         db_table = "core_product"
