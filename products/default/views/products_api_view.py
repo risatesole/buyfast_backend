@@ -16,7 +16,9 @@ from ..value_objects.product_taxrate import TaxRate
 from ..value_objects.product_tags import Tags
 from ..value_objects.product_created_at import CreatedAt
 from ..value_objects.product_updated_at import UpdatedAt
-
+from ..entities.product_entity import ProductEntity
+from ..entities.product_variant import ProductVariant
+from ..entities.product_attributes_normal import ProductAttributesNormal
 
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
@@ -97,19 +99,33 @@ class ProductDetailView(APIView):
         product_category = ProductCategory(request.data["data"]["category"])
         product_tags = Tags(request.data["data"]["tags"])
 
+
+
+
+
+
+
+
         # Extract all variant fields for processing
         for variant in request.data["data"]["variants"]:
             variant_name = ProductName(str(variant["name"]))
-
             variant_description = ProductDescription(str(variant["description"]))
             variant_sku = SKU(variant["sku"])
             variant_slug = Slug(variant["slug"])
             variant_selling_price = SellingPrice(Decimal(variant["selling_price"]))
             variant_tax_rate = TaxRate(Decimal(variant["tax_rate"]))
             variant_image_hero = variant["image_hero"]
+            variant_image_galery = None
             variant_image_thumb = variant["image_thumbnail"]
             variant_image_gallery = variant["image_gallery"]
+            variant_image_lifestyle = None
+            variant_image_details = None
 
+            product_attributes_normal = ProductAttributesNormal(name=variant_name,description=variant_description,SellingPrice=variant_selling_price,tax_rate=variant_tax_rate,sku=variant_sku,slug=variant_slug,image_hero=variant_image_hero,image_details=variant_image_details,image_thumbnail=variant_image_thumb,image_gallery=variant_image_galery,image_lifestyle=variant_image_lifestyle)
+            product_variant = ProductVariant(attributes=product_attributes_normal)
+
+        # fix add the list of product variants
+        product_entity = ProductEntity(name=product_name,category=product_category,tags=product_tags,variants=product_variant)
 
         return Response({
             "message": "got it"
