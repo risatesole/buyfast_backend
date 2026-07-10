@@ -66,7 +66,7 @@ class ProductRepository:
 
             variant.attributes.CreatedAt = productvariant_db.created_at
             variant.attributes.updated_at = productvariant_db.updated_at
-        
+
         return productentity
 
     def get_product_by_id(self, product_id: int) -> ProductEntity:
@@ -78,7 +78,6 @@ class ProductRepository:
         product_name = ProductName(product_db.name)
         product_category = ProductCategory(product_db.category)
         product_tags = list(product_db.tags.values_list('name', flat=True))
-        print(product_tags)
         created_at = CreatedAt(product_db.created_at)
         updated_at = UpdatedAt(product_db.updated_at)
 
@@ -134,53 +133,182 @@ class ProductRepository:
 
         return product_entity
 
-    def get_product_via_query(self, sort:str=None, status:bool=None, limit:int=None, 
-                            offset:int=None, tag:str=None, category:str=None, 
+    def get_product_via_query(self, sort:str=None, status:bool=None, limit:int=None,
+                            offset:int=None, tag:str=None, category:str=None,
                             search:str=None):
         """
         get products via query parameters
         """
 
-        print(f"{status}")
         filter_params = {}
         q_objects = Q()
 
         if category:
             filter_params['category'] = category
-        
+
         if tag:
             # TaggableManager search
             filter_params['tags__name__icontains'] = tag
-        
+
         if search:
             q_objects |= Q(name__icontains=search)
-        
+
         # Apply filters
         products = Product.objects.filter(**filter_params)
-        
+
         if q_objects:
             products = products.filter(q_objects)
-        
+
         if sort:
             products = products.order_by(sort)
-        
+
         if limit:
             if offset:
                 products = products[offset:offset+limit]
             else:
                 products = products[:limit]
-        
-        # Convert to JSON with all fields
-        product_data = list(products.values(
-            'id', 'name', 'category', 'product_type', 
-            'thumbnail', 'created_at', 'updated_at'
-        ))
-        
-        # Print as JSON
-        print("=" * 60)
-        print("PRODUCT DATA")
-        print("=" * 60)
-        print(json.dumps(product_data, indent=2, default=str))
-        print("=" * 60)
-        
+
+
+
+#########################################################
+
+        for p in products:
+
+            try:
+                id = p.id
+                name = ProductName(p.name)
+                category = ProductCategory(p.category)
+                thumbnail = p.thumbnail
+                tags = list(p.tags.values_list('name', flat=True))
+                created_at = CreatedAt(p.created_at)
+                updated_at = UpdatedAt(p.updated_at)
+#################################################################################################
+                product_variant_yes = ProductVariantModel.objects.filter(product=p)
+
+                for variant in product_variant_yes:
+
+                    print(f"#################################################################################")
+                    # print(f"variant:")
+                    # print(f"product variant id: {variant.id}")
+                    # print(f"product variant name: {variant.name}")
+                    # print(f"product variant description: {variant.description}")
+                    # print(f"product variant slug: {variant.slug}")
+                    # print(f"product variant sku: {variant.sku}")
+                    # print(f"product variant selling_price: {variant.selling_price}")
+                    # print(f"product variant tax_rate: {variant.tax_rate}")
+                    # print(f"product variant created_at: {variant.created_at}")
+                    # print(f"product variant updated_at: {variant.updated_at}")
+
+                    product_attributes_normal = ProductAttributesNormal(
+                        id = variant.id,
+                        name= ProductName(variant.name),
+                        description= ProductDescription(variant.description),
+                        SellingPrice = SellingPrice(variant.selling_price),
+                        tax_rate= TaxRate(variant.tax_rate),
+                        sku= SKU(variant.sku),
+                        slug= Slug(variant.slug),
+                        # image_hero: str | None = None
+                        # image_details: str | None = None
+                        # image_thumbnail: str | None = None
+                        # image_gallery: str | None = None
+                        # image_lifestyle: str | None = None
+                        created_at = CreatedAt(variant.created_at),
+                        updated_at= UpdatedAt(variant.updated_at)
+
+                    )
+
+                    product_variant = ProductVariantEntity(
+                        attributes=product_attributes_normal,
+                        id= variant.id
+                    )
+                    # print(f"{product_variant.attributes.name.value}")
+
+            except Exception as e:
+                print(f"{str(e)}")
+
+
+
+            # name = ProductName(products.name)
+            # category = ProductCategory("food")
+            # tags = None
+            #
+            # # Create 3 variants with different attributes
+            # # Variant 1 - Small Apples
+            # attributes1 = ProductAttributesNormal(
+            #     id=None,
+            #     name=ProductName("Small Apples"),
+            #     description=ProductDescription("Small fresh apples, perfect for snacking"),
+            #     SellingPrice=SellingPrice(Decimal("2.99")),
+            #     tax_rate=TaxRate(Decimal("0.10")),
+            #     sku=SKU("APPLE-SMALL-001"),
+            #     slug=Slug("small-apples"),
+            #     image_hero="small-apples-hero.jpg",
+            #     image_thumbnail="small-apples-thumb.jpg",
+            #     image_gallery="small-apples-gallery.jpg",
+            #     created_at = CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            #     updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            # )
+            #
+            # # Variant 2 - Medium Apples
+            # attributes2 = ProductAttributesNormal(
+            #     id=None,
+            #     name=ProductName("Medium Apples"),
+            #     description=ProductDescription("Medium-sized fresh apples, great for baking"),
+            #     SellingPrice=SellingPrice(Decimal("3.99")),
+            #     tax_rate=TaxRate(Decimal("0.10")),
+            #     sku=SKU("APPLE-MEDIUM-002"),
+            #     slug=Slug("medium-apples"),
+            #     image_hero="medium-apples-hero.jpg",
+            #     image_thumbnail="medium-apples-thumb.jpg",
+            #     image_gallery="medium-apples-gallery.jpg",
+            #     created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            #     updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            # )
+            #
+            # # Variant 3 - Large Apples
+            # attributes3 = ProductAttributesNormal(
+            #     id=None,
+            #     name=ProductName("Large Apples"),
+            #     description=ProductDescription("Large fresh apples, perfect for pies and cooking"),
+            #     SellingPrice=SellingPrice(Decimal("4.99")),
+            #     tax_rate=TaxRate(Decimal("0.10")),
+            #     sku=SKU("APPLE-LARGE-003"),
+            #     slug=Slug("large-apples"),
+            #     image_hero="large-apples-hero.jpg",
+            #     image_thumbnail="large-apples-thumb.jpg",
+            #     image_gallery="large-apples-gallery.jpg",
+            #     created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            #     updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            # )
+            #
+            # # Create variant objects
+            # variant1 = ProductVariantEntity(id=None, attributes=attributes1)
+            # variant2 = ProductVariantEntity(id=None, attributes=attributes2)
+            # variant3 = ProductVariantEntity(id=None, attributes=attributes3)
+            #
+            # # Create entity with all 3 variants
+            # entity = ProductEntity(
+            #     id=1,
+            #     name=name,
+            #     category=category,
+            #     tags=tags,
+            #     variants=[variant1, variant2, variant3],
+            #     created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            #     updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+            # )
+            #
+            #
+            # # Convert to JSON with all fields
+            # product_data = list(products.values(
+            #     'id', 'name', 'category', 'product_type',
+            #     'thumbnail', 'created_at', 'updated_at'
+            # ))
+        #
+        # # Print as JSON
+        # print("=" * 60)
+        # print("PRODUCT DATA")
+        # print("=" * 60)
+        # print(json.dumps(product_data, indent=2, default=str))
+        # print("=" * 60)
+
         return product_data
