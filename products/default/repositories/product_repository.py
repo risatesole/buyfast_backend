@@ -48,5 +48,3 @@ class ProductRepository:
 
             variant.attributes.CreatedAt = productvariant_db.created_at
             variant.attributes.updated_at = productvariant_db.updated_at
-            print(f"{variant.attributes.CreatedAt}")
-            print(f"{variant.attributes.updated_at}")
