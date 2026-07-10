@@ -80,6 +80,7 @@ class ProductDetailView(APIView):
                 query_param_tag = request.GET.get('tag')
                 query_param_category = request.GET.get('category')
                 query_param_search = request.GET.get('search')
+                query_param_limit = request.GET.get('limit')
 
                 if query_param_status:
                     if query_param_status is "true":
@@ -88,16 +89,16 @@ class ProductDetailView(APIView):
                         query_param_status = False
                     if query_param_status is None:
                         query_param_status = None
-                
-                query_param_limit = request.GET.get('limit')
+
+
                 if query_param_limit is None:
                     query_param_limit = 100
                 else:
                     query_param_limit = int(query_param_limit)
-                    
+
 
                 repository_products = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
-                
+
                 products = Product.objects.all()
 
                 products_data = [
