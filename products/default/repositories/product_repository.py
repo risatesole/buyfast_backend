@@ -36,6 +36,8 @@ class ProductRepository:
             product_type = product_type,
         )
 
+        productentity.id = product_db.id
+
         # Handle multiple variants
         for idx, variant in enumerate(productentity.variants, 1):
             variant_name = variant.attributes.name.value
@@ -59,12 +61,13 @@ class ProductRepository:
             variant.attributes.description = productvariant_db.description
             variant.attributes.sku = productvariant_db.sku
             variant.attributes.slug = productvariant_db.slug
-            variant.attributes.sku = productvariant_db.sku
             variant.attributes.SellingPrice = productvariant_db.selling_price
             variant.attributes.tax_rate = productvariant_db.tax_rate
 
             variant.attributes.CreatedAt = productvariant_db.created_at
             variant.attributes.updated_at = productvariant_db.updated_at
+        
+        return productentity
 
     def get_product_by_id(self, product_id: int) -> ProductEntity:
         """

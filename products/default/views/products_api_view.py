@@ -184,10 +184,29 @@ class ProductDetailView(APIView):
             saved_entity = repository.save(productentity=product_entity)
 
             return Response({
-                "message": "Product created successfully",
-                "product_id": getattr(saved_entity, 'id', None),
-                "variants_count": len(product_variants)
-            }, status=status.HTTP_201_CREATED)
+            "message": "Product created successfully",
+            "data": {
+                "id": saved_entity.id,
+                "name": saved_entity.name.value,
+                "category": saved_entity.category.value,
+                "tags": saved_entity.tags.value if saved_entity.tags else None,
+                "variants": [
+                    {
+                        "id": variant.attributes.id,
+                        "name": variant.attributes.name,
+                        "description": variant.attributes.description,
+                        "sku": variant.attributes.sku,
+                        "slug": variant.attributes.slug,
+                        "selling_price": float(variant.attributes.SellingPrice),
+                        "tax_rate": float(variant.attributes.tax_rate),
+                        "created_at": variant.attributes.created_at.value,
+                        "updated_at": variant.attributes.updated_at 
+                    }
+                    for variant in saved_entity.variants
+                ]
+            },
+            "variants_count": len(saved_entity.variants)
+        }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             return Response(
