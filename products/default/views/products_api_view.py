@@ -3,6 +3,19 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from ..repositories.product_repository import ProductRepository
+from decimal import Decimal
+
+from ..value_objects.product_name import ProductName
+from ..value_objects.product_description import ProductDescription
+from ..value_objects.product_sku import SKU
+from ..value_objects.product_slug import Slug
+from ..value_objects.product_category import ProductCategory
+from ..value_objects.product_type import ProductType
+from ..value_objects.product_selling_price import SellingPrice
+from ..value_objects.product_taxrate import TaxRate
+from ..value_objects.product_tags import Tags
+from ..value_objects.product_created_at import CreatedAt
+from ..value_objects.product_updated_at import UpdatedAt
 
 
 class ProductDetailView(APIView):
@@ -78,30 +91,28 @@ class ProductDetailView(APIView):
 
     def post(self, request, pk=None):
         """POST /api/products/ - Create a new product"""
-        
+
         # Extract main product data
-        product_name = request.data["data"]["name"]
-        product_category = request.data["data"]["category"]
-        product_tags = request.data["data"]["tags"]
-                
+        product_name = ProductName(str(request.data["data"]["name"]))
+        product_category = ProductCategory(request.data["data"]["category"])
+        product_tags = Tags(request.data["data"]["tags"])
+
         # Extract all variant fields for processing
         for variant in request.data["data"]["variants"]:
-            variant_name = variant["name"]
-            variant_description = variant["description"]
-            variant_sku = variant["sku"]
-            variant_slug = variant["slug"]
-            variant_price = variant["selling_price"]
-            variant_tax = variant["tax_rate"]
-            variant_hero = variant["image_hero"]
-            variant_thumb = variant["image_thumbnail"]
-            variant_gallery = variant["image_gallery"]
-            print(f"{variant_name}")
-                    
+            variant_name = ProductName(str(variant["name"]))
+
+            variant_description = ProductDescription(str(variant["description"]))
+            variant_sku = SKU(variant["sku"])
+            variant_slug = Slug(variant["slug"])
+            variant_selling_price = SellingPrice(Decimal(variant["selling_price"]))
+            variant_tax_rate = TaxRate(Decimal(variant["tax_rate"]))
+            variant_image_hero = variant["image_hero"]
+            variant_image_thumb = variant["image_thumbnail"]
+            variant_image_gallery = variant["image_gallery"]
+
+
         return Response({
-            "message": "Product created successfully",
-            "product_name": product_name,
-            "category": product_category,
-            "tags": product_tags
+            "message": "got it"
         }, status=status.HTTP_201_CREATED)
 
     def patch(self, request, pk=None):
