@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from ..repositories.product_repository import ProductRepository
 from decimal import Decimal
+from datetime import datetime, UTC
 
 from ..value_objects.product_name import ProductName
 from ..value_objects.product_description import ProductDescription
@@ -42,7 +43,7 @@ class ProductDetailView(APIView):
                     'updated_at': product_entity.updated_at.value.isoformat(),
                     'variants': [
                         {
-                            'id': v.attributes.id,
+                            'id': v.id,
                             'name': v.attributes.name.value,
                             'description': v.attributes.description.value,
                             'sku': v.attributes.sku.value,
@@ -67,7 +68,6 @@ class ProductDetailView(APIView):
                 )
 
         else:
-            # GET /api/products/ - List all products
             try:
                 from ..models import Product
                 products = Product.objects.all()
@@ -92,44 +92,78 @@ class ProductDetailView(APIView):
                 )
 
     def post(self, request, pk=None):
-        """POST /api/products/ - Create a new product"""
+        """POST /api/products/ - Create a new product with multiple variants"""
 
-        # Extract main product data
-        product_name = ProductName(str(request.data["data"]["name"]))
-        product_category = ProductCategory(request.data["data"]["category"])
-        product_tags = Tags(request.data["data"]["tags"])
+        try:
+            # Extract main product data
+            product_name = ProductName(str(request.data["data"]["name"]))
+            product_category = ProductCategory(request.data["data"]["category"])
+            product_tags = Tags(request.data["data"]["tags"]) if request.data["data"].get("tags") else None
+
+            now = datetime.now(UTC)
+            created_at = CreatedAt(now)
+            updated_at = UpdatedAt(now)
+
+            product_variants = []
+
+            for variant_data in request.data["data"]["variants"]:
+                variant_name = ProductName(str(variant_data["name"]))
+                variant_description = ProductDescription(str(variant_data["description"]))
+                variant_sku = SKU(variant_data["sku"])
+                variant_slug = Slug(variant_data["slug"])
+                variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
+                variant_tax_rate = TaxRate(Decimal(variant_data["tax_rate"]))
+
+                variant_image_hero = variant_data.get("image_hero")
+                variant_image_details = variant_data.get("image_details")
+                variant_image_thumbnail = variant_data.get("image_thumbnail")
+                variant_image_gallery = variant_data.get("image_gallery")
+                variant_image_lifestyle = variant_data.get("image_lifestyle")
+
+                product_attributes = ProductAttributesNormal(
+                    name=variant_name,
+                    description=variant_description,
+                    SellingPrice=variant_selling_price,
+                    tax_rate=variant_tax_rate,
+                    sku=variant_sku,
+                    slug=variant_slug,
+                    image_hero=variant_image_hero,
+                    image_details=variant_image_details,
+                    image_thumbnail=variant_image_thumbnail,
+                    image_gallery=variant_image_gallery,
+                    image_lifestyle=variant_image_lifestyle,
+                    created_at=created_at,
+                    updated_at=updated_at,
+                )
+
+                product_variant = ProductVariant(attributes=product_attributes)
+
+                product_variants.append(product_variant)
+
+            product_entity = ProductEntity(
+                name=product_name,
+                category=product_category,
+                tags=product_tags,
+                variants=product_variants,
+                created_at=created_at,
+                updated_at=updated_at,
+            )
 
 
+            repository = ProductRepository()
+            saved_entity = repository.save(productentity=product_entity)
 
+            return Response({
+                "message": "Product created successfully",
+                "product_id": getattr(saved_entity, 'id', None),
+                "variants_count": len(product_variants)
+            }, status=status.HTTP_201_CREATED)
 
-
-
-
-
-        # Extract all variant fields for processing
-        for variant in request.data["data"]["variants"]:
-            variant_name = ProductName(str(variant["name"]))
-            variant_description = ProductDescription(str(variant["description"]))
-            variant_sku = SKU(variant["sku"])
-            variant_slug = Slug(variant["slug"])
-            variant_selling_price = SellingPrice(Decimal(variant["selling_price"]))
-            variant_tax_rate = TaxRate(Decimal(variant["tax_rate"]))
-            variant_image_hero = variant["image_hero"]
-            variant_image_galery = None
-            variant_image_thumb = variant["image_thumbnail"]
-            variant_image_gallery = variant["image_gallery"]
-            variant_image_lifestyle = None
-            variant_image_details = None
-
-            product_attributes_normal = ProductAttributesNormal(name=variant_name,description=variant_description,SellingPrice=variant_selling_price,tax_rate=variant_tax_rate,sku=variant_sku,slug=variant_slug,image_hero=variant_image_hero,image_details=variant_image_details,image_thumbnail=variant_image_thumb,image_gallery=variant_image_galery,image_lifestyle=variant_image_lifestyle)
-            product_variant = ProductVariant(attributes=product_attributes_normal)
-
-        # fix add the list of product variants
-        product_entity = ProductEntity(name=product_name,category=product_category,tags=product_tags,variants=product_variant)
-
-        return Response({
-            "message": "got it"
-        }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {'error': f'Error creating product: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def patch(self, request, pk=None):
         """PATCH /api/products/<id>/ - Update a product"""
