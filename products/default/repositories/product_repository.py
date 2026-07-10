@@ -71,7 +71,8 @@ class ProductRepository:
 
         product_name = ProductName(product_db.name)
         product_category = ProductCategory(product_db.category)
-        product_tags = product_db.tags
+        product_tags = list(product_db.tags.values_list('name', flat=True))
+        print(product_tags)
         created_at = CreatedAt(product_db.created_at)
         updated_at = UpdatedAt(product_db.updated_at)
 
