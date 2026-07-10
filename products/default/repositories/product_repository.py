@@ -45,3 +45,8 @@ class ProductRepository:
             variant.attributes.sku = productvariant_db.sku
             variant.attributes.SellingPrice = productvariant_db.selling_price
             variant.attributes.tax_rate = productvariant_db.tax_rate
+
+            variant.attributes.CreatedAt = productvariant_db.created_at
+            variant.attributes.updated_at = productvariant_db.updated_at
+            print(f"{variant.attributes.CreatedAt}")
+            print(f"{variant.attributes.updated_at}")

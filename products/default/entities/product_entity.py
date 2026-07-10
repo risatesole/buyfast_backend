@@ -12,6 +12,8 @@ from ..value_objects.product_type import ProductType
 from ..value_objects.product_selling_price import SellingPrice
 from ..value_objects.product_taxrate import TaxRate
 from ..value_objects.product_tags import Tags
+from ..value_objects.product_created_at import CreatedAt
+from ..value_objects.product_updated_at import UpdatedAt
 
 from .product_variant import ProductVariant
 
@@ -28,12 +30,12 @@ class ProductEntity:
     tags: Optional[Tags] = None
     variants: List[ProductVariant] = field(default_factory=list)
 
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[CreatedAt] = None
+    updated_at: Optional[UpdatedAt] = None
     id: Optional[int] = None
 
     # Product type is locked to "normal" - hidden from constructor
     product_type: ProductType = field(default_factory=lambda: ProductType("normal"), init=False)
-    
+
     def __post_init__(self):
         pass

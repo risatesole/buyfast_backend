@@ -1,7 +1,6 @@
 Example usage of the product repository
 
 ```py
-
 from ..value_objects.product_name import ProductName
 from ..value_objects.product_description import ProductDescription
 from ..value_objects.product_sku import SKU
@@ -11,12 +10,18 @@ from ..value_objects.product_type import ProductType
 from ..value_objects.product_selling_price import SellingPrice
 from ..value_objects.product_taxrate import TaxRate
 from ..value_objects.product_tags import Tags
+from ..value_objects.product_created_at import CreatedAt
+from ..value_objects.product_updated_at import UpdatedAt
 
 from ..entities.product_attributes_normal import ProductAttributesNormal
 
 from .product_repository import ProductRepository
 
 from decimal import Decimal
+
+from datetime import datetime, UTC
+
+
 
 # Create base product info
 name = ProductName("Apples")
@@ -36,8 +41,8 @@ attributes1 = ProductAttributesNormal(
     image_hero="small-apples-hero.jpg",
     image_thumbnail="small-apples-thumb.jpg",
     image_gallery="small-apples-gallery.jpg",
-    created_at=None,
-    updated_at=None,
+    created_at = CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+    updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
 )
 
 # Variant 2 - Medium Apples
@@ -52,8 +57,8 @@ attributes2 = ProductAttributesNormal(
     image_hero="medium-apples-hero.jpg",
     image_thumbnail="medium-apples-thumb.jpg",
     image_gallery="medium-apples-gallery.jpg",
-    created_at=None,
-    updated_at=None,
+    created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+    updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
 )
 
 # Variant 3 - Large Apples
@@ -68,8 +73,8 @@ attributes3 = ProductAttributesNormal(
     image_hero="large-apples-hero.jpg",
     image_thumbnail="large-apples-thumb.jpg",
     image_gallery="large-apples-gallery.jpg",
-    created_at=None,
-    updated_at=None,
+    created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+    updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
 )
 
 # Create variant objects
@@ -84,11 +89,12 @@ entity = ProductEntity(
     category=category,
     tags=tags,
     variants=[variant1, variant2, variant3],
-    created_at=None,
-    updated_at=None,
+    created_at=CreatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
+    updated_at=UpdatedAt(datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)),
 )
 
 # Save
 repository = ProductRepository()
 repository.save(productentity=entity)
+
 ```

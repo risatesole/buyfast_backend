@@ -12,6 +12,8 @@ from products.default.value_objects.product_type import ProductType
 from products.default.value_objects.product_selling_price import SellingPrice
 from products.default.value_objects.product_taxrate import TaxRate
 from products.default.value_objects.product_tags import Tags
+from products.default.value_objects.product_created_at import CreatedAt
+from products.default.value_objects.product_updated_at import UpdatedAt
 
 from products.default.entities.interfaces.product_attributes_interface import ProductAttributes
 
@@ -36,8 +38,8 @@ class ProductAttributesNormal(ProductAttributes):
     image_lifestyle: str | None = None
 
 
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    created_at: Optional[CreatedAt] = None
+    updated_at: Optional[UpdatedAt] = None
     id: Optional[int] = None
 
     def __post_init__(self):
