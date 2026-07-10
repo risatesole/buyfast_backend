@@ -76,8 +76,7 @@ class ProductDetailView(APIView):
 
                 query_param_sort_by = request.GET.get('sort')
                 query_param_status = request.GET.get('status')
-                query_param_limit = int(request.GET.get('limit'))
-                query_param_offset = int(request.GET.get('offset'))
+                query_param_offset = int(request.GET.get('offset', '0'))
                 query_param_tag = request.GET.get('tag')
                 query_param_category = request.GET.get('category')
                 query_param_search = request.GET.get('search')
@@ -89,7 +88,13 @@ class ProductDetailView(APIView):
                         query_param_status = False
                     if query_param_status is None:
                         query_param_status = None
-                        
+                
+                query_param_limit = request.GET.get('limit')
+                if query_param_limit is None:
+                    query_param_limit = 100
+                else:
+                    query_param_limit = int(query_param_limit)
+                    
 
                 repository_products = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
                 
@@ -109,6 +114,7 @@ class ProductDetailView(APIView):
                 return Response(products_data, status=status.HTTP_200_OK)
 
             except Exception as e:
+                print(f"{request.GET.get('limit')}")
                 return Response(
                     {'error': str(e)},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
