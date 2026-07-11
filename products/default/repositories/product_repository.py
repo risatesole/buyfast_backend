@@ -41,32 +41,32 @@ class ProductRepository:
 
         productentity.id = product_db.id
 
-        # Handle multiple variants
-        for idx, variant in enumerate(productentity.variants, 1):
-            variant_name = variant.attributes.name.value
-            variant_description = variant.attributes.description.value
-            variant_sku = variant.attributes.sku.value
-            variant_slug = variant.attributes.slug.value
-            variant_price = variant.SellingPrice.value
-            variant_tax_rate = variant.tax_rate.value
+        if productentity.product_type.value == "normal":
+            for idx, variant in enumerate(productentity.variants, 1):
+                variant_name = variant.attributes.name.value
+                variant_description = variant.attributes.description.value
+                variant_sku = variant.attributes.sku.value
+                variant_slug = variant.attributes.slug.value
+                variant_price = variant.SellingPrice.value
+                variant_tax_rate = variant.tax_rate.value
 
-            productvariant_db = ProductVariantModel.objects.create(
-                product=product_db,
-                name=variant_name,
-                description=variant_description,
-                slug=variant_slug,
-                sku=variant_sku,
-                selling_price=variant_price,
-                tax_rate=variant_tax_rate,
-            )
-            variant.attributes.id = productvariant_db.id
-            variant.attributes.name = productvariant_db.name
-            variant.attributes.description = productvariant_db.description
-            variant.attributes.sku = productvariant_db.sku
-            variant.attributes.slug = productvariant_db.slug
+                productvariant_db = ProductVariantModel.objects.create(
+                    product=product_db,
+                    name=variant_name,
+                    description=variant_description,
+                    slug=variant_slug,
+                    sku=variant_sku,
+                    selling_price=variant_price,
+                    tax_rate=variant_tax_rate,
+                )
+                variant.attributes.id = productvariant_db.id
+                variant.attributes.name = productvariant_db.name
+                variant.attributes.description = productvariant_db.description
+                variant.attributes.sku = productvariant_db.sku
+                variant.attributes.slug = productvariant_db.slug
 
-            variant.attributes.CreatedAt = productvariant_db.created_at
-            variant.attributes.updated_at = productvariant_db.updated_at
+                variant.attributes.CreatedAt = productvariant_db.created_at
+                variant.attributes.updated_at = productvariant_db.updated_at
 
         return productentity
 

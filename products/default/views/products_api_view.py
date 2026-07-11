@@ -40,6 +40,7 @@ class ProductDetailView(APIView):
                     'id': product_entity.id,
                     'name': product_entity.name.value,
                     'category': product_entity.category.value,
+                    'product_type': product_entity.product_type.value,
                     'thumbnail': product_entity.thumbnail,
                     'slug': product_entity.slug.value,
                     'product_type': product_entity.product_type.value,
@@ -105,6 +106,7 @@ class ProductDetailView(APIView):
                         'id': product_entity.id,
                         'name': product_entity.name.value,
                         'category': product_entity.category.value,
+                        'product_type': product_entity.product_type.value,
                         'thumbnail': product_entity.thumbnail,
                         'slug': product_entity.slug.value,
                         "type": product_entity.product_type.value,
@@ -208,7 +210,7 @@ class ProductDetailView(APIView):
 
             repository = ProductRepository()
             saved_entity = repository.save(productentity=product_entity)
-            
+
             utc_now = datetime.now(timezone.utc)
 
             return Response({
@@ -217,6 +219,7 @@ class ProductDetailView(APIView):
                 "id": saved_entity.id,
                 "name": saved_entity.name.value,
                 "category": saved_entity.category.value,
+                'product_type': saved_entity.product_type.value,
                 "thumbnail": saved_entity.thumbnail,
                 "slug": saved_entity.slug.value,
                 "tags": saved_entity.tags.value if saved_entity.tags else None,
@@ -230,7 +233,7 @@ class ProductDetailView(APIView):
                         "selling_price": float(variant.SellingPrice.value),
                         "tax_rate": float(variant.tax_rate.value),
                         "created_at": variant.attributes.created_at.value,
-                        "updated_at": variant.attributes.updated_at 
+                        "updated_at": variant.attributes.updated_at
                     }
                     for variant in saved_entity.variants
                 ]
