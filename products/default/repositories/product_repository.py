@@ -105,7 +105,7 @@ class ProductRepository:
             variant_name = ProductName(variant_db.name)
             variant_description = ProductDescription(variant_db.description)
             variant_variantnumber = variant_db.variantnumber
-            variant_thumbnail = variant_db.ProductImage.filter(image_type='THUMBNAIL').first()
+            variant_thumbnail = variant_db.thumbnail if hasattr(variant_db, 'thumbnail') else None  # Just get the URL string
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -115,18 +115,20 @@ class ProductRepository:
             variant_updated_at = UpdatedAt(variant_db.updated_at)
 
             # Create ProductAttributesNormal for this variant
-            attributes = ProductAttributesNormal(
-                id=variant_db.id,
-                name=variant_name,
-                description=variant_description,
-
-                image_hero=variant_db.image_hero if hasattr(variant_db, 'image_hero') else None,
-                image_thumbnail=variant_db.image_thumbnail if hasattr(variant_db, 'image_thumbnail') else None,
-                image_gallery=variant_db.image_gallery if hasattr(variant_db, 'image_gallery') else None,
-                created_at=variant_created_at,
-                updated_at=variant_updated_at,
-            )
-
+            try:
+                attributes = ProductAttributesNormal(
+                    id=variant_db.id,
+                    name=variant_name,
+                    description=variant_description,
+                    image_hero=variant_db.image_hero if hasattr(variant_db, 'image_hero') else None,
+                    image_thumbnail=variant_db.image_thumbnail if hasattr(variant_db, 'image_thumbnail') else None,
+                    image_gallery=variant_db.image_gallery if hasattr(variant_db, 'image_gallery') else None,
+                    created_at=variant_created_at,
+                    updated_at=variant_updated_at,
+                )
+            except Exception as e:
+                print(f"error: ({e})")
+            
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
@@ -140,8 +142,6 @@ class ProductRepository:
             )
             variants.append(variant_entity)
 
-        # Reconstruct and return the ProductEntity
-        # NOTE: Do NOT pass product_type - it's automatically set with init=False
         product_entity = ProductEntity(
             id=product_db.id,
             name=product_name,
