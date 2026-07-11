@@ -156,9 +156,82 @@ class ProductRepository:
 
         return product_entity
 
+    def get_product_by_slug(self, product_slug: str) -> ProductEntity:
+        """
+        Retrieve a product by slug and reconstruct it as a ProductEntity with all variants.
+        """
+        product_db = Product.objects.get(slug=product_slug)
+
+        product_name = ProductName(product_db.name)
+        product_category = ProductCategory(product_db.category)
+        product_thumbnail = product_db.thumbnail
+        product_slug = Slug(product_db.slug)
+        product_tags = list(product_db.tags.values_list('name', flat=True))
+        created_at = CreatedAt(product_db.created_at)
+        updated_at = UpdatedAt(product_db.updated_at)
+
+        variants_db = ProductVariantModel.objects.filter(product=product_db)
+
+        variants = []
+        for variant_db in variants_db:
+            # Reconstruct variant-level value objects
+            variant_name = ProductName(variant_db.name)
+            variant_description = ProductDescription(variant_db.description)
+            variant_variantnumber = variant_db.variantnumber
+            variant_thumbnail = variant_db.thumbnail if hasattr(variant_db, 'thumbnail') else None
+            variant_sku = SKU(variant_db.sku)
+            variant_slug = Slug(variant_db.slug)
+            variant_price = SellingPrice(variant_db.selling_price)
+            variant_tax_rate = TaxRate(variant_db.tax_rate)
+
+            variant_created_at = CreatedAt(variant_db.created_at)
+            variant_updated_at = UpdatedAt(variant_db.updated_at)
+
+            # Create ProductAttributesNormal for this variant
+            try:
+                attributes = ProductAttributesNormal(
+                    id=variant_db.id,
+                    name=variant_name,
+                    description=variant_description,
+                    image_hero=variant_db.image_hero if hasattr(variant_db, 'image_hero') else None,
+                    image_thumbnail=variant_db.image_thumbnail if hasattr(variant_db, 'image_thumbnail') else None,
+                    image_gallery=variant_db.image_gallery if hasattr(variant_db, 'image_gallery') else None,
+                    created_at=variant_created_at,
+                    updated_at=variant_updated_at,
+                )
+            except Exception as e:
+                print(f"error: ({e})")
+            
+            # Create ProductVariantEntity
+            variant_entity = ProductVariantEntity(
+                id=variant_db.id,
+                sku=variant_sku,
+                slug=variant_slug,
+                thumbnail=variant_thumbnail,
+                variantnumber=variant_variantnumber,
+                attributes=attributes,
+                SellingPrice=variant_price,
+                tax_rate=variant_tax_rate
+            )
+            variants.append(variant_entity)
+
+        product_entity = ProductEntity(
+            id=product_db.id,
+            name=product_name,
+            slug=product_slug,
+            category=product_category,
+            thumbnail=product_thumbnail,
+            tags=product_tags,
+            variants=variants,
+            created_at=created_at,
+            updated_at=updated_at
+        )
+
+        return product_entity
+
     def get_product_via_query(self, sort:str=None, status:bool=None, limit:int=None,
                             offset:int=None, tag:str=None, category:str=None,
-                            search:str=None):
+                            search:str=None, slug:str=None):
         """
         get products via query parameters
         """
@@ -172,6 +245,10 @@ class ProductRepository:
         if tag:
             # TaggableManager search
             filter_params['tags__name__icontains'] = tag
+
+        if slug:
+            # If slug is provided, filter by slug that starts with the given value
+            filter_params['slug__istartswith'] = slug
 
         if search:
             q_objects |= Q(name__icontains=search)
@@ -203,11 +280,6 @@ class ProductRepository:
                     id = variant.id,
                     name= ProductName(variant.name),
                     description= ProductDescription(variant.description),
-                    # image_hero: str | None = None
-                    # image_details: str | None = None
-                    # image_thumbnail: str | None = None
-                    # image_gallery: str | None = None
-                    # image_lifestyle: str | None = None
                     created_at = CreatedAt(variant.created_at),
                     updated_at= UpdatedAt(variant.updated_at)
                 )
@@ -217,7 +289,7 @@ class ProductRepository:
                     sku= SKU(variant.sku),
                     slug= Slug(variant.slug),
                     attributes=product_attributes_normal,
-                    thumbnail=thumbnail_image.image,
+                    thumbnail=thumbnail_image.image if thumbnail_image else None,
                     id= variant.id,
                     SellingPrice=SellingPrice(variant.selling_price),
                     tax_rate=TaxRate(variant.tax_rate)
