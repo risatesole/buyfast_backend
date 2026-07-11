@@ -44,8 +44,8 @@ class ProductRepository:
             variant_description = variant.attributes.description.value
             variant_sku = variant.attributes.sku.value
             variant_slug = variant.attributes.slug.value
-            variant_price = variant.attributes.SellingPrice.value
-            variant_tax_rate = variant.attributes.tax_rate.value
+            variant_price = variant.SellingPrice.value
+            variant_tax_rate = variant.tax_rate.value
 
             productvariant_db = ProductVariantModel.objects.create(
                 product=product_db,
@@ -61,8 +61,6 @@ class ProductRepository:
             variant.attributes.description = productvariant_db.description
             variant.attributes.sku = productvariant_db.sku
             variant.attributes.slug = productvariant_db.slug
-            variant.attributes.SellingPrice = productvariant_db.selling_price
-            variant.attributes.tax_rate = productvariant_db.tax_rate
 
             variant.attributes.CreatedAt = productvariant_db.created_at
             variant.attributes.updated_at = productvariant_db.updated_at
@@ -101,8 +99,6 @@ class ProductRepository:
                 id=variant_db.id,
                 name=variant_name,
                 description=variant_description,
-                SellingPrice=variant_price,
-                tax_rate=variant_tax_rate,
                 sku=variant_sku,
                 slug=variant_slug,
                 image_hero=variant_db.image_hero if hasattr(variant_db, 'image_hero') else None,
@@ -115,7 +111,9 @@ class ProductRepository:
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
-                attributes=attributes
+                attributes=attributes,
+                SellingPrice=variant_price,
+                tax_rate=variant_tax_rate
             )
             variants.append(variant_entity)
 
@@ -178,8 +176,6 @@ class ProductRepository:
                     id = variant.id,
                     name= ProductName(variant.name),
                     description= ProductDescription(variant.description),
-                    SellingPrice = SellingPrice(variant.selling_price),
-                    tax_rate= TaxRate(variant.tax_rate),
                     sku= SKU(variant.sku),
                     slug= Slug(variant.slug),
                     # image_hero: str | None = None
@@ -193,7 +189,9 @@ class ProductRepository:
 
                 product_variant = ProductVariantEntity(
                     attributes=product_attributes_normal,
-                    id= variant.id
+                    id= variant.id,
+                    SellingPrice=SellingPrice(variant.selling_price),
+                    tax_rate=TaxRate(variant.tax_rate)
                 )
                 variant_entities.append(product_variant)
 

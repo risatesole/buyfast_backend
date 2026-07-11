@@ -20,6 +20,7 @@ from ..value_objects.product_updated_at import UpdatedAt
 from ..entities.product_entity import ProductEntity
 from ..entities.product_variant import ProductVariant
 from ..entities.product_attributes_normal import ProductAttributesNormal
+from ..repositories.product_repository import ProductRepository
 
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
@@ -48,8 +49,8 @@ class ProductDetailView(APIView):
                             'description': v.attributes.description.value,
                             'sku': v.attributes.sku.value,
                             'slug': v.attributes.slug.value,
-                            'selling_price': float(v.attributes.SellingPrice.value),
-                            'tax_rate': float(v.attributes.tax_rate.value),
+                            'selling_price': float(v.SellingPrice.value),
+                            'tax_rate': float(v.tax_rate.value),
                             'image_hero': v.attributes.image_hero,
                             'image_thumbnail': v.attributes.image_thumbnail,
                             'image_gallery': v.attributes.image_gallery,
@@ -105,8 +106,8 @@ class ProductDetailView(APIView):
                             {
                                 "name": variant.attributes.name.value,
                                 "description": variant.attributes.description.value,
-                                "selling_price": None, # TODO: remove selling price from the variant and put in the products.variant entity
-                                "tax_rate": None,  # TODO: remove tax_rate from the variant and put in the products.variant entity
+                                "selling_price": float(variant.SellingPrice.value),
+                                "tax_rate": float(variant.tax_rate.value),
                                 "sku": variant.attributes.sku.value,
                                 "slug": variant.attributes.slug.value,
                                 "image_hero":variant.attributes.image_hero,
@@ -161,8 +162,6 @@ class ProductDetailView(APIView):
                 product_attributes = ProductAttributesNormal(
                     name=variant_name,
                     description=variant_description,
-                    SellingPrice=variant_selling_price,
-                    tax_rate=variant_tax_rate,
                     sku=variant_sku,
                     slug=variant_slug,
                     image_hero=variant_image_hero,
@@ -174,7 +173,11 @@ class ProductDetailView(APIView):
                     updated_at=updated_at,
                 )
 
-                product_variant = ProductVariant(attributes=product_attributes)
+                product_variant = ProductVariant(
+                    attributes=product_attributes,
+                    SellingPrice=variant_selling_price,
+                    tax_rate=variant_tax_rate
+                )
 
                 product_variants.append(product_variant)
 
@@ -205,8 +208,8 @@ class ProductDetailView(APIView):
                         "description": variant.attributes.description,
                         "sku": variant.attributes.sku,
                         "slug": variant.attributes.slug,
-                        "selling_price": float(variant.attributes.SellingPrice),
-                        "tax_rate": float(variant.attributes.tax_rate),
+                        "selling_price": float(variant.SellingPrice.value),
+                        "tax_rate": float(variant.tax_rate.value),
                         "created_at": variant.attributes.created_at.value,
                         "updated_at": variant.attributes.updated_at 
                     }
