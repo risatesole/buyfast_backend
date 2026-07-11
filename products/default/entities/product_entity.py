@@ -26,6 +26,7 @@ class ProductEntity:
     """
     name: ProductName
     category: ProductCategory
+    slug: Slug
 
     tags: Optional[Tags] = None
     variants: List[ProductVariant] = field(default_factory=list)

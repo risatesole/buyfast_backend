@@ -38,6 +38,7 @@ class ProductDetailView(APIView):
                     'id': product_entity.id,
                     'name': product_entity.name.value,
                     'category': product_entity.category.value,
+                    'slug': product_entity.slug.value,
                     'product_type': product_entity.product_type.value,
                     'tags': product_entity.tags,  # Now it's a list, not TaggableManager
                     'created_at': product_entity.created_at.value.isoformat(),
@@ -100,6 +101,7 @@ class ProductDetailView(APIView):
                         'id': product_entity.id,
                         'name': product_entity.name.value,
                         'category': product_entity.category.value,
+                        'slug': product_entity.slug.value,
                         "type": product_entity.product_type.value,
                         # 'tags': product_entity.tags if product_entity.tags else None, # TODO: return the tags
                         "variants":[
@@ -137,6 +139,7 @@ class ProductDetailView(APIView):
             # Extract main product data
             product_name = ProductName(str(request.data["data"]["name"]))
             product_category = ProductCategory(request.data["data"]["category"])
+            product_slug = Slug(request.data["data"]["slug"])
             product_tags = Tags(request.data["data"]["tags"]) if request.data["data"].get("tags") else None
 
             now = datetime.now(UTC)
@@ -184,6 +187,7 @@ class ProductDetailView(APIView):
             product_entity = ProductEntity(
                 name=product_name,
                 category=product_category,
+                slug=product_slug,
                 tags=product_tags,
                 variants=product_variants,
                 created_at=created_at,
@@ -200,6 +204,7 @@ class ProductDetailView(APIView):
                 "id": saved_entity.id,
                 "name": saved_entity.name.value,
                 "category": saved_entity.category.value,
+                "slug": saved_entity.slug.value,
                 "tags": saved_entity.tags.value if saved_entity.tags else None,
                 "variants": [
                     {

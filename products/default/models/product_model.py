@@ -40,6 +40,7 @@ class Product(models.Model):
     thumbnail = models.CharField(max_length=1000)
     tags = TaggableManager(blank=True)
     name = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255,unique=True)
     
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
