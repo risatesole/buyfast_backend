@@ -20,6 +20,7 @@ from orders.orders import orders_admin_view
 from .modules.system.health_api_view import health
 from .views import set_product_price, api_root
 from orders.views.customers.orders_api_view import orders_api_view
+from products.default.views.product_categories_view import product_categories_api_view
 
 urlpatterns = [
     path("", api_root, name="api-root"),
@@ -37,7 +38,7 @@ urlpatterns = [
     path("delete-account/", delete_account),
     path('products/', ProductDetailView.as_view(), name='product-list'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
-
+    path('products/categories', product_categories_api_view, name="product-categories"),
     path("cart/", cart_api_view),
     path("checkout/", checkout_api_view),
     path("checkout/timeslots/", checkout_timeslots_api_view),

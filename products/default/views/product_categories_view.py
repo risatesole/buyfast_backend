@@ -1,135 +1,114 @@
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from api.utils import CsrfExemptSessionAuthentication
-from ..services.category_service import CategoryService, CategoryAlreadyExistsError, CategoryNotFoundError
 from rest_framework.response import Response
-from accounts.accounts import AccountRole
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+PRODUCT_CATEGORIES = {
+    'electronics': {
+        'label': 'Electronics',
+        'description': 'Electronic devices and gadgets',
+        'priority': 3,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=400&h=400&fit=crop'
+        }
+    },
+    'clothing': {
+        'label': 'Clothing',
+        'description': 'Apparel and fashion items',
+        'priority': 3,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop'
+        }
+    },
+    'books': {
+        'label': 'Books',
+        'description': 'Books and reading materials',
+        'priority': 2,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-150784272343-583f20270319?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1507842872343-583f20270319?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1507842872343-583f20270319?w=400&h=400&fit=crop'
+        }
+    },
+    'home': {
+        'label': 'Home & Garden',
+        'description': 'Home decor and garden supplies',
+        'priority': 1,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop'
+        }
+    },
+    'toys': {
+        'label': 'Toys & Games',
+        'description': 'Toys, games, and entertainment',
+        'priority': 2,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&h=400&fit=crop'
+        }
+    },
+    'food': {
+        'label': 'Food & Beverages',
+        'description': 'Food products and beverages',
+        'priority': 1,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop'
+        }
+    },
+    'beauty': {
+        'label': 'Beauty & Personal Care',
+        'description': 'Beauty and personal care products',
+        'priority': 2,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1596462502413-b55a833db978?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1596462502413-b55a833db978?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1596462502413-b55a833db978?w=400&h=400&fit=crop'
+        }
+    },
+    'sports': {
+        'label': 'Sports & Outdoors',
+        'description': 'Sports equipment and outdoor gear',
+        'priority': 2,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=400&fit=crop'
+        }
+    },
+    'automotive': {
+        'label': 'Automotive',
+        'description': 'Automotive parts and accessories',
+        'priority': 3,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=400&fit=crop'
+        }
+    },
+    'other': {
+        'label': 'Other',
+        'description': 'Other miscellaneous items',
+        'priority': 3,
+        'images': {
+            'banner': 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=1200&h=400&fit=crop',
+            'cart': 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=100&h=100&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&h=400&fit=crop'
+        }
+    },
+}
 
-@api_view(['GET', 'POST'])
-@authentication_classes([CsrfExemptSessionAuthentication])
-def product_categories(request):
-    service = CategoryService()
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def product_categories_api_view(request):
 
-    if request.method == 'GET':
-        status = request.query_params.get("status")
-        if status == "true":
-            status = True
-        elif status == "false":
-            status = False
-        else:
-            status = None
-        return Response({"status": "ok", "data": service.getCategories(status=status)})
-
-    user = request.user
-    if not user.is_authenticated:
-        return Response({"status": "error", "message": "Authentication required"}, status=401)
-    if user.role != AccountRole.EMPLOYEE.value:
-        return Response({"status": "error", "message": "Only employees can create categories"}, status=403)
-
-    try:
-        category = service.setCategory(
-            name=request.data.get("name"),
-            slug=request.data.get("slug"),
-            description=request.data.get("description", ""),
-            image=request.data.get("image", ""),
-            status=request.data.get("status", True),
-        )
-        return Response({"status": "created", "data": category}, status=201)
-    except ValueError as e:
-        return Response({"status": "error", "message": str(e)}, status=400)
-    except CategoryAlreadyExistsError as e:
-        return Response({"status": "error", "message": str(e)}, status=409)
-    except Exception as e:
-        return Response({"status": "error", "message": "An error occurred while creating the category"}, status=500)
-
-
-@api_view(['GET', 'PATCH', 'DELETE'])
-@authentication_classes([CsrfExemptSessionAuthentication])
-def product_category_detail(request, category_id):
-    service = CategoryService()
-    
-    # GET - Retrieve a single category
-    if request.method == 'GET':
-        try:
-            category = service.getCategoryById(category_id)
-            if not category:
-                return Response(
-                    {"status": "error", "message": "Category not found"}, 
-                    status=404
-                )
-            return Response({"status": "ok", "data": category})
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": str(e)}, 
-                status=500
-            )
-    
-    # PATCH - Update a category
-    if request.method == 'PATCH':
-        user = request.user
-        if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"}, 
-                status=401
-            )
-        if user.role != AccountRole.EMPLOYEE.value:
-            return Response(
-                {"status": "error", "message": "Only employees can update categories"}, 
-                status=403
-            )
-        
-        try:
-            # Prepare update data
-            update_data = {}
-            if 'name' in request.data:
-                update_data['name'] = request.data['name']
-            if 'slug' in request.data:
-                update_data['slug'] = request.data['slug']
-            if 'description' in request.data:
-                update_data['description'] = request.data['description']
-            if 'image' in request.data:
-                update_data['image'] = request.data['image']
-            if 'status' in request.data:
-                update_data['status'] = request.data['status']
-            
-            updated_category = service.updateCategory(category_id, **update_data)
-            return Response({"status": "ok", "data": updated_category})
-            
-        except CategoryNotFoundError as e:
-            return Response({"status": "error", "message": str(e)}, status=404)
-        except ValueError as e:
-            return Response({"status": "error", "message": str(e)}, status=400)
-        except CategoryAlreadyExistsError as e:
-            return Response({"status": "error", "message": str(e)}, status=409)
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": f"An error occurred while updating the category: {str(e)}"}, 
-                status=500
-            )
-    
-    # DELETE - Delete a category
-    if request.method == 'DELETE':
-        user = request.user
-        if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"}, 
-                status=401
-            )
-        if user.role != AccountRole.EMPLOYEE.value:
-            return Response(
-                {"status": "error", "message": "Only employees can delete categories"}, 
-                status=403
-            )
-        
-        try:
-            success = service.deleteCategory(category_id)
-            if not success:
-                return Response(
-                    {"status": "error", "message": "Category not found"}, 
-                    status=404
-                )
-            return Response({"status": "ok", "message": "Category deleted successfully"})
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": f"An error occurred while deleting the category: {str(e)}"}, 
-                status=500
-            )
+    return Response({"status": "ok", "data": PRODUCT_CATEGORIES})
