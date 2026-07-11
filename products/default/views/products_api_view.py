@@ -38,6 +38,7 @@ class ProductDetailView(APIView):
                     'id': product_entity.id,
                     'name': product_entity.name.value,
                     'category': product_entity.category.value,
+                    'thumbnail': product_entity.thumbnail,
                     'slug': product_entity.slug.value,
                     'product_type': product_entity.product_type.value,
                     'tags': product_entity.tags,  # Now it's a list, not TaggableManager
@@ -101,6 +102,7 @@ class ProductDetailView(APIView):
                         'id': product_entity.id,
                         'name': product_entity.name.value,
                         'category': product_entity.category.value,
+                        'thumbnail': product_entity.thumbnail,
                         'slug': product_entity.slug.value,
                         "type": product_entity.product_type.value,
                         # 'tags': product_entity.tags if product_entity.tags else None, # TODO: return the tags
@@ -141,6 +143,7 @@ class ProductDetailView(APIView):
             product_category = ProductCategory(request.data["data"]["category"])
             product_slug = Slug(request.data["data"]["slug"])
             product_tags = Tags(request.data["data"]["tags"]) if request.data["data"].get("tags") else None
+            product_thumbnail = request.data["data"]["thumbnail"]
 
             now = datetime.now(UTC)
             created_at = CreatedAt(now)
@@ -187,6 +190,7 @@ class ProductDetailView(APIView):
             product_entity = ProductEntity(
                 name=product_name,
                 category=product_category,
+                thumbnail=product_thumbnail,
                 slug=product_slug,
                 tags=product_tags,
                 variants=product_variants,
@@ -204,6 +208,7 @@ class ProductDetailView(APIView):
                 "id": saved_entity.id,
                 "name": saved_entity.name.value,
                 "category": saved_entity.category.value,
+                "thumbnail": saved_entity.thumbnail,
                 "slug": saved_entity.slug.value,
                 "tags": saved_entity.tags.value if saved_entity.tags else None,
                 "variants": [

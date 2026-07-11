@@ -24,6 +24,7 @@ class ProductRepository:
         name = productentity.name.value
         category = productentity.category.value
         tags = productentity.tags
+        thumbnail = productentity.thumbnail
         created_at = productentity.created_at
         updated_at = productentity.updated_at
         product_type = productentity.product_type
@@ -33,7 +34,7 @@ class ProductRepository:
             name = name,
             category=category,
             tags = tags,
-            thumbnail = "https://example.com",
+            thumbnail=thumbnail,
             product_type = product_type,
             slug= slug
         )
@@ -77,6 +78,7 @@ class ProductRepository:
 
         product_name = ProductName(product_db.name)
         product_category = ProductCategory(product_db.category)
+        product_thumbnail = product_db.thumbnail
         product_slug = Slug(product_db.slug)
         product_tags = list(product_db.tags.values_list('name', flat=True))
         created_at = CreatedAt(product_db.created_at)
@@ -127,6 +129,7 @@ class ProductRepository:
             name=product_name,
             slug=product_slug,
             category=product_category,
+            thumbnail=product_thumbnail,
             tags=product_tags,
             variants=variants,
             created_at=created_at,
@@ -203,6 +206,7 @@ class ProductRepository:
                 id=p.id,
                 name=ProductName(p.name),
                 category=ProductCategory(p.category),
+                thumbnail=p.thumbnail,
                 slug=Slug(p.slug),
                 tags=list(p.tags.values_list('name', flat=True)),
                 variants=variant_entities,
