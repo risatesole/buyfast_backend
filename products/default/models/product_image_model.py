@@ -17,7 +17,10 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE, 
         related_name="images"
     )
-    image = models.ImageField(upload_to='product_images/')
+    image = models.CharField(
+        max_length=2000,
+    )
+
     image_type = models.CharField(
         max_length=20,
         choices=ImageType.choices,

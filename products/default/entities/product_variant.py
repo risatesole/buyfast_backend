@@ -16,3 +16,4 @@ class ProductVariant(ABC):
     SellingPrice: Optional[SellingPrice] = None
     tax_rate: Optional[TaxRate] = None
     id: Optional[int] = None
+    thumbnail: Optional[str] = None

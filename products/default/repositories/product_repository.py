@@ -1,5 +1,6 @@
 from ..entities.product_entity import ProductEntity
 from ..models import Product, ProductVariant as ProductVariantModel
+from ..models.product_image_model import ProductImage
 from ..entities.product_variant import ProductVariant as ProductVariantEntity
 
 from ..value_objects.product_name import ProductName
@@ -46,6 +47,7 @@ class ProductRepository:
                 variant_name = variant.attributes.name.value
                 variant_description = variant.attributes.description.value
                 variant_variantnumber = variant.variantnumber
+                variant_thumbnail = variant.thumbnail
                 variant_sku = variant.attributes.sku.value
                 variant_slug = variant.attributes.slug.value
                 variant_price = variant.SellingPrice.value
@@ -61,6 +63,14 @@ class ProductRepository:
                     tax_rate=variant_tax_rate,
                     variantnumber=variant_variantnumber,
                 )
+
+                if variant_thumbnail is not None:
+                    thumbnail_db = ProductImage.objects.create(
+                        product_variant = productvariant_db,
+                        image = variant_thumbnail,
+                        image_type="THUMBNAIL",
+                        alt_text= f"{productvariant_db.name} image"
+                    )
 
                 variant.attributes.id = productvariant_db.id
                 variant.attributes.name = productvariant_db.name
@@ -95,6 +105,7 @@ class ProductRepository:
             variant_name = ProductName(variant_db.name)
             variant_description = ProductDescription(variant_db.description)
             variant_variantnumber = variant_db.variantnumber
+            variant_thumbnail = variant_db.ProductImage.filter(image_type='THUMBNAIL').first()
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -120,6 +131,7 @@ class ProductRepository:
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
+                thumbnail=variant_thumbnail,
                 variantnumber=variant_variantnumber,
                 attributes=attributes,
                 SellingPrice=variant_price,
@@ -184,6 +196,8 @@ class ProductRepository:
             product_variant_from_model = ProductVariantModel.objects.filter(product=p)
 
             for variant in product_variant_from_model:
+                thumbnail_image = variant.images.filter(image_type='THUMBNAIL').first()
+
                 product_attributes_normal = ProductAttributesNormal(
                     id = variant.id,
                     name= ProductName(variant.name),
@@ -202,6 +216,7 @@ class ProductRepository:
                 product_variant = ProductVariantEntity(
                     variantnumber = variant.variantnumber,
                     attributes=product_attributes_normal,
+                    thumbnail=thumbnail_image.image,
                     id= variant.id,
                     SellingPrice=SellingPrice(variant.selling_price),
                     tax_rate=TaxRate(variant.tax_rate)
