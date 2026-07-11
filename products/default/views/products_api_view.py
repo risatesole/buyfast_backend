@@ -52,6 +52,7 @@ class ProductDetailView(APIView):
                             'id': v.id,
                             'name': v.attributes.name.value,
                             'description': v.attributes.description.value,
+                            'variantnumber': v.variantnumber,
                             'sku': v.attributes.sku.value,
                             'slug': v.attributes.slug.value,
                             'selling_price': float(v.SellingPrice.value),
@@ -115,6 +116,7 @@ class ProductDetailView(APIView):
                             {
                                 "name": variant.attributes.name.value,
                                 "description": variant.attributes.description.value,
+                                "variantnumber": variant.variantnumber,
                                 "selling_price": float(variant.SellingPrice.value),
                                 "tax_rate": float(variant.tax_rate.value),
                                 "sku": variant.attributes.sku.value,
@@ -163,6 +165,7 @@ class ProductDetailView(APIView):
             for variant_data in request.data["data"]["variants"]:
                 variant_name = ProductName(str(variant_data["name"]))
                 variant_description = ProductDescription(str(variant_data["description"]))
+                variant_variantnumber = variant_data["variantnumber"]
                 variant_sku = SKU(variant_data["sku"])
                 variant_slug = Slug(variant_data["slug"])
                 variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
@@ -189,6 +192,7 @@ class ProductDetailView(APIView):
                 )
 
                 product_variant = ProductVariant(
+                    variantnumber=variant_variantnumber,
                     attributes=product_attributes,
                     SellingPrice=variant_selling_price,
                     tax_rate=variant_tax_rate
@@ -228,6 +232,7 @@ class ProductDetailView(APIView):
                         "id": variant.attributes.id,
                         "name": variant.attributes.name,
                         "description": variant.attributes.description,
+                        "variantnumber": variant.variantnumber,
                         "sku": variant.attributes.sku,
                         "slug": variant.attributes.slug,
                         "selling_price": float(variant.SellingPrice.value),

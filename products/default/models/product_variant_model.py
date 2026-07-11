@@ -6,6 +6,7 @@ class ProductVariant(models.Model):
 
     name = models.CharField(max_length=500)  # "Red/Medium", "Hardcover"
     description = models.TextField(blank=True)
+    variantnumber = models.IntegerField(null=False, blank=False)
     slug = models.CharField(max_length=500)
     sku = models.CharField(max_length=500, unique=True)
     

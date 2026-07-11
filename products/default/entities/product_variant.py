@@ -11,6 +11,7 @@ from products.default.value_objects.product_taxrate import TaxRate
 
 @dataclass
 class ProductVariant(ABC):
+    variantnumber: int
     attributes: ProductAttributes
     SellingPrice: Optional[SellingPrice] = None
     tax_rate: Optional[TaxRate] = None

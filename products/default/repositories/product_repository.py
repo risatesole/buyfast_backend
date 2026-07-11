@@ -45,6 +45,7 @@ class ProductRepository:
             for idx, variant in enumerate(productentity.variants, 1):
                 variant_name = variant.attributes.name.value
                 variant_description = variant.attributes.description.value
+                variant_variantnumber = variant.variantnumber
                 variant_sku = variant.attributes.sku.value
                 variant_slug = variant.attributes.slug.value
                 variant_price = variant.SellingPrice.value
@@ -58,7 +59,9 @@ class ProductRepository:
                     sku=variant_sku,
                     selling_price=variant_price,
                     tax_rate=variant_tax_rate,
+                    variantnumber=variant_variantnumber,
                 )
+
                 variant.attributes.id = productvariant_db.id
                 variant.attributes.name = productvariant_db.name
                 variant.attributes.description = productvariant_db.description
@@ -91,6 +94,7 @@ class ProductRepository:
             # Reconstruct variant-level value objects
             variant_name = ProductName(variant_db.name)
             variant_description = ProductDescription(variant_db.description)
+            variant_variantnumber = variant_db.variantnumber
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -116,6 +120,7 @@ class ProductRepository:
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
+                variantnumber=variant_variantnumber,
                 attributes=attributes,
                 SellingPrice=variant_price,
                 tax_rate=variant_tax_rate
@@ -195,6 +200,7 @@ class ProductRepository:
                 )
 
                 product_variant = ProductVariantEntity(
+                    variantnumber = variant.variantnumber,
                     attributes=product_attributes_normal,
                     id= variant.id,
                     SellingPrice=SellingPrice(variant.selling_price),
