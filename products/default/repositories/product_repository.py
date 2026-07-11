@@ -208,12 +208,3 @@ class ProductRepository:
             )
             entities.append(entity)
         return entities
-
-# example of how to access entitie values: 
-# for entity in entities:
-#     print(f"Product: {entity.name}")
-#     for variant in entity.variants:
-#         print(f"  Variant: {variant.attributes.name}")
-#         print(f"    Price: {variant.attributes.SellingPrice}")
-#         print(f"    TaxRate: {variant.attributes.tax_rate}")
-#         print(f"    SKU: {variant.attributes.sku}")
