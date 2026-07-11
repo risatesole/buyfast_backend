@@ -22,6 +22,8 @@ from ..entities.product_variant import ProductVariant
 from ..entities.product_attributes_normal import ProductAttributesNormal
 from ..repositories.product_repository import ProductRepository
 
+from datetime import datetime, timezone
+
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
 
@@ -96,9 +98,10 @@ class ProductDetailView(APIView):
 
                 repository = ProductRepository()
                 product_entity = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
-
-                products_data = [
-                    {
+                utc_now = datetime.now(timezone.utc)
+                products_data = {
+                    "data":[
+                        {
                         'id': product_entity.id,
                         'name': product_entity.name.value,
                         'category': product_entity.category.value,
@@ -121,9 +124,13 @@ class ProductDetailView(APIView):
                             }
                             for variant in product_entity.variants
                         ]
+                        }
+                        for product_entity in product_entity
+                    ],
+                    "meta":{
+                        "timestamp": utc_now
                     }
-                    for product_entity in product_entity
-                ]
+                    }
 
                 return Response(products_data, status=status.HTTP_200_OK)
 
@@ -201,6 +208,8 @@ class ProductDetailView(APIView):
 
             repository = ProductRepository()
             saved_entity = repository.save(productentity=product_entity)
+            
+            utc_now = datetime.now(timezone.utc)
 
             return Response({
             "message": "Product created successfully",
@@ -226,7 +235,10 @@ class ProductDetailView(APIView):
                     for variant in saved_entity.variants
                 ]
             },
-            "variants_count": len(saved_entity.variants)
+            "meta":{
+                "variants_count": len(saved_entity.variants),
+                "timestamp": utc_now
+            }
         }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
