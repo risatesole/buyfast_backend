@@ -69,11 +69,6 @@ class ProductDetailView(APIView):
 
         else:
             try:
-                from ..models import Product
-
-                repository = ProductRepository()
-
-
                 query_param_sort_by = request.GET.get('sort')
                 query_param_status = request.GET.get('status')
                 query_param_offset = int(request.GET.get('offset', '0'))
@@ -96,20 +91,33 @@ class ProductDetailView(APIView):
                 else:
                     query_param_limit = int(query_param_limit)
 
-
-                repository_products = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
-
-                products = Product.objects.all()
+                repository = ProductRepository()
+                product_entity = repository.get_product_via_query(query_param_sort_by,query_param_status,query_param_limit,query_param_offset,query_param_tag,query_param_category,query_param_search)
 
                 products_data = [
                     {
-                        'id': p.id,
-                        'name': p.name,
-                        'category': p.category,
-                        'thumbnail': p.thumbnail,
-                        'created_at': p.created_at.isoformat() if p.created_at else None,
+                        'id': product_entity.id,
+                        'name': product_entity.name.value,
+                        'category': product_entity.category.value,
+                        "type": product_entity.product_type.value,
+                        # 'tags': product_entity.tags if product_entity.tags else None, # TODO: return the tags
+                        "variants":[
+                            {
+                                "name": variant.attributes.name.value,
+                                "description": variant.attributes.description.value,
+                                "selling_price": None, # TODO: remove selling price from the variant and put in the products.variant entity
+                                "tax_rate": None,  # TODO: remove tax_rate from the variant and put in the products.variant entity
+                                "sku": variant.attributes.sku.value,
+                                "slug": variant.attributes.slug.value,
+                                "image_hero":variant.attributes.image_hero,
+                                "image_thumbnail": variant.attributes.image_thumbnail,
+                                "image_gallery": variant.attributes.image_gallery,
+                                "image_lifestyle": variant.attributes.image_lifestyle
+                            }
+                            for variant in product_entity.variants
+                        ]
                     }
-                    for p in products
+                    for product_entity in product_entity
                 ]
 
                 return Response(products_data, status=status.HTTP_200_OK)

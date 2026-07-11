@@ -207,7 +207,6 @@ class ProductRepository:
                 updated_at=UpdatedAt(p.updated_at),
             )
             entities.append(entity)
-
         return entities
 
 # example of how to access entitie values: 
