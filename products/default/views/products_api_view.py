@@ -54,8 +54,8 @@ class ProductDetailView(APIView):
                             'description': v.attributes.description.value,
                             'thumbnail': v.thumbnail,
                             'variantnumber': v.variantnumber,
-                            'sku': v.attributes.sku.value,
-                            'slug': v.attributes.slug.value,
+                            'sku': v.sku.value,
+                            'slug': v.slug.value,
                             'selling_price': float(v.SellingPrice.value),
                             'tax_rate': float(v.tax_rate.value),
                             'image_hero': v.attributes.image_hero,
@@ -121,8 +121,8 @@ class ProductDetailView(APIView):
                                 "thumbnail": variant.thumbnail,
                                 "selling_price": float(variant.SellingPrice.value),
                                 "tax_rate": float(variant.tax_rate.value),
-                                "sku": variant.attributes.sku.value,
-                                "slug": variant.attributes.slug.value,
+                                "sku": variant.sku.value,
+                                "slug": variant.slug.value,
                                 "image_hero":variant.attributes.image_hero,
                                 "image_thumbnail": variant.attributes.image_thumbnail,
                                 "image_gallery": variant.attributes.image_gallery,
@@ -180,11 +180,11 @@ class ProductDetailView(APIView):
                 variant_image_gallery = variant_data.get("image_gallery")
                 variant_image_lifestyle = variant_data.get("image_lifestyle")
 
+
+
                 product_attributes = ProductAttributesNormal(
                     name=variant_name,
                     description=variant_description,
-                    sku=variant_sku,
-                    slug=variant_slug,
                     image_hero=variant_image_hero,
                     image_details=variant_image_details,
                     image_thumbnail=variant_image_thumbnail,
@@ -194,13 +194,17 @@ class ProductDetailView(APIView):
                     updated_at=updated_at,
                 )
 
+
                 product_variant = ProductVariant(
                     variantnumber=variant_variantnumber,
+                    sku=variant_sku,
+                    slug=variant_slug,
                     thumbnail=variant_thumbnail,
                     attributes=product_attributes,
                     SellingPrice=variant_selling_price,
                     tax_rate=variant_tax_rate
                 )
+
 
                 product_variants.append(product_variant)
 
@@ -214,6 +218,7 @@ class ProductDetailView(APIView):
                 created_at=created_at,
                 updated_at=updated_at,
             )
+
 
 
             repository = ProductRepository()
@@ -238,8 +243,8 @@ class ProductDetailView(APIView):
                         "description": variant.attributes.description,
                         "thumbnail": variant.thumbnail,
                         "variantnumber": variant.variantnumber,
-                        "sku": variant.attributes.sku,
-                        "slug": variant.attributes.slug,
+                        "sku": variant.sku,
+                        "slug": variant.slug,
                         "selling_price": float(variant.SellingPrice.value),
                         "tax_rate": float(variant.tax_rate.value),
                         "created_at": variant.attributes.created_at.value,

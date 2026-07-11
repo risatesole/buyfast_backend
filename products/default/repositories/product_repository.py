@@ -48,8 +48,8 @@ class ProductRepository:
                 variant_description = variant.attributes.description.value
                 variant_variantnumber = variant.variantnumber
                 variant_thumbnail = variant.thumbnail
-                variant_sku = variant.attributes.sku.value
-                variant_slug = variant.attributes.slug.value
+                variant_sku = variant.sku.value
+                variant_slug = variant.slug.value
                 variant_price = variant.SellingPrice.value
                 variant_tax_rate = variant.tax_rate.value
 
@@ -75,8 +75,8 @@ class ProductRepository:
                 variant.attributes.id = productvariant_db.id
                 variant.attributes.name = productvariant_db.name
                 variant.attributes.description = productvariant_db.description
-                variant.attributes.sku = productvariant_db.sku
-                variant.attributes.slug = productvariant_db.slug
+                variant.sku = productvariant_db.sku
+                variant.slug = productvariant_db.slug
 
                 variant.attributes.CreatedAt = productvariant_db.created_at
                 variant.attributes.updated_at = productvariant_db.updated_at
@@ -119,8 +119,7 @@ class ProductRepository:
                 id=variant_db.id,
                 name=variant_name,
                 description=variant_description,
-                sku=variant_sku,
-                slug=variant_slug,
+
                 image_hero=variant_db.image_hero if hasattr(variant_db, 'image_hero') else None,
                 image_thumbnail=variant_db.image_thumbnail if hasattr(variant_db, 'image_thumbnail') else None,
                 image_gallery=variant_db.image_gallery if hasattr(variant_db, 'image_gallery') else None,
@@ -131,6 +130,8 @@ class ProductRepository:
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
+                sku=variant_sku,
+                slug=variant_slug,
                 thumbnail=variant_thumbnail,
                 variantnumber=variant_variantnumber,
                 attributes=attributes,
@@ -202,8 +203,6 @@ class ProductRepository:
                     id = variant.id,
                     name= ProductName(variant.name),
                     description= ProductDescription(variant.description),
-                    sku= SKU(variant.sku),
-                    slug= Slug(variant.slug),
                     # image_hero: str | None = None
                     # image_details: str | None = None
                     # image_thumbnail: str | None = None
@@ -215,6 +214,8 @@ class ProductRepository:
 
                 product_variant = ProductVariantEntity(
                     variantnumber = variant.variantnumber,
+                    sku= SKU(variant.sku),
+                    slug= Slug(variant.slug),
                     attributes=product_attributes_normal,
                     thumbnail=thumbnail_image.image,
                     id= variant.id,

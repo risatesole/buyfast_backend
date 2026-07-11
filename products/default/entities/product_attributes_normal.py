@@ -23,8 +23,8 @@ class ProductAttributesNormal(ProductAttributes):
     """
     name: ProductName
     description: ProductDescription
-    sku: SKU
-    slug: Slug
+    # sku: SKU
+    # slug: Slug
 
     image_hero: str | None = None
     image_details: str | None = None

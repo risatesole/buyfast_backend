@@ -11,6 +11,6 @@ from products.default.value_objects.product_slug import Slug
 class ProductAttributes(ABC):
     name: ProductName
     description: ProductDescription
-    sku: SKU
-    slug: Slug
+    # sku: SKU
+    # slug: Slug
     id: Optional[int] = None

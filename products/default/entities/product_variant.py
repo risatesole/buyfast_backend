@@ -4,6 +4,8 @@ from decimal import Decimal
 from datetime import datetime
 from abc import ABC
 
+from products.default.value_objects.product_sku import SKU
+from products.default.value_objects.product_slug import Slug
 from .interfaces.product_attributes_interface import ProductAttributes
 
 from products.default.value_objects.product_selling_price import SellingPrice
@@ -13,6 +15,8 @@ from products.default.value_objects.product_taxrate import TaxRate
 class ProductVariant(ABC):
     variantnumber: int
     attributes: ProductAttributes
+    sku: SKU
+    slug: Slug
     SellingPrice: Optional[SellingPrice] = None
     tax_rate: Optional[TaxRate] = None
     id: Optional[int] = None
