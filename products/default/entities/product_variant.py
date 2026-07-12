@@ -10,6 +10,7 @@ from .interfaces.product_attributes_interface import ProductAttributes
 
 from products.default.value_objects.product_selling_price import SellingPrice
 from products.default.value_objects.product_taxrate import TaxRate
+from .product_images_entity import ProductImages
 
 @dataclass
 class ProductVariant(ABC):
@@ -19,5 +20,6 @@ class ProductVariant(ABC):
     slug: Slug
     SellingPrice: Optional[SellingPrice] = None
     tax_rate: Optional[TaxRate] = None
+    images: Optional[List[ProductImages]] = None  
     id: Optional[int] = None
     thumbnail: Optional[str] = None

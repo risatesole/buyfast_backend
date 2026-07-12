@@ -16,28 +16,28 @@ from ..value_objects.product_created_at import CreatedAt
 from ..value_objects.product_updated_at import UpdatedAt
 
 from ..entities.product_attributes_normal import ProductAttributesNormal
+from ..entities.product_images_entity import ProductImages
 
 import json
 from django.db.models import Q
 
 class ProductRepository:
     def save(self, productentity: ProductEntity):
+        """Save a product entity with all its variants and images to the database."""
         name = productentity.name.value
         category = productentity.category.value
         tags = productentity.tags
         thumbnail = productentity.thumbnail
-        created_at = productentity.created_at
-        updated_at = productentity.updated_at
         product_type = productentity.product_type
         slug = productentity.slug.value
 
         product_db = Product.objects.create(
-            name = name,
+            name=name,
             category=category,
-            tags = tags,
+            tags=tags,
             thumbnail=thumbnail,
-            product_type = product_type,
-            slug= slug
+            product_type=product_type,
+            slug=slug
         )
 
         productentity.id = product_db.id
@@ -53,6 +53,7 @@ class ProductRepository:
                 variant_price = variant.SellingPrice.value
                 variant_tax_rate = variant.tax_rate.value
 
+                # Create the ProductVariant in DB
                 productvariant_db = ProductVariantModel.objects.create(
                     product=product_db,
                     name=variant_name,
@@ -64,22 +65,43 @@ class ProductRepository:
                     variantnumber=variant_variantnumber,
                 )
 
-                if variant_thumbnail is not None:
-                    thumbnail_db = ProductImage.objects.create(
-                        product_variant = productvariant_db,
-                        image = variant_thumbnail,
-                        image_type="THUMBNAIL",
-                        alt_text= f"{productvariant_db.name} image"
-                    )
+                # Process images array - convert domain objects to database records
+                product_images_list = []
+                
+                if variant.images:
+                    for img_idx, image in enumerate(variant.images):
+                        # Create ProductImage record in DB
+                        image_db = ProductImage.objects.create(
+                            product_variant=productvariant_db,
+                            image=image.url,  # Store the URL string
+                            image_type=image.type,  # Use the type from the image object
+                            alt_text=f"{productvariant_db.name} - {image.type}",
+                            order=img_idx  # Maintain order of images
+                        )
+                        
+                        # Recreate the domain object from the saved record
+                        product_image_entity = ProductImages(
+                            type=image_db.image_type,
+                            url=image_db.image  # Use the saved image URL
+                        )
+                        product_images_list.append(product_image_entity)
 
+                # Store the images array in the variant entity
+                variant.images = product_images_list if product_images_list else None
+
+                # Update variant attributes with DB values
+                # IMPORTANT: Wrap DB values back into value objects
                 variant.attributes.id = productvariant_db.id
-                variant.attributes.name = productvariant_db.name
-                variant.attributes.description = productvariant_db.description
-                variant.sku = productvariant_db.sku
-                variant.slug = productvariant_db.slug
-
-                variant.attributes.CreatedAt = productvariant_db.created_at
-                variant.attributes.updated_at = productvariant_db.updated_at
+                variant.attributes.name = ProductName(productvariant_db.name)
+                variant.attributes.description = ProductDescription(productvariant_db.description)
+                variant.attributes.created_at = CreatedAt(productvariant_db.created_at)
+                variant.attributes.updated_at = UpdatedAt(productvariant_db.updated_at)
+                
+                # Note: sku and slug are left as strings because they were already extracted as .value
+                variant.sku = SKU(productvariant_db.sku)
+                variant.slug = Slug(productvariant_db.slug)
+                
+                variant.id = productvariant_db.id
 
         return productentity
 
@@ -105,7 +127,7 @@ class ProductRepository:
             variant_name = ProductName(variant_db.name)
             variant_description = ProductDescription(variant_db.description)
             variant_variantnumber = variant_db.variantnumber
-            variant_thumbnail = variant_db.thumbnail if hasattr(variant_db, 'thumbnail') else None  # Just get the URL string
+            variant_thumbnail = variant_db.thumbnail if hasattr(variant_db, 'thumbnail') else None
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -234,7 +256,7 @@ class ProductRepository:
                             search:str=None, slug:str=None, variantslug: str=None):
         """
         Get products via query parameters.
-        
+
         If variantslug is provided, search for products by variant slug and return only those.
         Otherwise, apply standard filters.
         """
@@ -243,13 +265,13 @@ class ProductRepository:
         if variantslug:
             # Find the variant with the matching slug
             variant_db = ProductVariantModel.objects.filter(slug=variantslug).first()
-            
+
             if not variant_db:
                 return []  # Return empty list if no variant found
-            
+
             # Get the product associated with this variant
             product_db = variant_db.product
-            
+
             # Build the product entity with all its variants
             product_name = ProductName(product_db.name)
             product_category = ProductCategory(product_db.category)
@@ -258,14 +280,14 @@ class ProductRepository:
             product_tags = list(product_db.tags.values_list('name', flat=True))
             created_at = CreatedAt(product_db.created_at)
             updated_at = UpdatedAt(product_db.updated_at)
-            
+
             # Get all variants for this product
             variants_db = ProductVariantModel.objects.filter(product=product_db)
-            
+
             variants = []
             for variant in variants_db:
                 thumbnail_image = variant.images.filter(image_type='THUMBNAIL').first()
-                
+
                 product_attributes_normal = ProductAttributesNormal(
                     id=variant.id,
                     name=ProductName(variant.name),
@@ -273,7 +295,7 @@ class ProductRepository:
                     created_at=CreatedAt(variant.created_at),
                     updated_at=UpdatedAt(variant.updated_at)
                 )
-                
+
                 product_variant = ProductVariantEntity(
                     variantnumber=variant.variantnumber,
                     sku=SKU(variant.sku),
@@ -285,7 +307,7 @@ class ProductRepository:
                     tax_rate=TaxRate(variant.tax_rate)
                 )
                 variants.append(product_variant)
-            
+
             # Create and return the product entity
             entity = ProductEntity(
                 id=product_db.id,
@@ -298,7 +320,7 @@ class ProductRepository:
                 created_at=created_at,
                 updated_at=updated_at,
             )
-            
+
             return [entity]  # Return as a list to maintain consistency
 
         # Standard query logic (existing behavior)

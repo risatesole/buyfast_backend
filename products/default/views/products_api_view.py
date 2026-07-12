@@ -19,6 +19,7 @@ from ..value_objects.product_created_at import CreatedAt
 from ..value_objects.product_updated_at import UpdatedAt
 from ..entities.product_entity import ProductEntity
 from ..entities.product_variant import ProductVariant
+from ..entities.product_images_entity import ProductImages
 from ..entities.product_attributes_normal import ProductAttributesNormal
 from ..repositories.product_repository import ProductRepository
 
@@ -61,6 +62,13 @@ class ProductDetailView(APIView):
                             'image_hero': v.attributes.image_hero,
                             'image_thumbnail': v.attributes.image_thumbnail,
                             'image_gallery': v.attributes.image_gallery,
+                            'images': [
+                                {
+                                    'type': img.type,
+                                    'url': img.url
+                                }
+                                for img in (v.images or [])
+                            ],
                             'created_at': v.attributes.created_at.value.isoformat(),
                             'updated_at': v.attributes.updated_at.value.isoformat(),
                         }
@@ -138,7 +146,14 @@ class ProductDetailView(APIView):
                                 "image_hero":variant.attributes.image_hero,
                                 "image_thumbnail": variant.attributes.image_thumbnail,
                                 "image_gallery": variant.attributes.image_gallery,
-                                "image_lifestyle": variant.attributes.image_lifestyle
+                                "image_lifestyle": variant.attributes.image_lifestyle,
+                                "images": [
+                                    {
+                                        'type': img.type,
+                                        'url': img.url
+                                    }
+                                    for img in (variant.images or [])
+                                ]
                             }
                             for variant in product_entity.variants
                         ]
@@ -192,7 +207,15 @@ class ProductDetailView(APIView):
                 variant_image_gallery = variant_data.get("image_gallery")
                 variant_image_lifestyle = variant_data.get("image_lifestyle")
 
-
+                # Process images array from the request
+                variant_images = []
+                if variant_data.get("images"):
+                    for image_data in variant_data.get("images"):
+                        product_image = ProductImages(
+                            type=image_data.get("type", "GALLERY"),
+                            url=image_data.get("url")
+                        )
+                        variant_images.append(product_image)
 
                 product_attributes = ProductAttributesNormal(
                     name=variant_name,
@@ -206,7 +229,6 @@ class ProductDetailView(APIView):
                     updated_at=updated_at,
                 )
 
-
                 product_variant = ProductVariant(
                     variantnumber=variant_variantnumber,
                     sku=variant_sku,
@@ -214,9 +236,9 @@ class ProductDetailView(APIView):
                     thumbnail=variant_thumbnail,
                     attributes=product_attributes,
                     SellingPrice=variant_selling_price,
-                    tax_rate=variant_tax_rate
+                    tax_rate=variant_tax_rate,
+                    images=variant_images if variant_images else None
                 )
-
 
                 product_variants.append(product_variant)
 
@@ -231,51 +253,62 @@ class ProductDetailView(APIView):
                 updated_at=updated_at,
             )
 
-
-
             repository = ProductRepository()
             saved_entity = repository.save(productentity=product_entity)
 
             utc_now = datetime.now(timezone.utc)
 
             return Response({
-            "message": "Product created successfully",
-            "data": {
-                "id": saved_entity.id,
-                "name": saved_entity.name.value,
-                "category": saved_entity.category.value,
-                'product_type': saved_entity.product_type.value,
-                "thumbnail": saved_entity.thumbnail,
-                "slug": saved_entity.slug.value,
-                "tags": saved_entity.tags.value if saved_entity.tags else None,
-                "variants": [
-                    {
-                        "id": variant.attributes.id,
-                        "name": variant.attributes.name,
-                        "description": variant.attributes.description,
-                        "thumbnail": variant.thumbnail,
-                        "variantnumber": variant.variantnumber,
-                        "sku": variant.sku,
-                        "slug": variant.slug,
-                        "selling_price": float(variant.SellingPrice.value),
-                        "tax_rate": float(variant.tax_rate.value),
-                        "created_at": variant.attributes.created_at.value,
-                        "updated_at": variant.attributes.updated_at
-                    }
-                    for variant in saved_entity.variants
-                ]
-            },
-            "meta":{
-                "variants_count": len(saved_entity.variants),
-                "timestamp": utc_now
-            }
-        }, status=status.HTTP_201_CREATED)
+                "message": "Product created successfully",
+                "data": {
+                    "id": saved_entity.id,
+                    "name": saved_entity.name.value,
+                    "category": saved_entity.category.value,
+                    'product_type': saved_entity.product_type.value,
+                    "thumbnail": saved_entity.thumbnail,
+                    "slug": saved_entity.slug.value,
+                    "tags": saved_entity.tags.value if saved_entity.tags else None,
+                    "variants": [
+                        {
+                            "id": variant.id,
+                            "name": variant.attributes.name.value,  # name is ProductName, has .value
+                            "description": variant.attributes.description.value,  # description is ProductDescription, has .value
+                            "thumbnail": variant.thumbnail,
+                            "variantnumber": variant.variantnumber,
+                            "sku": variant.sku.value,  # sku is SKU, has .value
+                            "slug": variant.slug.value,  # slug is Slug, has .value
+                            "selling_price": float(variant.SellingPrice.value),  # SellingPrice, has .value
+                            "tax_rate": float(variant.tax_rate.value),  # tax_rate is TaxRate, has .value
+                            "images": [
+                                {
+                                    "type": img.type,
+                                    "url": img.url
+                                }
+                                for img in (variant.images or [])
+                            ],
+                            # created_at/updated_at are CreatedAt/UpdatedAt objects with .value property
+                            "created_at": variant.attributes.created_at.value.isoformat() if variant.attributes.created_at else None,
+                            "updated_at": variant.attributes.updated_at.value.isoformat() if variant.attributes.updated_at else None
+                        }
+                        for variant in saved_entity.variants
+                    ]
+                },
+                "meta":{
+                    "variants_count": len(saved_entity.variants),
+                    "timestamp": utc_now.isoformat()
+                }
+            }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return Response(
                 {'error': f'Error creating product: {str(e)}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+
 
     def patch(self, request, pk=None):
         """PATCH /api/products/<id>/ - Update a product"""
