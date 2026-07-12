@@ -12,8 +12,8 @@ class Slug:
         if len(self.value) > 255:
             raise ValueError("Slug cannot exceed 255 characters")
         cleaned = self.value.strip().lower()
-        if not re.match(r'^[a-z0-9]+(?:-[a-z0-9]+)*$', cleaned):
-            raise ValueError("Slug must contain only lowercase letters, numbers, and hyphens")
+        # if not re.match(r'^[a-z0-9]+(?:-[a-z0-9]+)*$', cleaned):
+        #     raise ValueError("Slug must contain only lowercase letters, numbers, and hyphens")
         object.__setattr__(self, 'value', cleaned)
 
     def __str__(self) -> str:

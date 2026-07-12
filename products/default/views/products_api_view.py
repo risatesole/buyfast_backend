@@ -85,6 +85,7 @@ class ProductDetailView(APIView):
                 query_param_search = request.GET.get('search')
                 query_param_limit = request.GET.get('limit')
                 query_param_slug = request.GET.get('slug') 
+                query_param_variantslug = request.GET.get('variantslug')
 
                 if query_param_status:
                     if query_param_status is "true":
@@ -109,7 +110,8 @@ class ProductDetailView(APIView):
                                     query_param_tag,
                                     query_param_category,
                                     query_param_search,
-                                    slug=query_param_slug 
+                                    slug=query_param_slug,
+                                    variantslug=query_param_variantslug,
                                 )
                 utc_now = datetime.now(timezone.utc)
                 products_data = {
