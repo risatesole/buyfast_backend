@@ -128,7 +128,7 @@ class ProductRepository:
                 )
             except Exception as e:
                 print(f"error: ({e})")
-            
+
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
@@ -201,7 +201,7 @@ class ProductRepository:
                 )
             except Exception as e:
                 print(f"error: ({e})")
-            
+
             # Create ProductVariantEntity
             variant_entity = ProductVariantEntity(
                 id=variant_db.id,
@@ -231,11 +231,77 @@ class ProductRepository:
 
     def get_product_via_query(self, sort:str=None, status:bool=None, limit:int=None,
                             offset:int=None, tag:str=None, category:str=None,
-                            search:str=None, slug:str=None):
+                            search:str=None, slug:str=None, variantslug: str=None):
         """
-        get products via query parameters
+        Get products via query parameters.
+        
+        If variantslug is provided, search for products by variant slug and return only those.
+        Otherwise, apply standard filters.
         """
 
+        # Handle variantslug separately - it has priority
+        if variantslug:
+            # Find the variant with the matching slug
+            variant_db = ProductVariantModel.objects.filter(slug=variantslug).first()
+            
+            if not variant_db:
+                return []  # Return empty list if no variant found
+            
+            # Get the product associated with this variant
+            product_db = variant_db.product
+            
+            # Build the product entity with all its variants
+            product_name = ProductName(product_db.name)
+            product_category = ProductCategory(product_db.category)
+            product_thumbnail = product_db.thumbnail
+            product_slug = Slug(product_db.slug)
+            product_tags = list(product_db.tags.values_list('name', flat=True))
+            created_at = CreatedAt(product_db.created_at)
+            updated_at = UpdatedAt(product_db.updated_at)
+            
+            # Get all variants for this product
+            variants_db = ProductVariantModel.objects.filter(product=product_db)
+            
+            variants = []
+            for variant in variants_db:
+                thumbnail_image = variant.images.filter(image_type='THUMBNAIL').first()
+                
+                product_attributes_normal = ProductAttributesNormal(
+                    id=variant.id,
+                    name=ProductName(variant.name),
+                    description=ProductDescription(variant.description),
+                    created_at=CreatedAt(variant.created_at),
+                    updated_at=UpdatedAt(variant.updated_at)
+                )
+                
+                product_variant = ProductVariantEntity(
+                    variantnumber=variant.variantnumber,
+                    sku=SKU(variant.sku),
+                    slug=Slug(variant.slug),
+                    attributes=product_attributes_normal,
+                    thumbnail=thumbnail_image.image if thumbnail_image else None,
+                    id=variant.id,
+                    SellingPrice=SellingPrice(variant.selling_price),
+                    tax_rate=TaxRate(variant.tax_rate)
+                )
+                variants.append(product_variant)
+            
+            # Create and return the product entity
+            entity = ProductEntity(
+                id=product_db.id,
+                name=product_name,
+                category=product_category,
+                thumbnail=product_thumbnail,
+                slug=product_slug,
+                tags=product_tags,
+                variants=variants,
+                created_at=created_at,
+                updated_at=updated_at,
+            )
+            
+            return [entity]  # Return as a list to maintain consistency
+
+        # Standard query logic (existing behavior)
         filter_params = {}
         q_objects = Q()
 
