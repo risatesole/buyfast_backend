@@ -8,7 +8,25 @@ from products.default.models import ProductVariant
 from accounts.models import User
 from rest_framework.response import Response
 from rest_framework import status
-from cart.cart import clear_cart
+from cart.models import CartItem
+
+def remove_cart_item(items, user):
+    for item in items:
+        product_variant_id = item.get("productvariantid")
+        
+        try:
+            product_variant = ProductVariant.objects.get(id=product_variant_id)
+            cart_item = CartItem.objects.get(
+                user=user, 
+                product_variant=product_variant
+            )
+            cart_item.delete()
+        except ProductVariant.DoesNotExist:
+            # Handle case where product variant doesn't exist
+            print(f"Product variant {product_variant_id} not found")
+        except CartItem.DoesNotExist:
+            # Handle case where cart item doesn't exist for this user
+            print(f"Cart item not found for user {user} and variant {product_variant_id}")
 
 def create_order_checkout(
     user,
@@ -36,9 +54,9 @@ def create_order_checkout(
         card_information_expiry_year,
         card_information_cvv
     )
-    
     is_product_avialable = validation_product_avialability(items)
     create_order(user,items,pickuptime)
+    remove_cart_item(items,user)
 
 def checkout_handler_post(request):
     # billing contact
@@ -83,8 +101,6 @@ def checkout_handler_post(request):
                 pickuptime,
                 items
             )
-
-        
 
         return Response(
                     {
