@@ -5,6 +5,9 @@ from rest_framework.permissions import AllowAny
 from ..repositories.product_repository import ProductRepository
 from decimal import Decimal
 from datetime import datetime, UTC
+from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
+
 
 from ..value_objects.product_name import ProductName
 from ..value_objects.product_description import ProductDescription
@@ -183,6 +186,15 @@ class ProductDetailView(APIView):
         """POST /api/products/ - Create a new product with multiple variants"""
 
         try:
+            if not request.user.is_authenticated:
+                raise PermissionDenied("Authentication required")
+            
+            if not request.user.is_active:
+                raise PermissionDenied("Your account is inactive")
+            
+            if request.user.role != "employee":  # Use != not is not
+                raise PermissionDenied("Only employees are allowed to perform this action")
+            
             # Extract main product data
             product_name = ProductName(str(request.data["data"]["name"]))
             product_category = ProductCategory(request.data["data"]["category"])
