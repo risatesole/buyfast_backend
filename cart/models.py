@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from products.default.models import ProductVariant
 
 
 class CartItem(models.Model):
@@ -9,11 +10,11 @@ class CartItem(models.Model):
         related_name="cart_items"
     )
 
-    # product = models.ForeignKey(
-    #     "products.Product",
-    #     on_delete=models.CASCADE,
-    #     related_name="cart_items"
-    # )
+    product_variant = models.ForeignKey(
+        ProductVariant,
+        on_delete=models.CASCADE,
+        related_name="cart_items",
+    )
 
     quantity = models.PositiveIntegerField(default=1)
 

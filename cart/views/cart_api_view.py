@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
-from products.default.models import Product
+from products.default.models import ProductVariant
 
 
 @api_view(["GET", "POST", "PATCH", "DELETE"])
@@ -30,29 +30,12 @@ def cart_api_view(request):
                             {
                                 "id": item.id,
                                 "product": {
-                                    "id": item.product.id,
-                                    "name": item.product.name,
-                                    "description": item.product.description,
-                                    "brand": item.product.brand,
-                                    "selling_price": item.product.selling_price,
-                                    "status": item.product.status,
-                                    "category": {
-                                        "id": item.product.category.id,
-                                        "name": item.product.category.name,
-                                        "slug": item.product.category.slug,
-                                        "image": item.product.category.image,
-                                        "status": item.product.category.status,
-                                    },
-                                    "images": [
-                                        {
-                                            "url": image.image,
-                                            "type": image.image_type,
-                                        }
-                                        for image in item.product.images.all()
-                                    ],
-                                    "tags": [
-                                        tag.name for tag in item.product.tags.all()
-                                    ],
+                                    "id": item.product_variant.id,
+                                    "name": item.product_variant.name,
+                                    "description": item.product_variant.description,
+                                    "selling_price": item.product_variant.selling_price,
+                                    "slug": item.product_variant.slug,
+                                    "tax_rate": item.product_variant.tax_rate,
                                 },
                                 "quantity": item.quantity,
                             }
@@ -63,12 +46,12 @@ def cart_api_view(request):
             )
 
         if request.method == "POST":
-            product_id = request.data.get("product_id")
+            product_variant_id = request.data.get("productvariantid")
             quantity = int(request.data.get("quantity", 1))
 
-            if not product_id:
+            if not product_variant_id:
                 return Response(
-                    {"status": "error", "message": "product_id is required"}, status=400
+                    {"status": "error", "message": "productvariantid is required"}, status=400
                 )
 
             if quantity < 1:
@@ -78,14 +61,14 @@ def cart_api_view(request):
                 )
 
             try:
-                product = Product.objects.get(id=int(product_id))
-            except Product.DoesNotExist:
+                product_variant = ProductVariant.objects.get(id=int(product_variant_id))
+            except ProductVariant.DoesNotExist:
                 return Response(
                     {"status": "error", "message": "Product not found"}, status=404
                 )
 
             cart_item, created = CartItem.objects.get_or_create(
-                user=user, product=product, defaults={"quantity": quantity}
+                user=user, product_variant=product_variant, defaults={"quantity": quantity}
             )
 
             if not created:
@@ -99,7 +82,7 @@ def cart_api_view(request):
                     "data": {
                         "item": {
                             "id": cart_item.id,
-                            "product_id": product.id,
+                            "productvariantid": product_variant.id,
                             "quantity": cart_item.quantity,
                         }
                     },
@@ -107,12 +90,12 @@ def cart_api_view(request):
             )
 
         if request.method == "PATCH":
-            product_id = request.data.get("product_id")
+            product_variant_id = request.data.get("productvariantid")
             quantity = request.data.get("quantity")
 
-            if not product_id:
+            if not product_variant_id:
                 return Response(
-                    {"status": "error", "message": "product_id is required"}, status=400
+                    {"status": "error", "message": "productvariantid is required"}, status=400
                 )
 
             if quantity is None:
@@ -121,10 +104,10 @@ def cart_api_view(request):
                 )
 
             try:
-                product_id = int(product_id)
+                product_variant_id = int(product_variant_id)
             except (ValueError, TypeError):
                 return Response(
-                    {"status": "error", "message": "product_id must be a valid integer"},
+                    {"status": "error", "message": "productvariantid must be a valid integer"},
                     status=400,
                 )
 
@@ -143,7 +126,7 @@ def cart_api_view(request):
                 )
 
             try:
-                cart_item = CartItem.objects.get(user=user, product_id=product_id)
+                cart_item = CartItem.objects.get(user=user, product_id=product_variant_id)
             except CartItem.DoesNotExist:
                 return Response(
                     {"status": "error", "message": "Item not found in cart"}, status=404
@@ -157,25 +140,25 @@ def cart_api_view(request):
                     "status": "ok",
                     "message": "Item quantity updated",
                     "data": {
-                        "product_id": product_id,
+                        "productvariantid": product_variant_id,
                         "quantity": cart_item.quantity,
                     },
                 }
             )
 
         if request.method == "DELETE":
-            product_id = request.data.get("product_id")
+            product_variant_id = request.data.get("productvariantid")
 
-            if not product_id:
+            if not product_variant_id:
                 return Response(
                     {"status": "error", "message": "product_id is required"}, status=400
                 )
 
             try:
-                product_id = int(product_id)
+                product_variant_id = int(product_variant_id)
             except (ValueError, TypeError):
                 return Response(
-                    {"status": "error", "message": "product_id must be a valid integer"},
+                    {"status": "error", "message": "productvariantid must be a valid integer"},
                     status=400,
                 )
 
@@ -195,7 +178,8 @@ def cart_api_view(request):
                 )
 
             try:
-                cart_item = CartItem.objects.get(user=user, product_id=product_id)
+
+                cart_item = CartItem.objects.get(user=user, product_variant=product_variant_id)
             except CartItem.DoesNotExist:
                 return Response(
                     {"status": "error", "message": "Item not found in cart"}, status=404
@@ -210,7 +194,7 @@ def cart_api_view(request):
                     {
                         "status": "ok",
                         "message": "Item removed from cart",
-                        "data": {"product_id": product_id, "quantity": 0},
+                        "data": {"product_id": product_variant_id, "quantity": 0},
                     }
                 )
 
@@ -221,7 +205,7 @@ def cart_api_view(request):
                     "status": "ok",
                     "message": "Item quantity updated",
                     "data": {
-                        "product_id": product_id,
+                        "product_id": product_variant_id,
                         "quantity": cart_item.quantity,
                     },
                 }
