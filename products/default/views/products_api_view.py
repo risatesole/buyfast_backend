@@ -99,7 +99,7 @@ class ProductDetailView(APIView):
                 query_param_category = request.GET.get('category')
                 query_param_search = request.GET.get('search')
                 query_param_limit = request.GET.get('limit')
-                query_param_slug = request.GET.get('slug') 
+                query_param_slug = request.GET.get('slug')
                 query_param_variantslug = request.GET.get('variantslug')
 
                 if query_param_status:
@@ -188,13 +188,13 @@ class ProductDetailView(APIView):
         try:
             if not request.user.is_authenticated:
                 raise PermissionDenied("Authentication required")
-            
+
             if not request.user.is_active:
                 raise PermissionDenied("Your account is inactive")
-            
+
             if request.user.role != "employee":  # Use != not is not
                 raise PermissionDenied("Only employees are allowed to perform this action")
-            
+
             # Extract main product data
             product_name = ProductName(str(request.data["data"]["name"]))
             product_category = ProductCategory(request.data["data"]["category"])
@@ -324,8 +324,55 @@ class ProductDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    def delete(self, request, pk=None):
+        """DELETE /api/products/<id>/ - Delete a product and all its variants"""
+        if not pk:
+            return Response(
+                {'error': 'Product ID is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        try:
+            # Check authentication and permissions
+            if not request.user.is_authenticated:
+                raise PermissionDenied("Authentication required")
 
+            if not request.user.is_active:
+                raise PermissionDenied("Your account is inactive")
+
+            if request.user.role != "employee":
+                raise PermissionDenied("Only employees are allowed to perform this action")
+
+            # Delete the product using repository
+            repository = ProductRepository()
+            deleted = repository.delete_product_by_id(product_id=pk)
+
+            if not deleted:
+                return Response(
+                    {'error': f'Product with ID {pk} not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            return Response(
+                {
+                    'message': f'Product {pk} deleted successfully',
+                    'id': pk
+                },
+                status=status.HTTP_200_OK
+            )
+
+        except PermissionDenied as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {'error': f'Error deleting product: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def patch(self, request, pk=None):
         """PATCH /api/products/<id>/ - Update a product"""

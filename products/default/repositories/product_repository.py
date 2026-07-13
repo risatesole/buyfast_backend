@@ -67,7 +67,7 @@ class ProductRepository:
 
                 # Process images array - convert domain objects to database records
                 product_images_list = []
-                
+
                 if variant.images:
                     for img_idx, image in enumerate(variant.images):
                         # Create ProductImage record in DB
@@ -78,7 +78,7 @@ class ProductRepository:
                             alt_text=f"{productvariant_db.name} - {image.type}",
                             order=img_idx  # Maintain order of images
                         )
-                        
+
                         # Recreate the domain object from the saved record
                         product_image_entity = ProductImages(
                             type=image_db.image_type,
@@ -96,11 +96,11 @@ class ProductRepository:
                 variant.attributes.description = ProductDescription(productvariant_db.description)
                 variant.attributes.created_at = CreatedAt(productvariant_db.created_at)
                 variant.attributes.updated_at = UpdatedAt(productvariant_db.updated_at)
-                
+
                 # Note: sku and slug are left as strings because they were already extracted as .value
                 variant.sku = SKU(productvariant_db.sku)
                 variant.slug = Slug(productvariant_db.slug)
-                
+
                 variant.id = productvariant_db.id
 
         return productentity
@@ -397,3 +397,15 @@ class ProductRepository:
             )
             entities.append(entity)
         return entities
+
+    def delete_product_by_id(self, product_id: int) -> bool:
+        """
+        Delete a product by ID along with all its variants and images.
+        Returns True if deletion was successful, False if product not found.
+        """
+        try:
+            product_db = Product.objects.get(id=product_id)
+            product_db.delete()
+            return True
+        except Product.DoesNotExist:
+            return False
