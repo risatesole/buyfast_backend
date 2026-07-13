@@ -135,6 +135,7 @@ class ProductDetailView(APIView):
                         # 'tags': product_entity.tags if product_entity.tags else None, # TODO: return the tags
                         "variants":[
                             {
+                                "id": variant.id,
                                 "name": variant.attributes.name.value,
                                 "description": variant.attributes.description.value,
                                 "variantnumber": variant.variantnumber,
