@@ -11,41 +11,18 @@ from ...models import Order
 @authentication_classes([])
 @permission_classes([AllowAny])
 def orders_api_view(request, order_id):
+    
     try:
+        
         order = Order.objects.select_related(
             'customer',
-            'payment__payment_provider',
-            'payment__payment_provider_transaction'
         ).prefetch_related(
-            'items__product',
-            'items__product__images'
+            'items__product'
         ).get(id=order_id)
-
-        # Calculate total from actual order items
-        total = sum(item.subtotal for item in order.items.all())
-
-        # Build items list from actual data
-        items = []
-        for item in order.items.all():
-            # Get hero image for the product
-            hero_image = item.product.images.filter(image_type='HERO').first()
-            image_url = hero_image.image if hero_image else None
-
-            items.append({
-                "id": item.id,
-                "product_id": item.product.id,
-                "product_name": item.product.name,
-                "quantity": item.quantity,
-                "price": float(item.price_per_item),
-                "image_url": image_url,
-                "sku": getattr(item.product, 'sku', None),
-                "brand": item.product.brand,
-            })
-
-        # Get payment method from actual payment data
+        
         payment_method = None
-        if hasattr(order, 'payment'):
-            payment_method = order.payment.payment_provider.name
+        # if hasattr(order, 'payment'):
+        #     payment_method = order.payment.payment_provider.name
 
         return Response({
             "data": {
@@ -55,7 +32,7 @@ def orders_api_view(request, order_id):
                 "lastname": order.customer.last_name,
                 "email": order.customer.email,
                 "created_at": order.created_at,
-                "total": float(total),
+                # "total": float(total),
                 "status": order.status,
                 "pickup_time": order.pickup_time,
                 "phone": order.customer.phone_number,
@@ -66,8 +43,22 @@ def orders_api_view(request, order_id):
                     "zipCode": "00000",
                     "country": "DO"
                 },
-                "items": items,
-                "shipping_method": "standard_shipping",
+                "items": [
+                    {
+                        "id": item.product.id,
+                        "name": item.product.name,
+                        "quantity": item.quantity,
+                        "price": item.price_per_item,
+                        "tax": item.tax_amount,
+                        "subtotal": (item.price_per_item + item.tax_amount) * item.quantity,
+                    }
+                    for item in order.items.all()
+                ],
+                "total": sum(
+                    (item.price_per_item + item.tax_amount) * item.quantity
+                    for item in order.items.all()
+                ),
+                "shipping_method": "pick_up",
                 "payment_method": payment_method or "credit_card",
                 "notes": "Please leave at front door"
             }
