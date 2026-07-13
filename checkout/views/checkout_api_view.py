@@ -37,5 +37,5 @@ def checkout_api_view(request):
         return error.http_response()
 
     except Exception as e:
-        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,"Unknown System error","error",500)
+        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,f"Unknown System error {e}","error",500)
         return error.http_response()
