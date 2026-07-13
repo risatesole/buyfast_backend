@@ -25,6 +25,10 @@ from ..repositories.product_repository import ProductRepository
 
 from datetime import datetime, timezone
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+@method_decorator(csrf_exempt, name='dispatch')
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
 
