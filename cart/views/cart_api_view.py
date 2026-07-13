@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
-from products.default.models import ProductVariant
+from products.default.models import ProductVariant, ProductImage
 
 
 @api_view(["GET", "POST", "PATCH", "DELETE"])
@@ -28,16 +28,21 @@ def cart_api_view(request):
                     "data": {
                         "items": [
                             {
-                                "id": item.id,
-                                "product": {
-                                    "id": item.product_variant.id,
-                                    "name": item.product_variant.name,
-                                    "description": item.product_variant.description,
-                                    "selling_price": item.product_variant.selling_price,
-                                    "slug": item.product_variant.slug,
-                                    "tax_rate": item.product_variant.tax_rate,
-                                },
-                                "quantity": item.quantity,
+                            
+                            "id": item.product_variant.id,
+                            "name": item.product_variant.name,
+                            "description": item.product_variant.description,
+                            "selling_price": item.product_variant.selling_price,
+                            "slug": item.product_variant.slug,
+                            "tax_rate": item.product_variant.tax_rate,
+                            "quantity": item.quantity,
+                            "thumbnail": (
+                                item.product_variant.images.filter(
+                                    image_type=ProductImage.ImageType.THUMBNAIL
+                                )
+                                .values_list("image", flat=True)
+                                .first()
+                            ),
                             }
                             for item in items
                         ]
