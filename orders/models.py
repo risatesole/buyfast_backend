@@ -1,7 +1,7 @@
 # orders/models.py
 from django.db import models
 from accounts.models import User
-from products.default.models import Product
+from products.default.models import ProductVariant
 from payment.models import PaymentProvider, PaymentProviderTransaction
 
 
@@ -38,7 +38,7 @@ class OrderItem(models.Model):
         related_name="items"
     )
     product = models.ForeignKey(
-        Product,
+        ProductVariant,
         on_delete=models.PROTECT,
         related_name="order_items"
     )

@@ -1,20 +1,24 @@
 from inventory.usecases.check_if_product_is_avialable import is_product_available
-from products.default.products import Product_model
-from products.default.models import Product
+from products.default.models import ProductVariant
 from inventory.inventory import ProductUnavailableException
 
 def validation_product_avialability(items):
+    """
+    Validate that all product variants in items are available.
+    
+    Expects items with: productvariantid, quantity
+    """
     unavailable_products = []
 
     for item in items:
-        product_id = item["productid"]
+        product_variant_id = item["productvariantid"]
         quantity = item["quantity"]
 
-        product = Product.objects.get(id=product_id)
+        product_variant = ProductVariant.objects.get(id=product_variant_id)
 
-        if not is_product_available(product_id, quantity):
+        if not is_product_available(product_variant_id, quantity):
             unavailable_products.append({
-                product.name
+                product_variant.name
             })
 
     # only return error if something is unavailable

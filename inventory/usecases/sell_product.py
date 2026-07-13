@@ -13,10 +13,13 @@ def sell_products(items, order_reference: str):
     order_reference — order id or reference string for document_reference
     """
 
+    print(f"####################### executing sell_product()")
     with transaction.atomic():
         for item in items:
-            product_id = item["product_id"]
+            
+            product_id = item["product_variant_id"]
             qty        = item["quantity"]
+            # print(f"#######################{product_id}")
 
             latest_movement = (
                 StockMovement_model.objects
