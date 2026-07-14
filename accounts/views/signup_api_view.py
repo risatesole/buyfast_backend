@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
 from accounts.accounts import create_account , AccountRole, AccountStatus
+from django.core.mail import send_mail
 
 from drf_spectacular.utils import extend_schema
 from .signup_api_view_serializer import SignupSerializer
@@ -48,6 +49,25 @@ def signup_api_view(request):
             user = create_account(first_name,last_name,email,password,AccountRole.CUSTOMER.value,  AccountStatus.ACTIVE.value, matricula,phone_number)
             login(request, user)
             request.META["CSRF_COOKIE_USED"] = True
+            send_mail(
+                subject="¡Bienvenido al Economato UASD!",
+                message=(
+                    f"Estimado(a) {user.first_name} {user.last_name},\n\n"
+                    "Le damos la bienvenida al Economato UASD!\n\n"
+                    "Su cuenta ha sido creada exitosamente y ya puede acceder a nuestros servicios.\n\n"
+                    "Información de la cuenta:\n"
+                    f"Nombre: {user.first_name} {user.last_name}\n"
+                    f"Correo electrónico: {user.email}\n"
+                    f"Matrícula: {user.matricula}\n\n"
+                    "Si usted no realizó este registro, por favor comuníquese con el equipo de soporte lo antes posible.\n\n"
+                    "Atentamente,\n"
+                    "Equipo del Economato UASD"
+                ),
+                from_email=None,  # Usa DEFAULT_FROM_EMAIL
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
             return Response({
                 "status": "ok",
                 "message": "signup successfully",
