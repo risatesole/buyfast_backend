@@ -9,6 +9,57 @@ from accounts.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from cart.models import CartItem
+from django.core.mail import send_mail
+
+
+def send_order_confirmation_email(order):
+    print(f"Sending email:")
+    lines = [
+        f"Estimado(a) {order.customer.first_name} {order.customer.last_name},",
+        "",
+        "¡Gracias por su compra en el Economato UASD!",
+        "",
+        f"Su pedido #{order.id} ha sido recibido correctamente.",
+        "",
+        "Detalles del pedido:",
+        "-" * 40,
+    ]
+
+    total = 0
+
+    for item in order.items.all():
+        subtotal = item.subtotal
+        total += subtotal
+
+        lines.extend([
+            f"• {item.product.product.name} - {item.product.name}",
+            f"  Cantidad: {item.quantity}",
+            f"  Precio: RD$ {item.price_per_item:.2f}",
+            f"  Impuestos: RD$ {item.tax_amount:.2f}",
+            f"  Subtotal: RD$ {subtotal:.2f}",
+            "",
+        ])
+
+    lines.extend([
+        "-" * 40,
+        f"Total: RD$ {total:.2f}",
+        "",
+        f"Hora de recogida: {order.pickup_time}",
+        "",
+        "Puede pasar a retirar su pedido en la fecha y hora seleccionadas.",
+        "",
+        "Atentamente,",
+        "Equipo del Economato UASD",
+    ])
+
+    send_mail(
+        subject=f"Confirmación de pedido #{order.id}",
+        message="\n".join(lines),
+        recipient_list=[order.customer.email],
+        from_email=None,
+        fail_silently=False,
+    )
+
 
 def remove_cart_item(items, user):
     for item in items:
@@ -47,7 +98,7 @@ def create_order_checkout(
     pickuptime,
     items
 ):
-    
+
     is_card_valid = validate_credit_card(
         card_information_card_number,
         card_information_expiry_month,
@@ -55,8 +106,11 @@ def create_order_checkout(
         card_information_cvv
     )
     is_product_avialable = validation_product_avialability(items)
-    create_order(user,items,pickuptime)
-    remove_cart_item(items,user)
+    order = create_order(user, items, pickuptime)
+    remove_cart_item(items, user)
+    send_order_confirmation_email(order)
+    return order
+
 
 def checkout_handler_post(request):
     # billing contact
