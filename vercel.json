@@ -1,4 +1,5 @@
 {
+  "installCommand": "uv sync",
   "builds": [
     {
       "src": "config/wsgi.py",
