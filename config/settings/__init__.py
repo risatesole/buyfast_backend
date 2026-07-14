@@ -31,6 +31,8 @@ from .cors_session_and_csfr.cors_session_and_csfr import (
 from .database.database import DATABASES as DATABASES
 from .development.debug import DEBUG as DEBUG
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
+from .email.email import DEFAULT_FROM_EMAIL as DEFAULT_FROM_EMAIL
+from .email.email import EMAIL_BACKEND as EMAIL_BACKEND
 from .hosts.allowed_hosts import ALLOWED_HOSTS as ALLOWED_HOSTS
 from .installed_apps.installed_apps import INSTALLED_APPS as INSTALLED_APPS
 from .localization.localization import LANGUAGE_CODE as LANGUAGE_CODE
