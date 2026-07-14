@@ -131,7 +131,7 @@ def cart_api_view(request):
                 )
 
             try:
-                cart_item = CartItem.objects.get(user=user, product_id=product_variant_id)
+                cart_item = CartItem.objects.get(user=user, product_variant_id=product_variant_id)
             except CartItem.DoesNotExist:
                 return Response(
                     {"status": "error", "message": "Item not found in cart"}, status=404
