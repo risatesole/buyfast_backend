@@ -1,4 +1,5 @@
 from django.db import models
+from products.default.models import ProductVariant
 
 class StockMovement_model(models.Model):
     MOVEMENT_TYPES = [
@@ -8,7 +9,7 @@ class StockMovement_model(models.Model):
     ]
     date_time = models.DateTimeField(auto_now_add=True)
     product_variant = models.ForeignKey(
-        "products.ProductVariant", 
+        ProductVariant,
         on_delete=models.CASCADE,
         related_name="stock_movements"
     )
