@@ -32,7 +32,7 @@ def _require_employee(request):
 
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
-def orders(request):
+def admin_order_view(request):
     """
     GET /api/admin/orders/
 
