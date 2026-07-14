@@ -15,7 +15,7 @@ from accounts.views.employee_api_view import create_employee
 from cart.cart import cart_api_view
 from checkout.checkout import checkout_api_view, checkout_timeslots_api_view
 from inventory.inventory import StockMovementListView
-from orders.orders import orders_admin_view
+from orders.orders import orders_admin_view , order_details_admin_view
 
 from .modules.system.health_api_view import health
 from .views import set_product_price, api_root
@@ -45,6 +45,7 @@ urlpatterns = [
     path("checkout/timeslots/", checkout_timeslots_api_view),
     path("users/", users),
     path("admin/orders/", orders_admin_view),
+    path('admin/orders/<int:pk>/', order_details_admin_view),
     path("customers/orders/",OrderDetailView.as_view(), name="orders-customer-api-view"),
     path("customers/orders/<int:order_id>",OrderDetailView.as_view(),name="orders-api-view"),
     path(
