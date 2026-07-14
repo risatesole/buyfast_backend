@@ -8,6 +8,7 @@ from datetime import datetime, UTC
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 
+from inventory.inventory import create_initial_inventory
 
 from ..value_objects.product_name import ProductName
 from ..value_objects.product_description import ProductDescription
@@ -207,6 +208,7 @@ class ProductDetailView(APIView):
             updated_at = UpdatedAt(now)
 
             product_variants = []
+            product_variant_initial_inventory = []
 
             for variant_data in request.data["data"]["variants"]:
                 variant_name = ProductName(str(variant_data["name"]))
@@ -217,7 +219,15 @@ class ProductDetailView(APIView):
                 variant_slug = Slug(variant_data["slug"])
                 variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
                 variant_tax_rate = TaxRate(Decimal(variant_data["tax_rate"]))
-
+                
+                # get variant initial inventory data to save to the inventory
+                variant_initial_inventory = variant_data["initial_inventory"]
+                product_variant_initial_inventory.append(
+                    {
+                        "initialinventory": variant_initial_inventory,
+                        "sku": variant_slug
+                    }
+                )
                 variant_image_hero = variant_data.get("image_hero")
                 variant_image_details = variant_data.get("image_details")
                 variant_image_thumbnail = variant_data.get("image_thumbnail")
@@ -272,6 +282,18 @@ class ProductDetailView(APIView):
 
             repository = ProductRepository()
             saved_entity = repository.save(productentity=product_entity)
+
+            inventory_by_slug = {
+                item["sku"]: item["initialinventory"]
+                for item in product_variant_initial_inventory
+            }
+
+            for variant in saved_entity.variants:
+                quantity = inventory_by_slug[variant.slug]
+                create_initial_inventory(
+                    variant.id,
+                    quantity
+                )
 
             utc_now = datetime.now(timezone.utc)
 
