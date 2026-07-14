@@ -364,6 +364,19 @@ class ProductRepository:
             for variant in product_variant_from_model:
                 thumbnail_image = variant.images.filter(image_type='THUMBNAIL').first()
 
+                gallery_images = variant.images.filter(image_type='GALLERY')
+                product_images_list = []
+
+                for images in gallery_images:
+                    image_type =images.image_type
+                    image_url =images.image
+                    product_image_entity = ProductImages(
+                        type=image_type,
+                        url=image_url
+                    )
+                    product_images_list.append(product_image_entity)
+
+
                 product_attributes_normal = ProductAttributesNormal(
                     id = variant.id,
                     name= ProductName(variant.name),
@@ -374,6 +387,7 @@ class ProductRepository:
 
                 product_variant = ProductVariantEntity(
                     variantnumber = variant.variantnumber,
+                    images=product_images_list,
                     sku= SKU(variant.sku),
                     slug= Slug(variant.slug),
                     attributes=product_attributes_normal,
