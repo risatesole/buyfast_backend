@@ -65,6 +65,14 @@ class ProductRepository:
                     variantnumber=variant_variantnumber,
                 )
 
+                thumbnail = ProductImage.objects.create(
+                    product_variant=productvariant_db,
+                    image=variant_thumbnail,
+                    image_type='THUMBNAIL',
+                    alt_text=f"{productvariant_db.name} - THUMBNAIL",
+                    
+                )
+
                 # Process images array - convert domain objects to database records
                 product_images_list = []
 
