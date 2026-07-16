@@ -14,6 +14,7 @@ class Category(TypedDict):
     label: str
     description: str
     priority: int
+    slug: str  # Tipo declarado explícitamente para evitar fallos en validación estricta
     images: CategoryImage
 
 # Categorías adaptadas al dominio de un economato universitario
@@ -22,6 +23,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Papelería y Suministros',
         'description': 'Cuadernos, bolígrafos, papel y material gastable',
         'priority': 1,
+        'slug': 'stationery',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=100&h=100&fit=crop',
@@ -32,6 +34,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Libros y Manuales',
         'description': 'Textos universitarios, manuales de laboratorio y guías',
         'priority': 1,
+        'slug': 'books_manuals',
         'images': {
             'banner': 'https://images.unsplash.com/photo-150784272343-583f20270319?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1507842872343-583f20270319?w=100&h=100&fit=crop',
@@ -42,6 +45,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Medicina y Laboratorio',
         'description': 'Estetoscopios, batas médicas, kits de disección y bioseguridad',
         'priority': 1,
+        'slug': 'medical_lab',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=100&h=100&fit=crop',
@@ -52,6 +56,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Arquitectura y Artes',
         'description': 'Reglas T, escalímetros, maquetas, pinturas y pinceles',
         'priority': 2,
+        'slug': 'architecture_arts',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=100&h=100&fit=crop',
@@ -59,9 +64,10 @@ UASD_CATEGORIES: Dict[str, Category] = {
         }
     },
     'electronics': {
-        'label': 'Electrónica y Calculadoras',
+        'label': 'Electrónica y Calculadora',
         'description': 'Calculadoras científicas, memorias USB y accesorios periféricos',
         'priority': 2,
+        'slug': 'electronics',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=100&h=100&fit=crop',
@@ -72,6 +78,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Uniformes e Institucional',
         'description': 'T-shirts UASD, ropa deportiva y promocionales',
         'priority': 3,
+        'slug': 'uniforms',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop',
@@ -82,6 +89,7 @@ UASD_CATEGORIES: Dict[str, Category] = {
         'label': 'Snacks y Bebidas',
         'description': 'Comida rápida, café, agua y meriendas',
         'priority': 3,
+        'slug': 'snacks_beverages',
         'images': {
             'banner': 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop',
             'cart': 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop',
@@ -100,5 +108,6 @@ def product_categories_api_view(request: Request) -> Response:
     """
     return Response({
         "status": "ok",
-        "data": UASD_CATEGORIES
+        # Serialización a lista plana para iteración directa en React (map)
+        "data": list(UASD_CATEGORIES.values())
     })
