@@ -1,234 +1,127 @@
-from django.db import ProgrammingError
-from rest_framework.decorators import api_view, authentication_classes
+# cart/views.py
+
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import Prefetch
 
 from api.utils import CsrfExemptSessionAuthentication
 from cart.models import CartItem
 from products.default.models import ProductVariant, ProductImage
+from cart.serializers import CartItemReadSerializer, CartActionSerializer
 
 
-@api_view(["GET", "POST", "PATCH", "DELETE"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-def cart_api_view(request):
-    try:
-        user = request.user
+class CartAPIView(APIView):
+    """
+    Refactorización a Class-Based View (CBV) para segregar la lógica HTTP.
+    Manejo estricto de autenticación a nivel de clase.
+    """
+    authentication_classes = [CsrfExemptSessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
-        if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required", "data": None},
-                status=401,
-            )
+    def get_queryset(self):
+        """
+        Aislamiento de la lógica de consulta base resolviendo el problema N+1.
+        """
+        # Limita el query de imágenes estrictamente a los Thumbnails y los inyecta en un atributo virtual
+        thumbnail_prefetch = Prefetch(
+            "product_variant__images",
+            queryset=ProductImage.objects.filter(image_type=ProductImage.ImageType.THUMBNAIL),
+            to_attr="prefetched_thumbnails"
+        )
+        
+        return CartItem.objects.filter(user=self.request.user).select_related(
+            "product_variant"
+        ).prefetch_related(thumbnail_prefetch)
 
-        if request.method == "GET":
-            items = CartItem.objects.filter(user=user)
+    def get(self, request):
+        items = self.get_queryset()
+        serializer = CartItemReadSerializer(items, many=True)
+        return Response({"status": "ok", "data": {"items": serializer.data}})
 
-            return Response(
-                {
-                    "status": "ok",
-                    "data": {
-                        "items": [
-                            {
-                            
-                            "id": item.product_variant.id,
-                            "name": item.product_variant.name,
-                            "description": item.product_variant.description,
-                            "selling_price": item.product_variant.selling_price,
-                            "slug": item.product_variant.slug,
-                            "tax_rate": item.product_variant.tax_rate,
-                            "quantity": item.quantity,
-                            "thumbnail": (
-                                item.product_variant.images.filter(
-                                    image_type=ProductImage.ImageType.THUMBNAIL
-                                )
-                                .values_list("image", flat=True)
-                                .first()
-                            ),
-                            }
-                            for item in items
-                        ]
-                    },
-                }
-            )
+    def post(self, request):
+        serializer = CartActionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"status": "error", "message": "Invalid data", "errors": serializer.errors}, status=400)
+        
+        data = serializer.validated_data
 
-        if request.method == "POST":
-            product_variant_id = request.data.get("productvariantid")
-            quantity = int(request.data.get("quantity", 1))
+        try:
+            # Optimizamos recuperando solo el ID para validar existencia, si no se necesita el objeto completo
+            variant = ProductVariant.objects.only('id').get(id=data["productvariantid"])
+        except ProductVariant.DoesNotExist:
+            return Response({"status": "error", "message": "Product not found"}, status=404)
 
-            if not product_variant_id:
-                return Response(
-                    {"status": "error", "message": "productvariantid is required"}, status=400
-                )
-
-            if quantity < 1:
-                return Response(
-                    {"status": "error", "message": "quantity must be greater than 0"},
-                    status=400,
-                )
-
-            try:
-                product_variant = ProductVariant.objects.get(id=int(product_variant_id))
-            except ProductVariant.DoesNotExist:
-                return Response(
-                    {"status": "error", "message": "Product not found"}, status=404
-                )
-
-            cart_item, created = CartItem.objects.get_or_create(
-                user=user, product_variant=product_variant, defaults={"quantity": quantity}
-            )
-
-            if not created:
-                cart_item.quantity += quantity
-                cart_item.save()
-
-            return Response(
-                {
-                    "status": "ok",
-                    "message": "Item added to cart",
-                    "data": {
-                        "item": {
-                            "id": cart_item.id,
-                            "productvariantid": product_variant.id,
-                            "quantity": cart_item.quantity,
-                        }
-                    },
-                }
-            )
-
-        if request.method == "PATCH":
-            product_variant_id = request.data.get("productvariantid")
-            quantity = request.data.get("quantity")
-
-            if not product_variant_id:
-                return Response(
-                    {"status": "error", "message": "productvariantid is required"}, status=400
-                )
-
-            if quantity is None:
-                return Response(
-                    {"status": "error", "message": "quantity is required"}, status=400
-                )
-
-            try:
-                product_variant_id = int(product_variant_id)
-            except (ValueError, TypeError):
-                return Response(
-                    {"status": "error", "message": "productvariantid must be a valid integer"},
-                    status=400,
-                )
-
-            try:
-                quantity = int(quantity)
-            except (ValueError, TypeError):
-                return Response(
-                    {"status": "error", "message": "quantity must be a valid integer"},
-                    status=400,
-                )
-
-            if quantity < 1:
-                return Response(
-                    {"status": "error", "message": "quantity must be greater than 0"},
-                    status=400,
-                )
-
-            try:
-                cart_item = CartItem.objects.get(user=user, product_variant_id=product_variant_id)
-            except CartItem.DoesNotExist:
-                return Response(
-                    {"status": "error", "message": "Item not found in cart"}, status=404
-                )
-
-            cart_item.quantity = quantity
-            cart_item.save()
-
-            return Response(
-                {
-                    "status": "ok",
-                    "message": "Item quantity updated",
-                    "data": {
-                        "productvariantid": product_variant_id,
-                        "quantity": cart_item.quantity,
-                    },
-                }
-            )
-
-        if request.method == "DELETE":
-            product_variant_id = request.data.get("productvariantid")
-
-            if not product_variant_id:
-                return Response(
-                    {"status": "error", "message": "product_id is required"}, status=400
-                )
-
-            try:
-                product_variant_id = int(product_variant_id)
-            except (ValueError, TypeError):
-                return Response(
-                    {"status": "error", "message": "productvariantid must be a valid integer"},
-                    status=400,
-                )
-
-            quantity = request.data.get("quantity", 1)
-            try:
-                quantity = int(quantity)
-            except (ValueError, TypeError):
-                return Response(
-                    {"status": "error", "message": "quantity must be a valid integer"},
-                    status=400,
-                )
-
-            if quantity < 1:
-                return Response(
-                    {"status": "error", "message": "quantity must be greater than 0"},
-                    status=400,
-                )
-
-            try:
-
-                cart_item = CartItem.objects.get(user=user, product_variant=product_variant_id)
-            except CartItem.DoesNotExist:
-                return Response(
-                    {"status": "error", "message": "Item not found in cart"}, status=404
-                )
-
-            cart_item.quantity -= quantity
-
-            if cart_item.quantity <= 0:
-                cart_item.delete()
-
-                return Response(
-                    {
-                        "status": "ok",
-                        "message": "Item removed from cart",
-                        "data": {"product_id": product_variant_id, "quantity": 0},
-                    }
-                )
-
-            cart_item.save()
-
-            return Response(
-                {
-                    "status": "ok",
-                    "message": "Item quantity updated",
-                    "data": {
-                        "product_id": product_variant_id,
-                        "quantity": cart_item.quantity,
-                    },
-                }
-            )
-
-    except ProgrammingError:
-        return Response(
-            {
-                "status": "error",
-                "message": (
-                    "Cart table does not exist. "
-                    "Run: python manage.py makemigrations cart && python manage.py migrate"
-                ),
-            },
-            status=500,
+        cart_item, created = CartItem.objects.get_or_create(
+            user=request.user, 
+            product_variant=variant, 
+            defaults={"quantity": data["quantity"]}
         )
 
-    except Exception as e:
-        return Response(
-            {"status": "error", "message": str(e), "data": None}, status=400
-        )
+        if not created:
+            cart_item.quantity += data["quantity"]
+            # update_fields optimiza el bloqueo a nivel de base de datos y reduce I/O
+            cart_item.save(update_fields=["quantity"])
+
+        return Response({
+            "status": "ok",
+            "message": "Item added to cart",
+            "data": {
+                "item": {
+                    "id": cart_item.id,
+                    "productvariantid": variant.id,
+                    "quantity": cart_item.quantity
+                }
+            }
+        })
+
+    def patch(self, request):
+        serializer = CartActionSerializer(data=request.data)
+        # Se exige cantidad estrictamente para PATCH
+        if not serializer.is_valid() or "quantity" not in request.data:
+            return Response({"status": "error", "message": "quantity and productvariantid are required"}, status=400)
+        
+        data = serializer.validated_data
+
+        try:
+            cart_item = CartItem.objects.get(user=request.user, product_variant_id=data["productvariantid"])
+        except CartItem.DoesNotExist:
+            return Response({"status": "error", "message": "Item not found in cart"}, status=404)
+
+        cart_item.quantity = data["quantity"]
+        cart_item.save(update_fields=["quantity"])
+
+        return Response({
+            "status": "ok",
+            "message": "Item quantity updated",
+            "data": {"productvariantid": data["productvariantid"], "quantity": cart_item.quantity}
+        })
+
+    def delete(self, request):
+        serializer = CartActionSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"status": "error", "message": "Invalid data", "errors": serializer.errors}, status=400)
+        
+        data = serializer.validated_data
+
+        try:
+            cart_item = CartItem.objects.get(user=request.user, product_variant_id=data["productvariantid"])
+        except CartItem.DoesNotExist:
+            return Response({"status": "error", "message": "Item not found in cart"}, status=404)
+
+        cart_item.quantity -= data["quantity"]
+
+        if cart_item.quantity <= 0:
+            cart_item.delete()
+            return Response({
+                "status": "ok",
+                "message": "Item removed from cart",
+                "data": {"product_id": data["productvariantid"], "quantity": 0}
+            })
+
+        cart_item.save(update_fields=["quantity"])
+        return Response({
+            "status": "ok",
+            "message": "Item quantity updated",
+            "data": {"product_id": data["productvariantid"], "quantity": cart_item.quantity}
+        })
