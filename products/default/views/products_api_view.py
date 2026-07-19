@@ -219,7 +219,7 @@ class ProductDetailView(APIView):
                 variant_slug = Slug(variant_data["slug"])
                 variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
                 variant_tax_rate = TaxRate(Decimal(variant_data["tax_rate"]))
-                
+
                 # get variant initial inventory data to save to the inventory
                 variant_initial_inventory = variant_data["initial_inventory"]
                 product_variant_initial_inventory.append(
