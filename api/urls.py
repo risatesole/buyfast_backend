@@ -7,12 +7,13 @@ from .views_sandbox import ApiSandboxView
 from .modules.system.health_api_view import health
 
 # --- Accounts ---
-# Sustitución del facade 'accounts.accounts'. Las importaciones deben apuntar 
-# directamente a los submódulos de vistas para evitar cuellos de botella en el App Registry.
-# (Ajusta 'auth_api_view' al nombre real de tu archivo dentro de accounts/views/)
-from accounts.views.auth_api_view import (
-    change_password_api_view, delete_account, me_api_view,
-    signin_api_view, signout_api_view, signup_api_view
+from accounts.accounts import (
+    change_password_api_view,
+    delete_account,
+    me_api_view,
+    signin_api_view,
+    signout_api_view,
+    signup_api_view,
 )
 from accounts.views.admin.users_api_view import users
 from accounts.views.employee_api_view import create_employee
@@ -23,15 +24,18 @@ from products.default.views.product_categories_view import product_categories_ap
 
 # --- Cart & Checkout ---
 from cart.views.cart_api_view import CartAPIView
-from checkout.views.checkout_api_view import checkout_api_view, checkout_timeslots_api_view
+from checkout.views.checkout_api_view import (
+    checkout_api_view,
+    checkout_timeslots_api_view,
+)
 
 # --- Orders & Inventory ---
-from orders.views.admin.orders_admin_api_view import orders_admin_view, order_details_admin_view
+from orders.views.admin.orders_admin_api_view import admin_order_view
+from orders.views.admin.order_details_admin_api_view import order_details_admin_view
 from orders.views.customers.orders_api_view import OrderDetailView
-# Sustitución del facade 'inventory.inventory'
-from inventory.views.stock_movement_view import StockMovementListView 
+from inventory.inventory import StockMovementListView
 
-app_name = 'api'
+app_name = "api"
 
 urlpatterns = [
     # System & General
@@ -60,12 +64,16 @@ urlpatterns = [
     path("checkout/", checkout_api_view, name="checkout-api"),
     path("checkout/timeslots/", checkout_timeslots_api_view, name="checkout-timeslots"),
 
-    # Orders (Admin & Customer)
-    path("admin/orders/", orders_admin_view, name="admin-orders-list"),
+    # Orders
+    path("admin/orders/", admin_order_view, name="admin-orders-list"),
     path("admin/orders/<int:pk>/", order_details_admin_view, name="admin-order-detail"),
     path("customers/orders/", OrderDetailView.as_view(), name="customer-orders-list"),
     path("customers/orders/<int:order_id>/", OrderDetailView.as_view(), name="customer-order-detail"),
 
     # Inventory
-    path("admin/inventory/stockmovement/", StockMovementListView.as_view(), name="admin-stock-movement-list"),
+    path(
+        "admin/inventory/stockmovement/",
+        StockMovementListView.as_view(),
+        name="admin-stock-movement-list",
+    ),
 ]

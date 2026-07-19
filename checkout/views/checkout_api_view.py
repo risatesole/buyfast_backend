@@ -15,8 +15,14 @@ from data_transfer_objects.ErrorResponse import ErrorResponse, ErrorCode
 def checkout_api_view(request):
     try:
         user = request.user
+
         if not user.is_authenticated:
-            error = ErrorResponse(ErrorCode.CHECKOUT_LOGIN_REQUIRED,"user must log in in order to checkout","error",400)
+            error = ErrorResponse(
+                ErrorCode.CHECKOUT_LOGIN_REQUIRED,
+                "user must log in in order to checkout",
+                "error",
+                400
+            )
             return error.http_response()
 
         if request.method == "GET":
@@ -26,16 +32,88 @@ def checkout_api_view(request):
             return checkout_handler_post(request)
 
         if request.method == "DELETE":
-            checkout_handler_delete(request)
+            return checkout_handler_delete(request)
 
     except Product.DoesNotExist:
-        error = ErrorResponse(ErrorCode.PRODUCT_DOESNT_EXISTS,"Product user is reaching for doesnt exists","error",404)
+        error = ErrorResponse(
+            ErrorCode.PRODUCT_DOESNT_EXISTS,
+            "Product user is reaching for doesnt exists",
+            "error",
+            404
+        )
         return error.http_response()
 
     except ProgrammingError:
-        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,"System needs configuration","error",500)
+        error = ErrorResponse(
+            ErrorCode.INTERNAL_ERROR,
+            "System needs configuration",
+            "error",
+            500
+        )
         return error.http_response()
 
     except Exception as e:
-        error = ErrorResponse(ErrorCode.INTERNAL_ERROR,f"Unknown System error {e}","error",500)
+        import traceback
+        traceback.print_exc()
+
+        error = ErrorResponse(
+            ErrorCode.INTERNAL_ERROR,
+            f"Unknown System error {e}",
+            "error",
+            500
+        )
+        return error.http_response()
+
+
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+def checkout_timeslots_api_view(request):
+    try:
+        user = request.user
+
+        if not user.is_authenticated:
+            error = ErrorResponse(
+                ErrorCode.CHECKOUT_LOGIN_REQUIRED,
+                "El usuario debe iniciar sesión para consultar los horarios disponibles",
+                "error",
+                400
+            )
+            return error.http_response()
+
+        return Response({
+            "availableDates": [
+                {
+                    "date": "2026-06-20",
+                    "slots": ["09:00", "10:00", "14:00", "17:25"]
+                },
+                {
+                    "date": "2026-06-21",
+                    "slots": ["11:00", "15:00"]
+                },
+                {
+                    "date": "2026-06-22",
+                    "slots": ["11:00", "15:00"]
+                }
+            ]
+        })
+
+    except ProgrammingError:
+        error = ErrorResponse(
+            ErrorCode.INTERNAL_ERROR,
+            "El sistema necesita configuración",
+            "error",
+            500
+        )
+        return error.http_response()
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+
+        error = ErrorResponse(
+            ErrorCode.INTERNAL_ERROR,
+            f"Error desconocido del sistema: {e}",
+            "error",
+            500
+        )
         return error.http_response()
