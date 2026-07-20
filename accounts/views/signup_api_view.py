@@ -4,7 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
-from accounts.accounts import create_account , AccountRole, AccountStatus
+from django.db import IntegrityError, transaction  # ADD transaction import
+from accounts.accounts import create_account, AccountRole, AccountStatus
 from django.core.mail import send_mail
 
 from drf_spectacular.utils import extend_schema
@@ -55,7 +56,31 @@ def signup_api_view(request):
         try:
             validate_password(password)
 
-            user = create_account(first_name,last_name,email,password,AccountRole.CUSTOMER.value,  AccountStatus.ACTIVE.value, matricula,phone_number)
+            # USE transaction.atomic() TO PROPERLY HANDLE IntegrityError
+            try:
+                with transaction.atomic():
+                    user = create_account(
+                        first_name,
+                        last_name,
+                        email,
+                        password,
+                        AccountRole.CUSTOMER.value,
+                        AccountStatus.ACTIVE.value,
+                        matricula,
+                        phone_number
+                    )
+            except IntegrityError as e:
+                # Handle database integrity errors (like duplicate email)
+                if 'UNIQUE constraint failed' in str(e) or 'email' in str(e).lower():
+                    return Response({
+                        "status": "error",
+                        "message": "Email already exists",
+                        "errors": {"email": ["This email is already registered."]}
+                    }, status=400)
+                else:
+                    # Re-raise if it's a different integrity error
+                    raise
+
             login(request, user)
             request.META["CSRF_COOKIE_USED"] = True
             send_mail(
