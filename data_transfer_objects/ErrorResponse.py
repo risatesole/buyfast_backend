@@ -9,13 +9,14 @@ from enum import Enum
 class ErrorCode(Enum):
     """Enumeration of all possible error codes"""
     CHECKOUT_LOGIN_REQUIRED = "CHECKOUT_LOGIN_REQUIRED"
+    EMPTY_BODY="EMPTY_BODY"
     PRODUCT_DOESNT_EXISTS = "PRODUCT_DOESNT_EXISTS"
     INVALID_INPUT = "INVALID_INPUT"
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
     UNAUTHORIZED = "UNAUTHORIZED"
     FORBIDDEN = "FORBIDDEN"
     INTERNAL_ERROR = "INTERNAL_ERROR"
-    
+
     # Additional common error codes you might want
     USER_NOT_FOUND = "USER_NOT_FOUND"
     INVALID_EMAIL = "INVALID_EMAIL"
@@ -94,13 +95,13 @@ class ErrorResponse:
     message: str  # Human-readable error message
     status: str = "error"  # Default status string
     http_status: Optional[int] = None  # HTTP status code (optional)
-    
+
     def __post_init__(self):
         if not self.code:
             raise ValueError("code is required")
         if not self.message:
             raise ValueError("message is required")
-    
+
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization"""
         data = {

@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 
 from drf_spectacular.utils import extend_schema
 from .signup_api_view_serializer import SignupSerializer
+from data_transfer_objects.ErrorResponse import ErrorResponse, ErrorCode
 
 @extend_schema(
     request=SignupSerializer,
@@ -21,9 +22,17 @@ from .signup_api_view_serializer import SignupSerializer
 def signup_api_view(request):
 
     if request.method == 'GET':
-            request
+            # request
             signup_api_view.cls.serializer_class = SignupSerializer
-            return Response({'message': 'Please submit the registration form.'}, status=400)
+
+            error = ErrorResponse(
+                ErrorCode.EMPTY_BODY,
+                "Signup need fields to be filled",
+                "error",
+                400
+            )
+
+            return error.http_response()
 
     if request.method == 'POST':
         serializer = SignupSerializer(data=request.data)
