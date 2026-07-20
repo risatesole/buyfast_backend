@@ -23,7 +23,7 @@ def signup_api_view(request):
     if request.method == 'GET':
             request
             signup_api_view.cls.serializer_class = SignupSerializer
-            return Response({'message': 'Please submit the registration form.'})
+            return Response({'message': 'Please submit the registration form.'}, status=400)
 
     if request.method == 'POST':
         serializer = SignupSerializer(data=request.data)
