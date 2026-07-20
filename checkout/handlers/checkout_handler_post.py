@@ -165,7 +165,8 @@ def checkout_handler_post(request):
                 )
 
     except InvalidCreditCardError as e:
-        return Response({"success": False, "message": "Invalid credit card","error":{"message":"invalid credit card"}},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"success": False, "message": "No pudimos procesar la tarjeta. Verifica los datos e intenta nuevamente.","error":{"message":""
+        "Tarjeta inválida"}},status=status.HTTP_400_BAD_REQUEST)
 
     except ProductUnavailableException as e:
         return Response(

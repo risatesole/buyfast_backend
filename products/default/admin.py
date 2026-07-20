@@ -1,155 +1,97 @@
 from django.contrib import admin
-from django.core.exceptions import ValidationError
+from django.utils.html import format_html
+from django.db import transaction
+
+# Asegúrate de ajustar las importaciones a la estructura de tu app
 from .models.product_model import Product
 from .models.product_variant_model import ProductVariant
 from .models.product_image_model import ProductImage
 
-
 class ProductImageInline(admin.TabularInline):
-    """Inline admin for ProductImages within ProductVariant"""
     model = ProductImage
     extra = 1
-    fields = ('image', 'image_type', 'alt_text', 'order')
-    ordering = ['order', 'uploaded_at']
+    fields = ('image_preview', 'image', 'image_type', 'alt_text', 'order')
+    readonly_fields = ('image_preview',)
+    classes = ('collapse',)
 
+    def image_preview(self, obj: ProductImage) -> str:
+        if obj.image:
+            return format_html('<img src="{}" style="height: 50px; border-radius: 4px;" />', obj.image)
+        return "-"
+    image_preview.short_description = "Vista Previa"
 
-class ProductVariantInline(admin.TabularInline):
-    """Inline admin for ProductVariants within Product"""
+class ProductVariantInline(admin.StackedInline):
     model = ProductVariant
-    extra = 1
+    extra = 0
+    min_num = 1  # Obliga a que se cree al menos una variante por producto
+    prepopulated_fields = {'slug': ('name',)}
     fields = (
-        'name',
-        'variantnumber',
-        'sku',
-        'selling_price',
-        'tax_rate',
+        ('name', 'sku'), 
+        ('variantnumber', 'slug'), 
+        ('selling_price', 'tax_rate'), 
         'description'
     )
-    readonly_fields = ('created_at', 'updated_at')
-
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'slug',
-        'category',
-        'product_type',
-        'variant_count',
-        'created_at',
-        'updated_at'
-    )
-    list_filter = ('category', 'product_type', 'created_at')
-    search_fields = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ('created_at', 'updated_at')
-    
-    fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'slug', 'thumbnail')
-        }),
-        ('Classification', {
-            'fields': ('category', 'product_type')
-        }),
-        ('Tags', {
-            'fields': ('tags',)
-        }),
-        ('Metadata', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    inlines = [ProductVariantInline]
-    
-    def variant_count(self, obj):
-        """Display the number of variants for this product"""
-        return obj.variants.count()
-    variant_count.short_description = 'Variants'
-    
-    def save_model(self, request, obj, form, change):
-        """Save the product"""
-        super().save_model(request, obj, form, change)
-    
-    def save_formset(self, request, form, formset, change):
-        """Validate that at least one variant exists before saving"""
-        super().save_formset(request, form, formset, change)
-        
-        # Check if product has at least one variant
-        if not change:  # Creating new product
-            product = form.instance
-            if not product.variants.exists():
-                raise ValidationError(
-                    'A product must have at least one variant. Please add a variant.'
-                )
-
-
-@admin.register(ProductVariant)
-class ProductVariantAdmin(admin.ModelAdmin):
-    list_display = (
-        'product',
-        'name',
-        'sku',
-        'variantnumber',
-        'selling_price',
-        'tax_rate',
-        'image_count',
-        'created_at'
-    )
-    list_filter = ('product', 'created_at', 'selling_price')
-    search_fields = ('name', 'sku', 'product__name')
-    readonly_fields = ('created_at', 'updated_at')
-    
-    fieldsets = (
-        ('Product & Basic Info', {
-            'fields': ('product', 'name', 'variantnumber')
-        }),
-        ('SKU & Slug', {
-            'fields': ('sku', 'slug')
-        }),
-        ('Pricing & Tax', {
-            'fields': ('selling_price', 'tax_rate')
-        }),
-        ('Description', {
-            'fields': ('description',),
-            'classes': ('wide',)
-        }),
-        ('Metadata', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    inlines = [ProductImageInline]
-    
-    def image_count(self, obj):
-        """Display the number of images for this variant"""
-        return obj.images.count()
-    image_count.short_description = 'Images'
-
+    classes = ('collapse',)
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = (
-        'product_variant',
-        'image_type',
-        'order',
-        'alt_text',
-        'uploaded_at'
-    )
-    list_filter = ('image_type', 'uploaded_at')
-    search_fields = ('alt_text', 'product_variant__name', 'product_variant__product__name')
-    readonly_fields = ('uploaded_at',)
+    list_display = ('image_preview', 'product_variant', 'image_type', 'order', 'uploaded_at')
+    list_filter = ('image_type',)
+    search_fields = ('product_variant__sku', 'product_variant__name', 'alt_text')
+    list_editable = ('order', 'image_type')
+    list_select_related = ('product_variant', 'product_variant__product') # Evita N+1
     
-    fieldsets = (
-        ('Variant & Image', {
-            'fields': ('product_variant', 'image')
-        }),
-        ('Image Details', {
-            'fields': ('image_type', 'alt_text', 'order')
-        }),
-        ('Metadata', {
-            'fields': ('uploaded_at',),
-            'classes': ('collapse',)
-        }),
-    )
+    def image_preview(self, obj: ProductImage) -> str:
+        if obj.image:
+            return format_html('<img src="{}" style="height: 40px; border-radius: 4px;" />', obj.image)
+        return "-"
+    image_preview.short_description = "Img"
+
+@admin.register(ProductVariant)
+class ProductVariantAdmin(admin.ModelAdmin):
+    list_display = ('sku', 'product', 'name', 'selling_price', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('sku', 'name', 'product__name')
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [ProductImageInline]
+    list_select_related = ('product',) # Evita N+1 al consultar la tabla principal
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'product_type', 'thumbnail_preview', 'updated_at')
+    list_filter = ('category', 'product_type', 'created_at')
+    search_fields = ('name', 'slug', 'variants__sku') # Permite buscar producto por SKU de variante
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [ProductVariantInline]
+    
+    def thumbnail_preview(self, obj: Product) -> str:
+        if obj.thumbnail:
+            return format_html('<img src="{}" style="height: 40px; border-radius: 4px;" />', obj.thumbnail)
+        return "-"
+    thumbnail_preview.short_description = "Thumbnail"
+
+    @transaction.atomic
+    def save_related(self, request, form, formsets, change):
+        """
+        Sobrescribimos save_related porque las variantes (inlines) se guardan aquí.
+        Una vez guardada la variante, sincronizamos el thumbnail del Producto
+        hacia el modelo ProductImage de su variante principal.
+        """
+        super().save_related(request, form, formsets, change)
+        product = form.instance
+        
+        if product.thumbnail:
+            # Tomamos la variante principal (la de menor variantnumber o la primera creada)
+            main_variant = product.variants.order_by('variantnumber', 'id').first()
+            
+            if main_variant:
+                # Sincronización lógica: Actualiza o crea el thumbnail en ProductImage
+                ProductImage.objects.update_or_create(
+                    product_variant=main_variant,
+                    image_type=ProductImage.ImageType.THUMBNAIL,
+                    defaults={
+                        'image': product.thumbnail,
+                        'alt_text': f"Thumbnail para {product.name}",
+                        'order': 0
+                    }
+                )

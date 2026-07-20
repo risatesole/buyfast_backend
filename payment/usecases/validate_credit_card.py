@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class InvalidCreditCardError(Exception):
-    def __init__(self, message="Invalid credit card"):
+    def __init__(self, message="No pudimos procesar la tarjeta. Verifica los datos e intenta nuevamente."):
         self.message = message
         super().__init__(self.message)
 
