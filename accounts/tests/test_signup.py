@@ -3,23 +3,62 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
 from rest_framework.test import APIClient
+import random
+import string
 
 User = get_user_model()
 
 class SignupAPITestCase(TestCase):
+    """Test cases for signup API with randomly generated test data"""
+
     def setUp(self):
         self.client = APIClient()
         self.signup_url = reverse('api:auth-signup')
+        self.test_users = []
 
-    def test_successful_signup(self):
-        """Test successful user signup"""
+    def generate_random_email(self):
+        """Generate a random email address"""
+        username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        return f"{username}@example.com"
+
+    def generate_random_password(self, length=12):
+        """Generate a random strong password"""
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = [
+            random.choice(string.ascii_uppercase),  # At least one uppercase
+            random.choice(string.ascii_lowercase),  # At least one lowercase
+            random.choice(string.digits),           # At least one digit
+            random.choice(string.punctuation)       # At least one special char
+        ]
+        password += [random.choice(characters) for _ in range(length - 4)]
+        random.shuffle(password)
+        return ''.join(password)
+
+    def generate_random_name(self, length=None):
+        """Generate a random name"""
+        if length is None:
+            length = random.randint(5, 12)
+        return ''.join(random.choices(string.ascii_letters, k=length)).capitalize()
+
+    def generate_random_phone(self):
+        """Generate a random phone number"""
+        return f"{random.randint(200, 999)}-{random.randint(100, 999)}-{random.randint(1000, 9999)}"
+
+    def generate_random_matricula(self):
+        """Generate a random matricula"""
+        year = random.randint(2020, 2024)
+        number = random.randint(1000, 9999)
+        return f"{year}-{number}"
+
+    def test_successful_signup_with_random_data(self):
+        """Test successful signup with randomly generated data"""
         signup_data = {
-            "firstname": "John",
-            "lastname": "Doe",
-            "email": "john.doe@example.com",
-            "password": "StrongPass123!",
-            "phone": "809-555-1234",
-            "matricula": "2023-1234",
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
@@ -35,38 +74,38 @@ class SignupAPITestCase(TestCase):
         self.assertEqual(response.data['message'], 'signup successfully')
 
         # Check user was created with correct data
-        self.assertTrue(User.objects.filter(email='john.doe@example.com').exists())
-        user = User.objects.get(email='john.doe@example.com')
-        self.assertEqual(user.first_name, 'John')
-        self.assertEqual(user.last_name, 'Doe')
-        self.assertEqual(user.matricula, '2023-1234')
-        self.assertEqual(user.phone_number, '809-555-1234')
+        self.assertTrue(User.objects.filter(email=signup_data['email']).exists())
+        user = User.objects.get(email=signup_data['email'])
+        self.assertEqual(user.first_name, signup_data['firstname'])
+        self.assertEqual(user.last_name, signup_data['lastname'])
+        self.assertEqual(user.matricula, signup_data['matricula'])
+        self.assertEqual(user.phone_number, signup_data['phone'])
 
-        # Check email was sent (use .to instead of .recipient_list)
+        # Check email was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, '¡Bienvenido al Economato UASD!')
-        self.assertIn('john.doe@example.com', mail.outbox[0].to)
+        self.assertIn(signup_data['email'], mail.outbox[0].to)
 
         # Check response contains user data
-        self.assertEqual(response.data['data']['user']['firstname'], 'John')
-        self.assertEqual(response.data['data']['user']['lastname'], 'Doe')
-        self.assertEqual(response.data['data']['user']['email'], 'john.doe@example.com')
+        self.assertEqual(response.data['data']['user']['firstname'], signup_data['firstname'])
+        self.assertEqual(response.data['data']['user']['lastname'], signup_data['lastname'])
+        self.assertEqual(response.data['data']['user']['email'], signup_data['email'])
 
-    def test_signup_invalid_data(self):
-        """Test signup with invalid data"""
-        invalid_data = {
-            "firstname": "",  # Empty first name
-            "lastname": "Doe",
-            "email": "invalid-email",  # Invalid email format
-            "password": "weak",  # Weak password
-            "phone": "809-555-1234",
-            "matricula": "2023-1234",
+    def test_signup_invalid_email_format(self):
+        """Test signup with invalid email format"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": "invalid-email-format",
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
         response = self.client.post(
             self.signup_url,
-            data=invalid_data,
+            data=signup_data,
             format='json'
         )
 
@@ -78,23 +117,50 @@ class SignupAPITestCase(TestCase):
         # User should not be created
         self.assertEqual(User.objects.count(), 0)
 
-    def test_signup_duplicate_email(self):
-        """Test signup with existing email"""
-        # Create a user first
+    def test_signup_empty_firstname(self):
+        """Test signup with empty first name"""
+        signup_data = {
+            "firstname": "",
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": True
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        # Check error response
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['status'], 'error')
+        self.assertIn('errors', response.data)
+
+        # User should not be created
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_signup_duplicate_email_random_data(self):
+        """Test signup with existing random email"""
+        # Create a user first with random data
+        existing_email = self.generate_random_email()
         User.objects.create_user(
-            email='existing@example.com',
-            password='StrongPass123!',
-            first_name='Existing',
-            last_name='User'
+            email=existing_email,
+            password=self.generate_random_password(),
+            first_name=self.generate_random_name(),
+            last_name=self.generate_random_name()
         )
 
         signup_data = {
-            "firstname": "John",
-            "lastname": "Doe",
-            "email": "existing@example.com",  # Duplicate email
-            "password": "StrongPass123!",
-            "phone": "809-555-1234",
-            "matricula": "2023-1234",
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": existing_email,  # Duplicate email
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
@@ -117,22 +183,48 @@ class SignupAPITestCase(TestCase):
 
         # GET requests should return 400 error
         self.assertEqual(response.status_code, 400)
-        # Check for error message (may be in different key)
         self.assertIn('message', response.data)
         self.assertIn('Signup need fields to be filled', response.data['message'])
 
-    def test_signup_missing_required_fields(self):
-        """Test signup with missing required fields"""
-        incomplete_data = {
-            "firstname": "John",
-            "lastname": "Doe",
-            # Missing email, password, phone, matricula
+    def test_signup_missing_email(self):
+        """Test signup with missing email field"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
         response = self.client.post(
             self.signup_url,
-            data=incomplete_data,
+            data=signup_data,
+            format='json'
+        )
+
+        # Should return validation error
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['status'], 'error')
+        self.assertIn('errors', response.data)
+
+        # User should not be created
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_signup_missing_password(self):
+        """Test signup with missing password field"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": True
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
             format='json'
         )
 
@@ -147,12 +239,12 @@ class SignupAPITestCase(TestCase):
     def test_signup_weak_password(self):
         """Test signup with weak password"""
         signup_data = {
-            "firstname": "John",
-            "lastname": "Doe",
-            "email": "john.weak@example.com",
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
             "password": "123",  # Too weak
-            "phone": "809-555-1234",
-            "matricula": "2023-1234",
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
@@ -169,15 +261,15 @@ class SignupAPITestCase(TestCase):
         # User should not be created
         self.assertEqual(User.objects.count(), 0)
 
-    def test_signup_response_structure(self):
-        """Test that successful signup response has correct structure"""
+    def test_signup_response_structure_random_data(self):
+        """Test response structure with randomly generated data"""
         signup_data = {
-            "firstname": "Jane",
-            "lastname": "Smith",
-            "email": "jane.smith@example.com",
-            "password": "SecurePass456!",
-            "phone": "809-555-5678",
-            "matricula": "2023-5678",
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
             "terms": True
         }
 
@@ -205,3 +297,178 @@ class SignupAPITestCase(TestCase):
         self.assertIn('role', user_data)
         self.assertIn('phonenumber', user_data)
         self.assertIn('matricula', user_data)
+
+    def test_signup_multiple_attempts_random_data(self):
+        """Test multiple signup attempts with random data"""
+        for _ in range(3):
+            signup_data = {
+                "firstname": self.generate_random_name(),
+                "lastname": self.generate_random_name(),
+                "email": self.generate_random_email(),
+                "password": self.generate_random_password(),
+                "phone": self.generate_random_phone(),
+                "matricula": self.generate_random_matricula(),
+                "terms": True
+            }
+
+            response = self.client.post(
+                self.signup_url,
+                data=signup_data,
+                format='json'
+            )
+
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.data['status'], 'ok')
+
+        # Verify all 3 users were created
+        self.assertEqual(User.objects.count(), 3)
+
+    def test_signup_with_special_characters_password(self):
+        """Test signup with complex password containing special characters"""
+        complex_password = self.generate_random_password(length=16)
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": complex_password,
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": True
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['status'], 'ok')
+
+        # Verify user was created
+        user = User.objects.get(email=signup_data['email'])
+        self.assertEqual(user.first_name, signup_data['firstname'])
+
+    def test_signup_all_fields_valid_random_data(self):
+        """Test signup with all fields valid and random"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": True
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['status'], 'ok')
+        self.assertEqual(response.data['message'], 'signup successfully')
+
+        # Verify all data matches
+        user = User.objects.get(email=signup_data['email'])
+        self.assertEqual(user.first_name, signup_data['firstname'])
+        self.assertEqual(user.last_name, signup_data['lastname'])
+        self.assertEqual(user.email, signup_data['email'])
+        self.assertEqual(user.phone_number, signup_data['phone'])
+        self.assertEqual(user.matricula, signup_data['matricula'])
+
+    def test_signup_stress_test_random_users(self):
+        """Stress test with multiple random user signups"""
+        num_users = 5
+
+        for _ in range(num_users):
+            signup_data = {
+                "firstname": self.generate_random_name(),
+                "lastname": self.generate_random_name(),
+                "email": self.generate_random_email(),
+                "password": self.generate_random_password(),
+                "phone": self.generate_random_phone(),
+                "matricula": self.generate_random_matricula(),
+                "terms": True
+            }
+
+            response = self.client.post(
+                self.signup_url,
+                data=signup_data,
+                format='json'
+            )
+
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.data['status'], 'ok')
+
+        # Verify all users were created
+        self.assertEqual(User.objects.count(), num_users)
+
+    def test_signup_empty_lastname(self):
+        """Test signup with empty last name"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": "",
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": True
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        # Check error response
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['status'], 'error')
+
+        # User should not be created
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_signup_terms_false(self):
+        """Test signup with terms not accepted"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula(),
+            "terms": False  # Terms not accepted
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        # Should return error or validation error
+        self.assertEqual(response.status_code, 400)
+
+    def test_signup_missing_terms_field(self):
+        """Test signup with missing terms field"""
+        signup_data = {
+            "firstname": self.generate_random_name(),
+            "lastname": self.generate_random_name(),
+            "email": self.generate_random_email(),
+            "password": self.generate_random_password(),
+            "phone": self.generate_random_phone(),
+            "matricula": self.generate_random_matricula()
+            # Missing terms field
+        }
+
+        response = self.client.post(
+            self.signup_url,
+            data=signup_data,
+            format='json'
+        )
+
+        # Should return validation error
+        self.assertEqual(response.status_code, 400)

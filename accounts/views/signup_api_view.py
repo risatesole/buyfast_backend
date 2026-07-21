@@ -53,6 +53,12 @@ def signup_api_view(request):
         matricula = request.data.get("matricula")
         terms = request.data.get("terms")
 
+        if terms == None or terms == False:
+            return Response({
+                "status": "error",
+                "message": "Must accept terms of service to signup"
+            }, status=400)
+
         try:
             validate_password(password)
 
