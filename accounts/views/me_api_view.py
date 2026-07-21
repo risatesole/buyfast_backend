@@ -22,8 +22,11 @@ def me_api_view(request):
                         "role": None,
                         "profilepicture": None,
                         "is_authenticated": False,
+                        "phone_number": None,
+                        "matricula": None,
                         "permisions": None,
                         "is_active": None,
+                        "is_staff": None,
                     }
                 }
             })
@@ -43,6 +46,7 @@ def me_api_view(request):
                     "is_staff": user.is_staff,
                     "phone_number": user.phone_number,
                     "matricula": user.matricula,
+                    "is_staff": user.is_staff,
                     "permisions": [
                         perm.split(".")[1]
                         for perm in request.user.get_all_permissions()
