@@ -221,6 +221,7 @@ class ProductDetailView(APIView):
                 variant_slug = Slug(variant_data["slug"])
                 variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
                 variant_tax_rate = TaxRate(Decimal(variant_data["tax_rate"]))
+                variant_status = bool(variant_data["status"])
 
                 # get variant initial inventory data to save to the inventory
                 variant_initial_inventory = variant_data["initial_inventory"]
@@ -266,7 +267,8 @@ class ProductDetailView(APIView):
                     attributes=product_attributes,
                     SellingPrice=variant_selling_price,
                     tax_rate=variant_tax_rate,
-                    images=variant_images if variant_images else None
+                    images=variant_images if variant_images else None,
+                    status=variant_status,
                 )
 
                 product_variants.append(product_variant)
@@ -320,6 +322,7 @@ class ProductDetailView(APIView):
                             "slug": variant.slug.value,  # slug is Slug, has .value
                             "selling_price": float(variant.SellingPrice.value),  # SellingPrice, has .value
                             "tax_rate": float(variant.tax_rate.value),  # tax_rate is TaxRate, has .value
+                            "status": variant.status,
                             "images": [
                                 {
                                     "type": img.type,

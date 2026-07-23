@@ -53,7 +53,7 @@ class ProductRepository:
                 variant_slug = variant.slug.value
                 variant_price = variant.SellingPrice.value
                 variant_tax_rate = variant.tax_rate.value
-                variant_status = variant.status
+                variant_status = bool(variant.status)
 
                 # Create the ProductVariant in DB
                 productvariant_db = ProductVariantModel.objects.create(
