@@ -21,6 +21,7 @@ from accounts.views.employee_api_view import create_employee
 # --- Products ---
 from products.default.views.products_api_view import ProductDetailView
 from products.default.views.product_categories_view import product_categories_api_view
+from products.default.views.product_import_csv import ImportProductsCSVView
 
 # --- Cart & Checkout ---
 from cart.views.cart_api_view import CartAPIView
@@ -55,6 +56,7 @@ urlpatterns = [
 
     # Products
     path("products/", ProductDetailView.as_view(), name="product-list"),
+    path('products/import/csv/', ImportProductsCSVView.as_view(), name='import_products'),
     path("products/<int:pk>/", ProductDetailView.as_view(), name="product-detail"),
     path("products/categories/", product_categories_api_view, name="product-categories"),
     path("products/set-price/", set_product_price, name="product-set-price"),
