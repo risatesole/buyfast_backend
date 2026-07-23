@@ -70,6 +70,7 @@ class ProductDetailView(APIView):
                             'image_hero': v.attributes.image_hero,
                             'image_thumbnail': v.attributes.image_thumbnail,
                             'image_gallery': v.attributes.image_gallery,
+                            "status": v.status,
                             'images': [
                                 {
                                     'type': img.type,
@@ -156,6 +157,7 @@ class ProductDetailView(APIView):
                                 "image_thumbnail": variant.attributes.image_thumbnail,
                                 "image_gallery": variant.attributes.image_gallery,
                                 "image_lifestyle": variant.attributes.image_lifestyle,
+                                "status": variant.status,
                                 "images": [
                                     {
                                         'type': img.type,

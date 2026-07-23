@@ -9,7 +9,10 @@ class ProductVariant(models.Model):
     variantnumber = models.IntegerField(null=False, blank=False)
     slug = models.CharField(max_length=500)
     sku = models.CharField(max_length=500, unique=True)
-    
+    status = models.BooleanField(
+        default=True,
+    )
+
     # Pricing & Tax
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)

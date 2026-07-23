@@ -18,6 +18,7 @@ class ProductVariant(ABC):
     attributes: ProductAttributes
     sku: SKU
     slug: Slug
+    status: bool
     SellingPrice: Optional[SellingPrice] = None
     tax_rate: Optional[TaxRate] = None
     images: Optional[List[ProductImages]] = None  

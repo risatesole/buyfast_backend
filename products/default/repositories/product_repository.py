@@ -53,6 +53,7 @@ class ProductRepository:
                 variant_slug = variant.slug.value
                 variant_price = variant.SellingPrice.value
                 variant_tax_rate = variant.tax_rate.value
+                variant_status = variant.status
 
                 # Create the ProductVariant in DB
                 productvariant_db = ProductVariantModel.objects.create(
@@ -64,6 +65,7 @@ class ProductRepository:
                     selling_price=variant_price,
                     tax_rate=variant_tax_rate,
                     variantnumber=variant_variantnumber,
+                    status = variant_status,
                 )
 
                 thumbnail = ProductImage.objects.create(
@@ -151,6 +153,7 @@ class ProductRepository:
             variant_thumbnail = (
                 variant_db.thumbnail if hasattr(variant_db, "thumbnail") else None
             )
+            variant_status = variant_db.status
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -186,6 +189,7 @@ class ProductRepository:
                 sku=variant_sku,
                 slug=variant_slug,
                 thumbnail=variant_thumbnail,
+                status=variant_status,
                 variantnumber=variant_variantnumber,
                 attributes=attributes,
                 SellingPrice=variant_price,
@@ -243,6 +247,7 @@ class ProductRepository:
             variant_thumbnail = (
                 variant_db.thumbnail if hasattr(variant_db, "thumbnail") else None
             )
+            variant_status = variant_db.status
             variant_sku = SKU(variant_db.sku)
             variant_slug = Slug(variant_db.slug)
             variant_price = SellingPrice(variant_db.selling_price)
@@ -282,6 +287,7 @@ class ProductRepository:
                 attributes=attributes,
                 SellingPrice=variant_price,
                 tax_rate=variant_tax_rate,
+                status=variant_status,
             )
             variants.append(variant_entity)
 
@@ -339,6 +345,7 @@ class ProductRepository:
             images=image_list if image_list else None,
             attributes=product_attributes_normal,
             thumbnail=thumbnail_image.image if thumbnail_image else None,
+            status=variant_db.status,
             id=variant_db.id,
             SellingPrice=SellingPrice(variant_db.selling_price),
             tax_rate=TaxRate(variant_db.tax_rate),
