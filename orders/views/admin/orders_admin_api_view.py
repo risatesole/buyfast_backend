@@ -55,7 +55,7 @@ def admin_order_view(request):
 
     # Start with base queryset with all related data
     qs = Order.objects.select_related("customer").prefetch_related("items").all()
-    
+
     # Annotate with computed fields
     qs = qs.annotate(
         total_amount=Coalesce(
@@ -123,6 +123,11 @@ def admin_order_view(request):
     else:
         qs = qs.order_by("-created_at")  # fallback
 
+    # Total count of matching rows BEFORE pagination is applied.
+    # Must be computed here (on the filtered/annotated qs, before slicing)
+    # so it reflects the full result set, not just the current page.
+    total = qs.count()
+
     # --- pagination ---
     try:
         limit = max(1, int(request.query_params.get("limit", 20)))
@@ -133,15 +138,15 @@ def admin_order_view(request):
     except ValueError:
         offset = 0
 
-    total = qs.count()
-    
-    # Check if there are no orders
+    # Always return the same shape, even when there are no results,
+    # so the frontend doesn't have to special-case an empty {}.
     if total == 0:
-        return Response({})  
-    
+        return Response({"data": [], "total": 0})
+
     qs = qs[offset: offset + limit]
 
     serializer = OrderListSerializer(qs, many=True)
     return Response({
-        "data": serializer.data
+        "data": serializer.data,
+        "total": total,
     })
