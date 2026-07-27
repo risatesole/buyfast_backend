@@ -20,6 +20,7 @@ from ..value_objects.product_tags import Tags
 from ..value_objects.product_taxrate import TaxRate
 from ..value_objects.product_type import ProductType
 from ..value_objects.product_updated_at import UpdatedAt
+from decimal import Decimal
 
 
 class ProductRepository:
@@ -506,3 +507,97 @@ class ProductRepository:
             return True
         except Product.DoesNotExist:
             return False
+
+    def update_product(self, product_id: int, data: dict) -> ProductEntity:
+        """
+        Partially update a product and/or its variants.
+        Only fields present in `data` are changed. Variants must include their
+        `id` to be matched to an existing row; variants without an id are skipped.
+        """
+        try:
+            product_db = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise ValueError(f"Product with id {product_id} does not exist")
+
+        # --- Top-level product fields ---
+        if "name" in data:
+            product_db.name = ProductName(str(data["name"])).value
+        if "category" in data:
+            product_db.category = ProductCategory(data["category"]).value
+        if "slug" in data:
+            product_db.slug = Slug(data["slug"]).value
+        if "thumbnail" in data:
+            product_db.thumbnail = data["thumbnail"]
+        if "tags" in data:
+            tags_value = Tags(data["tags"]).value if data["tags"] else []
+            product_db.tags.set(tags_value)
+
+        product_db.save()
+
+        # --- Variants (matched by id, partial per-variant update) ---
+        if "variants" in data:
+            for variant_data in data["variants"]:
+                variant_id = variant_data.get("id")
+                if not variant_id:
+                    continue  # PATCH only touches existing variants
+
+                try:
+                    variant_db = ProductVariantModel.objects.get(
+                        id=variant_id, product=product_db
+                    )
+                except ProductVariantModel.DoesNotExist:
+                    continue
+
+                if "name" in variant_data:
+                    variant_db.name = ProductName(str(variant_data["name"])).value
+                if "description" in variant_data:
+                    variant_db.description = ProductDescription(
+                        str(variant_data["description"])
+                    ).value
+                if "variantnumber" in variant_data:
+                    variant_db.variantnumber = variant_data["variantnumber"]
+                if "slug" in variant_data:
+                    variant_db.slug = Slug(variant_data["slug"]).value
+                if "sku" in variant_data:
+                    variant_db.sku = SKU(variant_data["sku"]).value
+                if "selling_price" in variant_data:
+                    variant_db.selling_price = SellingPrice(
+                        Decimal(str(variant_data["selling_price"]))
+                    ).value
+                if "tax_rate" in variant_data:
+                    variant_db.tax_rate = TaxRate(
+                        Decimal(str(variant_data["tax_rate"]))
+                    ).value
+                if "status" in variant_data:
+                    variant_db.status = bool(variant_data["status"])
+
+                variant_db.save()
+
+                # thumbnail is stored as its own ProductImage row
+                if "thumbnail" in variant_data:
+                    ProductImage.objects.update_or_create(
+                        product_variant=variant_db,
+                        image_type="THUMBNAIL",
+                        defaults={
+                            "image": variant_data["thumbnail"],
+                            "alt_text": f"{variant_db.name} - THUMBNAIL",
+                        },
+                    )
+
+                # Replace gallery/other images wholesale if provided
+                if "images" in variant_data:
+                    ProductImage.objects.filter(
+                        product_variant=variant_db
+                    ).exclude(image_type="THUMBNAIL").delete()
+
+                    for img_idx, image_data in enumerate(variant_data["images"]):
+                        ProductImage.objects.create(
+                            product_variant=variant_db,
+                            image=image_data.get("url"),
+                            image_type=image_data.get("type", "GALLERY"),
+                            alt_text=f"{variant_db.name} - {image_data.get('type', 'GALLERY')}",
+                            order=img_idx,
+                        )
+
+        # Re-hydrate a fresh, fully-loaded entity to return
+        return self.get_product_by_id(product_id)

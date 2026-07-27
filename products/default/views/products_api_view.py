@@ -402,5 +402,76 @@ class ProductDetailView(APIView):
             )
 
     def patch(self, request, pk=None):
-        """PATCH /api/products/<id>/ - Update a product"""
-        return Response({'message': 'Updated'})
+        """PATCH /api/products/<id>/ - Partially update a product and/or its variants"""
+        if not pk:
+            return Response(
+                {'error': 'Product ID is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            if not request.user.is_authenticated:
+                raise PermissionDenied("Authentication required")
+
+            if not request.user.is_active:
+                raise PermissionDenied("Your account is inactive")
+
+            if request.user.role != "employee":
+                raise PermissionDenied("Only employees are allowed to perform this action")
+
+            # Accept either {"data": {...}} or a raw body, matching your POST convention
+            payload = request.data.get("data", request.data)
+
+            repository = ProductRepository()
+            updated_entity = repository.update_product(product_id=pk, data=payload)
+
+            return Response({
+                "message": "Product updated successfully",
+                "data": {
+                    "id": updated_entity.id,
+                    "name": updated_entity.name.value,
+                    "category": updated_entity.category.value,
+                    "product_type": updated_entity.product_type.value,
+                    "thumbnail": updated_entity.thumbnail,
+                    "slug": updated_entity.slug.value,
+                    "tags": updated_entity.tags,
+                    "variants": [
+                        {
+                            "id": v.id,
+                            "name": v.attributes.name.value,
+                            "description": v.attributes.description.value,
+                            "thumbnail": v.thumbnail,
+                            "variantnumber": v.variantnumber,
+                            "sku": v.sku.value,
+                            "slug": v.slug.value,
+                            "selling_price": float(v.SellingPrice.value),
+                            "tax_rate": float(v.tax_rate.value),
+                            "status": v.status,
+                            "images": [
+                                {"type": img.type, "url": img.url}
+                                for img in (v.images or [])
+                            ],
+                            "created_at": v.attributes.created_at.value.isoformat(),
+                            "updated_at": v.attributes.updated_at.value.isoformat(),
+                        }
+                        for v in updated_entity.variants
+                    ]
+                },
+                "meta": {
+                    "variants_count": len(updated_entity.variants),
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            }, status=status.HTTP_200_OK)
+
+        except PermissionDenied as e:
+            return Response({'error': str(e)}, status=status.HTTP_403_FORBIDDEN)
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {'error': f'Error updating product: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
