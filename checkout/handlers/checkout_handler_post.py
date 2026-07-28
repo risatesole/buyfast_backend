@@ -113,6 +113,7 @@ def create_order_checkout(
     )
     is_product_avialable = validation_product_avialability(items)
     order = create_order(user, items, pickuptime)
+    sell_products(items,f"{order.customer} bought the product")
     remove_cart_item(items, user)
     send_order_confirmation_email(order)
     return order
