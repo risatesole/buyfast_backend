@@ -66,7 +66,7 @@ class ProductRepository:
                     selling_price=variant_price,
                     tax_rate=variant_tax_rate,
                     variantnumber=variant_variantnumber,
-                    status = variant_status,
+                    status=variant_status,
                 )
 
                 thumbnail = ProductImage.objects.create(
@@ -118,6 +118,45 @@ class ProductRepository:
 
         return productentity
 
+    def _build_variant_entity(self, variant_db: ProductVariantModel) -> ProductVariantEntity:
+        """
+        Helper method to convert a ProductVariantModel to ProductVariantEntity.
+        Assumes all related data (images) is already prefetched on variant_db.
+
+        Keeps every non-THUMBNAIL image type (GALLERY, HERO, LIFESTYLE, SIZE,
+        COLOR, PACKAGING, OTHER, etc.) in the `images` list. THUMBNAIL is
+        pulled out separately since it's exposed as `thumbnail`.
+        """
+        thumbnail_image = None
+        image_list = []
+
+        for img in variant_db.images.all():
+            if img.image_type == "THUMBNAIL":
+                thumbnail_image = img
+            else:
+                image_list.append(ProductImages(type=img.image_type, url=img.image))
+
+        product_attributes_normal = ProductAttributesNormal(
+            id=variant_db.id,
+            name=ProductName(variant_db.name),
+            description=ProductDescription(variant_db.description),
+            created_at=CreatedAt(variant_db.created_at),
+            updated_at=UpdatedAt(variant_db.updated_at),
+        )
+
+        return ProductVariantEntity(
+            variantnumber=variant_db.variantnumber,
+            sku=SKU(variant_db.sku),
+            slug=Slug(variant_db.slug),
+            images=image_list if image_list else None,
+            attributes=product_attributes_normal,
+            thumbnail=thumbnail_image.image if thumbnail_image else None,
+            status=variant_db.status,
+            id=variant_db.id,
+            SellingPrice=SellingPrice(variant_db.selling_price),
+            tax_rate=TaxRate(variant_db.tax_rate),
+        )
+
     def get_product_by_id(self, product_id: int) -> ProductEntity:
         """
         Retrieve a product by ID and reconstruct it as a ProductEntity with all variants.
@@ -145,58 +184,9 @@ class ProductRepository:
         created_at = CreatedAt(product_db.created_at)
         updated_at = UpdatedAt(product_db.updated_at)
 
-        variants = []
-        for variant_db in product_db.variants.all():
-            # Reconstruct variant-level value objects
-            variant_name = ProductName(variant_db.name)
-            variant_description = ProductDescription(variant_db.description)
-            variant_variantnumber = variant_db.variantnumber
-            variant_thumbnail = (
-                variant_db.thumbnail if hasattr(variant_db, "thumbnail") else None
-            )
-            variant_status = variant_db.status
-            variant_sku = SKU(variant_db.sku)
-            variant_slug = Slug(variant_db.slug)
-            variant_price = SellingPrice(variant_db.selling_price)
-            variant_tax_rate = TaxRate(variant_db.tax_rate)
-
-            variant_created_at = CreatedAt(variant_db.created_at)
-            variant_updated_at = UpdatedAt(variant_db.updated_at)
-
-            # Create ProductAttributesNormal for this variant
-            try:
-                attributes = ProductAttributesNormal(
-                    id=variant_db.id,
-                    name=variant_name,
-                    description=variant_description,
-                    image_hero=variant_db.image_hero
-                    if hasattr(variant_db, "image_hero")
-                    else None,
-                    image_thumbnail=variant_db.image_thumbnail
-                    if hasattr(variant_db, "image_thumbnail")
-                    else None,
-                    image_gallery=variant_db.image_gallery
-                    if hasattr(variant_db, "image_gallery")
-                    else None,
-                    created_at=variant_created_at,
-                    updated_at=variant_updated_at,
-                )
-            except Exception as e:
-                print(f"error: ({e})")
-
-            # Create ProductVariantEntity
-            variant_entity = ProductVariantEntity(
-                id=variant_db.id,
-                sku=variant_sku,
-                slug=variant_slug,
-                thumbnail=variant_thumbnail,
-                status=variant_status,
-                variantnumber=variant_variantnumber,
-                attributes=attributes,
-                SellingPrice=variant_price,
-                tax_rate=variant_tax_rate,
-            )
-            variants.append(variant_entity)
+        variants = [
+            self._build_variant_entity(variant_db) for variant_db in product_db.variants.all()
+        ]
 
         product_entity = ProductEntity(
             id=product_db.id,
@@ -239,58 +229,9 @@ class ProductRepository:
         created_at = CreatedAt(product_db.created_at)
         updated_at = UpdatedAt(product_db.updated_at)
 
-        variants = []
-        for variant_db in product_db.variants.all():
-            # Reconstruct variant-level value objects
-            variant_name = ProductName(variant_db.name)
-            variant_description = ProductDescription(variant_db.description)
-            variant_variantnumber = variant_db.variantnumber
-            variant_thumbnail = (
-                variant_db.thumbnail if hasattr(variant_db, "thumbnail") else None
-            )
-            variant_status = variant_db.status
-            variant_sku = SKU(variant_db.sku)
-            variant_slug = Slug(variant_db.slug)
-            variant_price = SellingPrice(variant_db.selling_price)
-            variant_tax_rate = TaxRate(variant_db.tax_rate)
-
-            variant_created_at = CreatedAt(variant_db.created_at)
-            variant_updated_at = UpdatedAt(variant_db.updated_at)
-
-            # Create ProductAttributesNormal for this variant
-            try:
-                attributes = ProductAttributesNormal(
-                    id=variant_db.id,
-                    name=variant_name,
-                    description=variant_description,
-                    image_hero=variant_db.image_hero
-                    if hasattr(variant_db, "image_hero")
-                    else None,
-                    image_thumbnail=variant_db.image_thumbnail
-                    if hasattr(variant_db, "image_thumbnail")
-                    else None,
-                    image_gallery=variant_db.image_gallery
-                    if hasattr(variant_db, "image_gallery")
-                    else None,
-                    created_at=variant_created_at,
-                    updated_at=variant_updated_at,
-                )
-            except Exception as e:
-                print(f"error: ({e})")
-
-            # Create ProductVariantEntity
-            variant_entity = ProductVariantEntity(
-                id=variant_db.id,
-                sku=variant_sku,
-                slug=variant_slug,
-                thumbnail=variant_thumbnail,
-                variantnumber=variant_variantnumber,
-                attributes=attributes,
-                SellingPrice=variant_price,
-                tax_rate=variant_tax_rate,
-                status=variant_status,
-            )
-            variants.append(variant_entity)
+        variants = [
+            self._build_variant_entity(variant_db) for variant_db in product_db.variants.all()
+        ]
 
         product_entity = ProductEntity(
             id=product_db.id,
@@ -305,52 +246,6 @@ class ProductRepository:
         )
 
         return product_entity
-
-    def _build_variant_entity(self, variant_db: ProductVariantModel) -> ProductVariantEntity:
-        """
-        Helper method to convert a ProductVariantModel to ProductVariantEntity.
-        Assumes all related data is already prefetched.
-        """
-        # Get thumbnail and gallery images from the prefetched images
-        thumbnail_image = None
-        gallery_images = []
-
-        for img in variant_db.images.all():
-            if img.image_type == "THUMBNAIL":
-                thumbnail_image = img
-            elif img.image_type == "GALLERY":
-                gallery_images.append(img)
-
-        # Build image list
-        image_list = []
-        for gallery in gallery_images:
-            image_type = gallery.image_type
-            image_url = gallery.image
-            image_entity = ProductImages(type=image_type, url=image_url)
-            image_list.append(image_entity)
-
-        # Create attributes
-        product_attributes_normal = ProductAttributesNormal(
-            id=variant_db.id,
-            name=ProductName(variant_db.name),
-            description=ProductDescription(variant_db.description),
-            created_at=CreatedAt(variant_db.created_at),
-            updated_at=UpdatedAt(variant_db.updated_at),
-        )
-
-        # Create and return variant entity
-        return ProductVariantEntity(
-            variantnumber=variant_db.variantnumber,
-            sku=SKU(variant_db.sku),
-            slug=Slug(variant_db.slug),
-            images=image_list if image_list else None,
-            attributes=product_attributes_normal,
-            thumbnail=thumbnail_image.image if thumbnail_image else None,
-            status=variant_db.status,
-            id=variant_db.id,
-            SellingPrice=SellingPrice(variant_db.selling_price),
-            tax_rate=TaxRate(variant_db.tax_rate),
-        )
 
     def get_product_via_query(
         self,
