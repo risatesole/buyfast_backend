@@ -60,24 +60,30 @@ def send_order_confirmation_email(order):
         fail_silently=False,
     )
 
-
 def remove_cart_item(items, user):
-    for item in items:
-        product_variant_id = item.get("productvariantid")
+    from cart.models import Cart  # Import Cart model
+    
+    try:
+        # Get the user's cart
+        cart = Cart.objects.get(user=user)
         
-        try:
-            product_variant = ProductVariant.objects.get(id=product_variant_id)
-            cart_item = CartItem.objects.get(
-                user=user, 
-                product_variant=product_variant
-            )
-            cart_item.delete()
-        except ProductVariant.DoesNotExist:
-            # Handle case where product variant doesn't exist
-            print(f"Product variant {product_variant_id} not found")
-        except CartItem.DoesNotExist:
-            # Handle case where cart item doesn't exist for this user
-            print(f"Cart item not found for user {user} and variant {product_variant_id}")
+        for item in items:
+            product_variant_id = item.get("productvariantid")
+            
+            try:
+                product_variant = ProductVariant.objects.get(id=product_variant_id)
+                cart_item = CartItem.objects.get(
+                    cart=cart,  # Use cart instead of user
+                    variant=product_variant
+                )
+                cart_item.delete()
+            except ProductVariant.DoesNotExist:
+                print(f"Product variant {product_variant_id} not found")
+            except CartItem.DoesNotExist:
+                print(f"Cart item not found for cart {cart.id} and variant {product_variant_id}")
+    except Cart.DoesNotExist:
+        print(f"Cart not found for user {user}")
+
 
 def create_order_checkout(
     user,
