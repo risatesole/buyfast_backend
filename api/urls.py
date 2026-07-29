@@ -73,9 +73,7 @@ urlpatterns = [
     path("customers/orders/<int:order_id>/", OrderDetailView.as_view(), name="customer-order-detail"),
 
     # Inventory
-    path(
-        "admin/inventory/stockmovement/",
-        StockMovementListView.as_view(),
-        name="admin-stock-movement-list",
-    ),
+    path('admin/inventory/stockmovement/', StockMovementListView.as_view(), name='stock-movement-list'),
+    path('admin/inventory/stockmovement/<int:movement_id>/', StockMovementListView.as_view(), name='stock-movement-detail'),
+
 ]
