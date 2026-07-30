@@ -1,4 +1,6 @@
+from django.db import transaction
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +14,12 @@ from products.default.models import ProductVariant, Product
 
 class IsEmployee(IsAuthenticated):
     """Custom permission to check if user is an employee"""
+
+    def has_permission(self, request, view):
+        return super().has_permission(request, view) and request.user.role == "employee"
+
+class IsInventory(IsAuthenticated):
+    """Custom permission to check if user is inventory staff"""
 
     def has_permission(self, request, view):
         return super().has_permission(request, view) and request.user.role == "employee"
@@ -109,12 +117,20 @@ class StockMovementSerializer:
 
 class StockMovementListView(APIView):
     """
-    API endpoint for listing stock movements
-    Endpoint: GET /api/v1/admin/inventory/stockmovement
-    Only accessible by employees
+    API endpoint for listing and creating stock movements
+    - GET  /api/v1/admin/inventory/stockmovement          -> list / detail (employees)
+    - POST /api/v1/admin/inventory/stockmovement           -> create purchase entry (inventory staff)
     """
 
-    permission_classes = [IsEmployee]
+    def get_permissions(self):
+        """
+        Use different permission classes depending on the HTTP method:
+        - GET requires the user to be an employee
+        - POST requires the user to be inventory staff
+        """
+        if self.request.method == "POST":
+            return [IsInventory()]
+        return [IsEmployee()]
 
     def get(self, request, movement_id=None):
         """
@@ -139,6 +155,102 @@ class StockMovementListView(APIView):
         except Exception as e:
             import traceback
             print(f"Error in StockMovementListView: {str(e)}")
+            print(traceback.format_exc())
+            return Response(
+                {"status": "error", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def post(self, request):
+        """
+        Add stock to inventory via a purchase entry.
+
+        Expects JSON body:
+            {
+                "sku": "<product variant sku>",
+                "quantity": <positive int>,
+                "document_reference": "<optional string>"
+            }
+
+        Only accessible by users with role == "inventory" (see IsInventory).
+        Creates a StockMovement_model row with movement_type="purchase_entry",
+        with balance computed as the previous balance for that variant + quantity.
+        """
+        sku = request.data.get("sku")
+        quantity = request.data.get("quantity")
+        document_reference = request.data.get("document_reference", "")
+
+        # Validate presence of required fields
+        if not sku:
+            return Response(
+                {"status": "error", "message": "sku is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if quantity is None:
+            return Response(
+                {"status": "error", "message": "quantity is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate quantity is a positive integer
+        try:
+            quantity = int(quantity)
+        except (TypeError, ValueError):
+            return Response(
+                {"status": "error", "message": "quantity must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if quantity <= 0:
+            return Response(
+                {"status": "error", "message": "quantity must be greater than zero"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            with transaction.atomic():
+                # Lock the product variant row to avoid race conditions on balance calc
+                product_variant = get_object_or_404(
+                    ProductVariant.objects.select_for_update(),
+                    sku=sku,
+                )
+
+                # Lock and fetch the most recent movement for this variant
+                last_movement = (
+                    StockMovement_model.objects
+                    .select_for_update()
+                    .filter(product_variant=product_variant)
+                    .order_by("-date_time", "-id")
+                    .first()
+                )
+                current_balance = last_movement.balance if last_movement else 0
+                new_balance = current_balance + quantity
+
+                movement = StockMovement_model.objects.create(
+                    product_variant=product_variant,
+                    movement_type="purchase_entry",
+                    quantity=quantity,
+                    balance=new_balance,
+                    document_reference=document_reference,
+                )
+
+            serialized_data = StockMovementSerializer.serialize_stock_movement(movement)
+
+            return Response(
+                {"status": "ok", "data": serialized_data},
+                status=status.HTTP_201_CREATED,
+            )
+
+        except Http404:
+            return Response(
+                {"status": "error", "message": f"Product variant with sku '{sku}' not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Exception as e:
+            import traceback
+            print(f"Error in StockMovementListView.post: {str(e)}")
             print(traceback.format_exc())
             return Response(
                 {"status": "error", "message": str(e)},
