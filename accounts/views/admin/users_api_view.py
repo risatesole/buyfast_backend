@@ -9,31 +9,36 @@ from .users_api_serializer import UserSerializer
 
 
 VALID_SORT_FIELDS = {
-    "firstname":   "first_name",
-    "lastname":    "last_name",
-    "email":       "email",
-    "status":      "status",
-    "role":        "role",
+    "firstname": "first_name",
+    "lastname": "last_name",
+    "email": "email",
+    "status": "status",
+    "role": "role",
     "lastLoggedIn": "updated_at",
-    "created_at":  "created_at",
+    "created_at": "created_at",
 }
 
 
 def _require_employee(request):
     if not request.user or not request.user.is_authenticated:
-        return Response({"success": False, "message": "Authentication required."}, status=401)
+        return Response(
+            {"success": False, "message": "Authentication required."},
+            status=401,
+        )
+
     if request.user.role != "employee":
-        return Response({"success": False, "message": "Access restricted to employees only."}, status=403)
+        return Response(
+            {
+                "success": False,
+                "message": "Access restricted to employees only.",
+            },
+            status=403,
+        )
+
     return None
 
 
-
-
-
-
-
-
-@api_view(["GET"])
+@api_view(["GET", "PATCH"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def user_details_api_view(request, pk):
     error = _require_employee(request)
@@ -48,13 +53,57 @@ def user_details_api_view(request, pk):
         pk=pk,
     )
 
+    if request.method == "GET":
+        serializer = UserSerializer(user)
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data,
+            }
+        )
+
+    updated = False
+
+    institution_member = request.data.get("institution_member")
+    if institution_member is not None:
+        if not isinstance(institution_member, bool):
+            return Response(
+                {
+                    "success": False,
+                    "message": "institution_member must be a boolean.",
+                },
+                status=400,
+            )
+
+        user.institution_member = institution_member
+        updated = True
+
+    is_active = request.data.get("is_active")
+    if is_active is not None:
+        if not isinstance(is_active, bool):
+            return Response(
+                {
+                    "success": False,
+                    "message": "is_active must be a boolean.",
+                },
+                status=400,
+            )
+
+        user.is_active = is_active
+        updated = True
+
+    if updated:
+        user.save()
+
     serializer = UserSerializer(user)
 
-    return Response({
-        "success": True,
-        "data": serializer.data,
-    })
-
+    return Response(
+        {
+            "success": True,
+            "message": "User updated successfully.",
+            "data": serializer.data,
+        }
+    )
 
 
 @api_view(["GET"])
@@ -65,10 +114,10 @@ def users(request):
 
     Query params:
       ?search=      filter by firstname, lastname, or email (case-insensitive)
-      ?role=        filter by role: customer | employee  (omit to return all)
+      ?role=        filter by role: customer | employee (omit to return all)
       ?status=      filter by status: active | deactivated | deleted
       ?sort=        field to sort by: firstname | lastname | email | status |
-                    role | lastLoggedIn | created_at  (prefix with - for DESC)
+                    role | lastLoggedIn | created_at (prefix with - for DESC)
       ?limit=       max number of results (default 20)
       ?offset=      number of results to skip (default 0)
     """
@@ -104,26 +153,30 @@ def users(request):
     if db_field:
         qs = qs.order_by(f"-{db_field}" if descending else db_field)
     else:
-        qs = qs.order_by("-created_at")  # fallback
+        qs = qs.order_by("-created_at")
 
     # --- pagination ---
     try:
         limit = max(1, int(request.query_params.get("limit", 20)))
     except ValueError:
         limit = 20
+
     try:
         offset = max(0, int(request.query_params.get("offset", 0)))
     except ValueError:
         offset = 0
 
     total = qs.count()
-    qs = qs[offset: offset + limit]
+    qs = qs[offset : offset + limit]
 
     serializer = UserSerializer(qs, many=True)
-    return Response({
-        "success": True,
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "data": serializer.data,
-    })
+
+    return Response(
+        {
+            "success": True,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "data": serializer.data,
+        }
+    )
