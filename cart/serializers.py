@@ -38,18 +38,21 @@ class CartItemReadSerializer(serializers.ModelSerializer):
     def get_thumbnail(self, obj):
         thumbnails = getattr(obj.variant, "prefetched_thumbnails", [])
 
-        if thumbnails:
-            image = thumbnails[0].image
+        if not thumbnails:
+            return None
 
-            try:
-                request = self.context.get("request")
-                if request:
-                    return request.build_absolute_uri(image.url)
-                return image.url
-            except Exception:
-                return None
+        # NOTE: ProductImage.image is a CharField holding a URL string,
+        # not a Django ImageField/FileField — it has no `.url` attribute.
+        image_url = thumbnails[0].image
 
-        return None
+        if not image_url:
+            return None
+
+        request = self.context.get("request")
+        if request and image_url.startswith("/"):
+            return request.build_absolute_uri(image_url)
+
+        return image_url
 
     def get_total_price(self, obj: CartItem) -> Decimal:
         return obj.quantity * obj.variant.selling_price

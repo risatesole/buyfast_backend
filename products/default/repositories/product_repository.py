@@ -486,11 +486,23 @@ class ProductRepository:
                     ).exclude(image_type="THUMBNAIL").delete()
 
                     for img_idx, image_data in enumerate(variant_data["images"]):
+                        img_type = image_data.get("type", "GALLERY")
+
+                        # The thumbnail is managed exclusively via the
+                        # dedicated `thumbnail` field above (update_or_create
+                        # on image_type="THUMBNAIL"). Skip any THUMBNAIL
+                        # entries coming from the images array to avoid
+                        # creating a duplicate/orphan THUMBNAIL row that
+                        # would silently disappear from `images` on the
+                        # next read (see _build_variant_entity).
+                        if img_type == "THUMBNAIL":
+                            continue
+
                         ProductImage.objects.create(
                             product_variant=variant_db,
                             image=image_data.get("url"),
-                            image_type=image_data.get("type", "GALLERY"),
-                            alt_text=f"{variant_db.name} - {image_data.get('type', 'GALLERY')}",
+                            image_type=img_type,
+                            alt_text=f"{variant_db.name} - {img_type}",
                             order=img_idx,
                         )
 

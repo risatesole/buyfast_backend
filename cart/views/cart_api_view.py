@@ -40,7 +40,7 @@ class CartAPIView(APIView):
 
     def get(self, request):
         items = self.get_queryset()
-        serializer = CartItemReadSerializer(items, many=True)
+        serializer = CartItemReadSerializer(items, many=True, context={"request": request})
 
         return Response({
             "status": "ok",
