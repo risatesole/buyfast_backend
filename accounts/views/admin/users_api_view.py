@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from api.utils import CsrfExemptSessionAuthentication
 from accounts.models import User
@@ -24,6 +25,36 @@ def _require_employee(request):
     if request.user.role != "employee":
         return Response({"success": False, "message": "Access restricted to employees only."}, status=403)
     return None
+
+
+
+
+
+
+
+
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+def user_details_api_view(request, pk):
+    error = _require_employee(request)
+    if error:
+        return error
+
+    user = get_object_or_404(
+        User.objects.select_related(
+            "customer_profile",
+            "employee_profile",
+        ),
+        pk=pk,
+    )
+
+    serializer = UserSerializer(user)
+
+    return Response({
+        "success": True,
+        "data": serializer.data,
+    })
+
 
 
 @api_view(["GET"])

@@ -10,14 +10,20 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     customer_profile = CustomerProfileSerializer(read_only=True)
+
     profilepicture = serializers.CharField(source="profile_picture")
     firstname = serializers.CharField(source="first_name")
     lastname = serializers.CharField(source="last_name")
     lastLoggedIn = serializers.DateTimeField(source="updated_at")
+
     status = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
 
     def get_status(self, obj):
         return obj.status == "active"
+
+    def get_permissions(self, obj):
+        return sorted(obj.get_all_permissions())
 
     class Meta:
         model = User
@@ -29,6 +35,8 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "lastLoggedIn",
             "status",
+            "is_active",
             "role",
             "customer_profile",
+            "permissions",
         ]

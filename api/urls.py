@@ -15,7 +15,7 @@ from accounts.accounts import (
     signout_api_view,
     signup_api_view,
 )
-from accounts.views.admin.users_api_view import users
+from accounts.views.admin.users_api_view import users, user_details_api_view
 from accounts.views.employee_api_view import create_employee
 
 # --- Products ---
@@ -51,7 +51,10 @@ urlpatterns = [
     path("signout/", signout_api_view, name="auth-signout"),
     path("change-password/", change_password_api_view, name="auth-change-password"),
     path("delete-account/", delete_account, name="auth-delete-account"),
+
+    path("users/<int:pk>/", user_details_api_view, name="admin-user-detail"),
     path("users/", users, name="admin-users"),
+
     path("employee/", create_employee, name="admin-create-employee"),
 
     # Products
