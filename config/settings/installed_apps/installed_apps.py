@@ -19,4 +19,5 @@ INSTALLED_APPS = [
     "payment",
     "orders",
     "seed",
+    "store",
 ]
