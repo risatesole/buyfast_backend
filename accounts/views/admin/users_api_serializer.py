@@ -9,8 +9,6 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    customer_profile = CustomerProfileSerializer(read_only=True)
-
     profilepicture = serializers.CharField(source="profile_picture")
     firstname = serializers.CharField(source="first_name")
     lastname = serializers.CharField(source="last_name")
@@ -37,6 +35,5 @@ class UserSerializer(serializers.ModelSerializer):
             "status",
             "is_active",
             "role",
-            "customer_profile",
             "permissions",
         ]
