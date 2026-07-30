@@ -41,6 +41,99 @@ def _require_employee(request):
 @api_view(["GET", "PATCH"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 def user_details_api_view(request, pk):
+    """
+        Retrieve or update a user account.
+
+        Endpoint:
+            GET   /api/v1/users/<id>/
+            PATCH /api/v1/users/<id>/
+
+        Permissions:
+            - Requires an authenticated user.
+            - Requesting user must have the "employee" role.
+
+        GET:
+            Returns the complete user details.
+
+            Response example:
+            {
+                "success": true,
+                "data": {
+                    "id": 1,
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "email": "john@example.com",
+                    "is_active": true,
+                    "institutionMember": true,
+                    "role": "customer"
+                }
+            }
+
+        PATCH:
+            Updates user account properties.
+
+            Supported fields:
+
+            institution_member:
+                - Type: boolean
+                - Description: Indicates whether the user belongs to the institution.
+                - Example:
+                    {
+                        "institution_member": true
+                    }
+
+            is_active:
+                - Type: boolean
+                - Description: Controls whether the user can authenticate.
+                - Setting this to false disables the account.
+                - Example:
+                    {
+                        "is_active": false
+                    }
+
+            Multiple fields can be updated together:
+
+            Request:
+                PATCH /api/v1/users/1/
+
+                {
+                    "institution_member": true,
+                    "is_active": false
+                }
+
+            Successful response:
+                {
+                    "success": true,
+                    "message": "User updated successfully.",
+                    "data": {
+                        ...
+                    }
+                }
+
+        Errors:
+            401:
+                Authentication required.
+
+            403:
+                Access restricted to employees only.
+
+            404:
+                User does not exist.
+
+            400:
+                Invalid field type.
+
+                Example:
+                {
+                    "is_active": "false"
+                }
+
+                Response:
+                {
+                    "success": false,
+                    "message": "is_active must be a boolean."
+                }
+    """
     error = _require_employee(request)
     if error:
         return error
