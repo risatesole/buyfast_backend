@@ -1,8 +1,11 @@
+from mediaupload.uploader import upload_file
+from rest_framework import serializers, status
+from rest_framework.parsers import MultiPartParser, FormParser
 from products.default.products import ProductService
 from accounts.accounts import AccountRole
 from .utils import CsrfExemptSessionAuthentication
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -70,3 +73,33 @@ def set_product_price(request):
         return Response({"status": "error", "message": "Product not found"}, status=404)
 
     return Response({"status": "ok", "data": product})
+
+
+
+
+
+
+class UploadFileSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_file_api_view(request):
+    if (
+        request.user.role != "employee"
+    ):
+        return Response(
+            {f"detail": f"You do not have permission to upload files, your role is: {request.user.role}"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    serializer = UploadFileSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    url = upload_file(serializer.validated_data["file"])
+
+    return Response(
+        {"url": url},
+        status=status.HTTP_201_CREATED,
+    )

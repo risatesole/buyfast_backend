@@ -36,6 +36,8 @@ from orders.views.admin.order_details_admin_api_view import order_details_admin_
 from orders.views.customers.orders_api_view import OrderDetailView
 from inventory.inventory import StockMovementListView
 
+from .views import upload_file_api_view
+
 app_name = "api"
 
 urlpatterns = [
@@ -79,4 +81,5 @@ urlpatterns = [
     path('admin/inventory/stockmovement/', StockMovementListView.as_view(), name='stock-movement-list'),
     path('admin/inventory/stockmovement/<int:movement_id>/', StockMovementListView.as_view(), name='stock-movement-detail'),
 
+    path("upload/", upload_file_api_view, name="upload-file"),
 ]
