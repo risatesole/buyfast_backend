@@ -13,6 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
     firstname = serializers.CharField(source="first_name")
     lastname = serializers.CharField(source="last_name")
     lastLoggedIn = serializers.DateTimeField(source="updated_at")
+    institutionMember = serializers.BooleanField(source="institution_member")
 
     status = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
@@ -34,6 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
             "lastLoggedIn",
             "status",
             "is_active",
+            "institutionMember",
             "role",
             "permissions",
         ]

@@ -47,6 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="active")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="customer")
+    institution_member = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
