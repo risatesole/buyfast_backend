@@ -468,16 +468,38 @@ class ProductRepository:
 
                 variant_db.save()
 
-                # thumbnail is stored as its own ProductImage row
+                # thumbnail is stored as its own ProductImage row.
+                # NOTE: update_or_create() does an internal get(), which
+                # raises MultipleObjectsReturned if duplicate THUMBNAIL rows
+                # already exist for this variant (possible from data created
+                # before this was guarded against). Collapse to a single row
+                # explicitly so this can never crash.
                 if "thumbnail" in variant_data:
-                    ProductImage.objects.update_or_create(
-                        product_variant=variant_db,
-                        image_type="THUMBNAIL",
-                        defaults={
-                            "image": variant_data["thumbnail"],
-                            "alt_text": f"{variant_db.name} - THUMBNAIL",
-                        },
+                    existing_thumbnails = list(
+                        ProductImage.objects.filter(
+                            product_variant=variant_db,
+                            image_type="THUMBNAIL",
+                        ).order_by("-uploaded_at")
                     )
+
+                    if len(existing_thumbnails) > 1:
+                        # Keep the most recently uploaded row, drop the rest
+                        stale_ids = [img.id for img in existing_thumbnails[1:]]
+                        ProductImage.objects.filter(id__in=stale_ids).delete()
+                        existing_thumbnails = existing_thumbnails[:1]
+
+                    if existing_thumbnails:
+                        thumb = existing_thumbnails[0]
+                        thumb.image = variant_data["thumbnail"]
+                        thumb.alt_text = f"{variant_db.name} - THUMBNAIL"
+                        thumb.save(update_fields=["image", "alt_text"])
+                    else:
+                        ProductImage.objects.create(
+                            product_variant=variant_db,
+                            image=variant_data["thumbnail"],
+                            image_type="THUMBNAIL",
+                            alt_text=f"{variant_db.name} - THUMBNAIL",
+                        )
 
                 # Replace gallery/other images wholesale if provided
                 if "images" in variant_data:

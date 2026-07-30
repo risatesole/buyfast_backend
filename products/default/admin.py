@@ -86,12 +86,36 @@ class ProductAdmin(admin.ModelAdmin):
             
             if main_variant:
                 # Sincronización lógica: Actualiza o crea el thumbnail en ProductImage
-                ProductImage.objects.update_or_create(
-                    product_variant=main_variant,
-                    image_type=ProductImage.ImageType.THUMBNAIL,
-                    defaults={
-                        'image': product.thumbnail,
-                        'alt_text': f"Thumbnail para {product.name}",
-                        'order': 0
-                    }
+                #
+                # NOTE: update_or_create() runs an internal get() on
+                # (product_variant, image_type="THUMBNAIL"), which raises
+                # MultipleObjectsReturned if duplicate THUMBNAIL rows already
+                # exist for this variant. Collapse to a single row explicitly
+                # first so this can never crash, regardless of how much
+                # duplicate data already exists.
+                existing_thumbnails = list(
+                    ProductImage.objects.filter(
+                        product_variant=main_variant,
+                        image_type=ProductImage.ImageType.THUMBNAIL,
+                    ).order_by('-uploaded_at')
                 )
+
+                if len(existing_thumbnails) > 1:
+                    stale_ids = [img.id for img in existing_thumbnails[1:]]
+                    ProductImage.objects.filter(id__in=stale_ids).delete()
+                    existing_thumbnails = existing_thumbnails[:1]
+
+                if existing_thumbnails:
+                    thumb = existing_thumbnails[0]
+                    thumb.image = product.thumbnail
+                    thumb.alt_text = f"Thumbnail para {product.name}"
+                    thumb.order = 0
+                    thumb.save(update_fields=['image', 'alt_text', 'order'])
+                else:
+                    ProductImage.objects.create(
+                        product_variant=main_variant,
+                        image_type=ProductImage.ImageType.THUMBNAIL,
+                        image=product.thumbnail,
+                        alt_text=f"Thumbnail para {product.name}",
+                        order=0,
+                    )
