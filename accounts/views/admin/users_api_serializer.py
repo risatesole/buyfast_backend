@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     lastname = serializers.CharField(source="last_name")
     lastLoggedIn = serializers.DateTimeField(source="updated_at")
     institutionMember = serializers.BooleanField(source="institution_member")
+    matricula = serializers.CharField()  # ← Sin source
 
     status = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
@@ -32,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             "firstname",
             "lastname",
             "email",
+            "matricula",
             "lastLoggedIn",
             "status",
             "is_active",

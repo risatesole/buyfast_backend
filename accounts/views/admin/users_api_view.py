@@ -63,6 +63,7 @@ def user_details_api_view(request, pk):
                     "firstname": "John",
                     "lastname": "Doe",
                     "email": "john@example.com",
+                    "matricula": "A12345",
                     "is_active": true,
                     "institutionMember": true,
                     "role": "customer"
@@ -91,6 +92,14 @@ def user_details_api_view(request, pk):
                         "is_active": false
                     }
 
+            matricula:
+                - Type: string
+                - Description: User's registration number.
+                - Example:
+                    {
+                        "matricula": "A12345"
+                    }
+
             Multiple fields can be updated together:
 
             Request:
@@ -98,7 +107,8 @@ def user_details_api_view(request, pk):
 
                 {
                     "institution_member": true,
-                    "is_active": false
+                    "is_active": false,
+                    "matricula": "B67890"
                 }
 
             Successful response:
@@ -183,6 +193,31 @@ def user_details_api_view(request, pk):
             )
 
         user.is_active = is_active
+        updated = True
+
+    # ← AÑADIDO: Soporte para actualizar matrícula
+    matricula = request.data.get("matricula")
+    if matricula is not None:
+        if not isinstance(matricula, str):
+            return Response(
+                {
+                    "success": False,
+                    "message": "matricula must be a string.",
+                },
+                status=400,
+            )
+        
+        # Opcional: validar que no exceda el máximo de caracteres
+        if len(matricula) > 30:
+            return Response(
+                {
+                    "success": False,
+                    "message": "matricula cannot exceed 30 characters.",
+                },
+                status=400,
+            )
+        
+        user.matricula = matricula
         updated = True
 
     if updated:
