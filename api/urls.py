@@ -1,4 +1,3 @@
-# api/urls.py
 from django.urls import path
 
 # --- System & Root ---
@@ -35,6 +34,16 @@ from orders.views.admin.orders_admin_api_view import admin_order_view
 from orders.views.admin.order_details_admin_api_view import order_details_admin_view
 from orders.views.customers.orders_api_view import OrderDetailView
 from inventory.inventory import StockMovementListView
+
+# --- Inventory Admin Views ---
+from inventory.views.admin.inventory_products_admin_view import (
+    AdminProductInventoryListView,
+    AdminProductInventoryDetailView,
+    AdminLowStockView,
+    AdminOutOfStockView,
+    AdminInventorySummaryView,
+    AdminBulkInventoryUpdateView,
+)
 
 from .views import upload_file_api_view
 from store.views import store_carrousel_view
@@ -79,9 +88,17 @@ urlpatterns = [
     path("customers/orders/", OrderDetailView.as_view(), name="customer-orders-list"),
     path("customers/orders/<int:order_id>/", OrderDetailView.as_view(), name="customer-order-detail"),
 
-    # Inventory
+    # Inventory - Stock Movements
     path('admin/inventory/stockmovement/', StockMovementListView.as_view(), name='stock-movement-list'),
     path('admin/inventory/stockmovement/<int:movement_id>/', StockMovementListView.as_view(), name='stock-movement-detail'),
+
+    # Inventory - Product Inventory Admin Views
+    path('admin/inventory/products/', AdminProductInventoryListView.as_view(), name='admin-inventory-products-list'),
+    path('admin/inventory/products/<int:pk>/', AdminProductInventoryDetailView.as_view(), name='admin-inventory-product-detail'),
+    path('admin/inventory/low-stock/', AdminLowStockView.as_view(), name='admin-inventory-low-stock'),
+    path('admin/inventory/out-of-stock/', AdminOutOfStockView.as_view(), name='admin-inventory-out-of-stock'),
+    path('admin/inventory/summary/', AdminInventorySummaryView.as_view(), name='admin-inventory-summary'),
+    path('admin/inventory/bulk-update/', AdminBulkInventoryUpdateView.as_view(), name='admin-inventory-bulk-update'),
 
     path("upload/", upload_file_api_view, name="upload-file"),
 
