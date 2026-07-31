@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
 
-    matricula = models.CharField(max_length=30, null=True, blank=True, default=None)
+    matricula = models.CharField(max_length=30, null=True, blank=True, default=None, unique=True)
     phone_number = models.CharField(max_length=30, null=True, blank=True, default=None)
     profile_picture = models.CharField(max_length=500, null=True, blank=True, default=None)
 
