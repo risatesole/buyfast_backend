@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 from api.utils import CsrfExemptSessionAuthentication
 from accounts.models import User
@@ -40,13 +41,13 @@ def _require_employee(request):
 
 @api_view(["GET", "PATCH"])
 @authentication_classes([CsrfExemptSessionAuthentication])
-def user_details_api_view(request, pk):
+def user_details_api_view(request, matricula):  # ← CAMBIADO: pk → matricula
     """
         Retrieve or update a user account.
 
         Endpoint:
-            GET   /api/v1/users/<id>/
-            PATCH /api/v1/users/<id>/
+            GET   /api/v1/users/<matricula>/
+            PATCH /api/v1/users/<matricula>/
 
         Permissions:
             - Requires an authenticated user.
@@ -97,13 +98,13 @@ def user_details_api_view(request, pk):
                 - Description: User's registration number.
                 - Example:
                     {
-                        "matricula": "A12345"
+                        "matricula": "B67890"
                     }
 
             Multiple fields can be updated together:
 
             Request:
-                PATCH /api/v1/users/1/
+                PATCH /api/v1/users/A12345/
 
                 {
                     "institution_member": true,
@@ -148,13 +149,14 @@ def user_details_api_view(request, pk):
     if error:
         return error
 
-    user = get_object_or_404(
-        User.objects.select_related(
+    # ← CAMBIADO: Buscar por matricula en lugar de pk
+    try:
+        user = User.objects.select_related(
             "customer_profile",
             "employee_profile",
-        ),
-        pk=pk,
-    )
+        ).get(matricula=matricula)
+    except User.DoesNotExist:
+        raise Http404("User not found")
 
     if request.method == "GET":
         serializer = UserSerializer(user)
@@ -195,10 +197,10 @@ def user_details_api_view(request, pk):
         user.is_active = is_active
         updated = True
 
-    # ← AÑADIDO: Soporte para actualizar matrícula
-    matricula = request.data.get("matricula")
-    if matricula is not None:
-        if not isinstance(matricula, str):
+    # Soporte para actualizar matrícula
+    new_matricula = request.data.get("matricula")
+    if new_matricula is not None:
+        if not isinstance(new_matricula, str):
             return Response(
                 {
                     "success": False,
@@ -207,8 +209,7 @@ def user_details_api_view(request, pk):
                 status=400,
             )
         
-        # Opcional: validar que no exceda el máximo de caracteres
-        if len(matricula) > 30:
+        if len(new_matricula) > 30:
             return Response(
                 {
                     "success": False,
@@ -217,7 +218,17 @@ def user_details_api_view(request, pk):
                 status=400,
             )
         
-        user.matricula = matricula
+        # Verificar que la nueva matrícula no exista ya (excepto para este usuario)
+        if User.objects.filter(matricula=new_matricula).exclude(pk=user.pk).exists():
+            return Response(
+                {
+                    "success": False,
+                    "message": "This matricula is already in use.",
+                },
+                status=400,
+            )
+        
+        user.matricula = new_matricula
         updated = True
 
     if updated:
