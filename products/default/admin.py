@@ -26,9 +26,9 @@ class ProductVariantInline(admin.StackedInline):
     min_num = 1  # Obliga a que se cree al menos una variante por producto
     prepopulated_fields = {'slug': ('name',)}
     fields = (
-        ('name', 'sku'), 
-        ('variantnumber', 'slug'), 
-        ('selling_price', 'tax_rate'), 
+        ('name', 'sku'),
+        ('attribute', 'variantnumber', 'slug'),
+        ('selling_price', 'tax_rate'),
         'description'
     )
     classes = ('collapse',)

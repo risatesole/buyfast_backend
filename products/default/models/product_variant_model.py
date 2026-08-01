@@ -6,6 +6,12 @@ class ProductVariant(models.Model):
 
     name = models.CharField(max_length=500)  # "Red/Medium", "Hardcover"
     description = models.TextField(blank=True)
+    attribute = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="The distinguishing attribute of this variant, e.g. 'Rojo', '4 Pulgadas', 'Talla M'.",
+    )
     variantnumber = models.IntegerField(null=False, blank=False)
     slug = models.CharField(max_length=500)
     sku = models.CharField(max_length=500, unique=True)
