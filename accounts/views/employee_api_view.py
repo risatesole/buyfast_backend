@@ -20,6 +20,7 @@ def create_employee(request):
                     "email": employee.user.email,
                     "first_name": employee.user.first_name,
                     "last_name": employee.user.last_name,
+                    "matricula": employee.user.matricula,
                     "position": employee.position,
                     "hired_at": employee.hired_at,
                 }
@@ -47,6 +48,7 @@ def create_employee(request):
         first_name = request.data.get("firstname", "")
         last_name = request.data.get("lastname", "")
         position = request.data.get("position", EmployeePosition.STORE_MANAGER)
+        matricula = request.data.get("matricula") or None
 
         if not email or not password:
             return Response({
@@ -67,12 +69,19 @@ def create_employee(request):
                 "message": "A user with this email already exists"
             }, status=409)
 
+        if matricula and User.objects.filter(matricula=matricula).exists():
+            return Response({
+                "status": "error",
+                "message": "A user with this matricula already exists"
+            }, status=409)
+
         try:
             new_user = User.objects.create_user(
                 email=email,
                 password=password,
                 first_name=first_name,
                 last_name=last_name,
+                matricula=matricula,
                 role=AccountRole.EMPLOYEE.value,
                 is_staff=True,
             )
@@ -89,6 +98,7 @@ def create_employee(request):
                     "email": new_user.email,
                     "first_name": new_user.first_name,
                     "last_name": new_user.last_name,
+                    "matricula": new_user.matricula,
                     "position": employee.position,
                     "hired_at": employee.hired_at,
                 }
