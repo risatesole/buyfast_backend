@@ -5,6 +5,9 @@ from .views import api_root, set_product_price
 from .views_sandbox import ApiSandboxView
 from .modules.system.health_api_view import health
 
+# --- Dashboard ---
+from .views_dashboard import admin_dashboard_summary_view
+
 # --- Accounts ---
 from accounts.accounts import (
     change_password_api_view,
@@ -105,4 +108,7 @@ urlpatterns = [
     path("upload/", upload_file_api_view, name="upload-file"),
 
     path("ui/carrousel/",store_carrousel_view,name='carrousel-view'),
+
+    # Dashboard
+    path("admin/dashboard/summary/", admin_dashboard_summary_view, name="admin-dashboard-summary"),
 ]

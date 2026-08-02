@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from api.utils import CsrfExemptSessionAuthentication
+from api.permissions import require_employee
 from accounts.models import User
 from .users_api_serializer import UserSerializer
 
@@ -21,22 +22,7 @@ VALID_SORT_FIELDS = {
 
 
 def _require_employee(request):
-    if not request.user or not request.user.is_authenticated:
-        return Response(
-            {"success": False, "message": "Authentication required."},
-            status=401,
-        )
-
-    if request.user.role != "employee":
-        return Response(
-            {
-                "success": False,
-                "message": "Access restricted to employees only.",
-            },
-            status=403,
-        )
-
-    return None
+    return require_employee(request)
 
 
 @api_view(["GET", "PATCH"])

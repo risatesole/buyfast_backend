@@ -1,12 +1,13 @@
 # orders/views/admin_orders_api_view.py
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from django.db.models import Q, Sum, Count, F, FloatField, ExpressionWrapper
-from django.db.models.functions import Coalesce
+from django.db.models import Q
 
 from api.utils import CsrfExemptSessionAuthentication
+from api.permissions import require_employee
 from accounts.models import User
 from orders.models import Order, OrderItem, OrderPayment
+from orders.queries import annotate_order_totals
 from .serializer import OrderListSerializer
 
 
@@ -23,11 +24,7 @@ VALID_SORT_FIELDS = {
 
 
 def _require_employee(request):
-    if not request.user or not request.user.is_authenticated:
-        return Response({"success": False, "message": "Authentication required."}, status=401)
-    if request.user.role != "employee":
-        return Response({"success": False, "message": "Access restricted to employees only."}, status=403)
-    return None
+    return require_employee(request)
 
 
 @api_view(["GET"])
@@ -56,26 +53,8 @@ def admin_order_view(request):
     # Start with base queryset with all related data
     qs = Order.objects.select_related("customer").prefetch_related("items").all()
 
-    # Annotate with computed fields
-    qs = qs.annotate(
-        total_amount=Coalesce(
-            Sum(ExpressionWrapper(
-                F('items__price_per_item') * F('items__quantity'),
-                output_field=FloatField()
-            )),
-            0.0,
-            output_field=FloatField()
-        ),
-        total_tax=Coalesce(
-            Sum(ExpressionWrapper(
-                F('items__tax_amount') * F('items__quantity'),
-                output_field=FloatField()
-            )),
-            0.0,
-            output_field=FloatField()
-        ),
-        item_count=Count('items', distinct=True),
-    )
+    # Annotate with computed fields (shared helper, see orders/queries.py)
+    qs = annotate_order_totals(qs)
 
     # --- filters ---
     search = request.query_params.get("search", "").strip()

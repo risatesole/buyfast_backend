@@ -2,11 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-from django.db.models import Sum, Q, F, Value, IntegerField
-from django.db.models.functions import Coalesce
+from django.db.models import Sum, Q
 from products.default.models import ProductVariant
 from inventory.models import StockMovement_model
 from inventory.serializers import ProductInventorySerializer
+from inventory.queries import annotate_variant_stock
 
 class CustomPagination(PageNumberPagination):
     page_size = 20
@@ -45,14 +45,8 @@ class AdminProductInventoryListView(generics.ListAPIView):
         # Annotate with total quantity
         queryset = ProductVariant.objects.all().select_related('product').prefetch_related('images')
         
-        # Annotate with quantity for filtering and ordering
-        queryset = queryset.annotate(
-            total_quantity=Coalesce(
-                Sum('stock_movements__balance'), 
-                Value(0), 
-                output_field=IntegerField()
-            )
-        )
+        # Annotate with quantity for filtering and ordering (shared helper, see inventory/queries.py)
+        queryset = annotate_variant_stock(queryset)
         
         # Filter by product category if provided
         category = self.request.query_params.get('category')
