@@ -23,6 +23,7 @@ class Category(models.Model):
 
     def as_dict(self):
         return {
+            "id": self.id,
             "slug": self.slug,
             "label": self.name,
             "description": self.description,
