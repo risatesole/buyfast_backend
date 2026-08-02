@@ -10,6 +10,7 @@ from rest_framework.test import APITestCase
 from cart.models import Cart, CartItem
 from products.default.models import (
     Product,
+    Category,
     ProductVariant,
     ProductImage,
 )
@@ -26,10 +27,15 @@ class CartAPIViewTests(APITestCase):
 
         self.client.force_authenticate(self.user)
 
+        self.category = Category.objects.create(
+            name="Papelería y Suministros",
+            slug="stationery",
+        )
+
         self.product = Product.objects.create(
             name="Notebook",
             slug="notebook",
-            category=Product.Category.STATIONERY,
+            category=self.category,
             product_type=Product.ProductType.PHYSICAL,
         )
 

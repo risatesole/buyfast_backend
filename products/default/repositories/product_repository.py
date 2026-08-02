@@ -7,6 +7,7 @@ from ..entities.product_entity import ProductEntity
 from ..entities.product_images_entity import ProductImages
 from ..entities.product_variant import ProductVariant as ProductVariantEntity
 from ..models import Product
+from ..models import Category
 from ..models import ProductVariant as ProductVariantModel
 from ..models.product_image_model import ProductImage
 from ..value_objects.product_category import ProductCategory
@@ -27,7 +28,7 @@ class ProductRepository:
     def save(self, productentity: ProductEntity):
         """Save a product entity with all its variants and images to the database."""
         name = productentity.name.value
-        category = productentity.category.value
+        category = Category.objects.get(slug=productentity.category.value)
         tags = productentity.tags
         thumbnail = productentity.thumbnail
         product_type = productentity.product_type
@@ -163,7 +164,7 @@ class ProductRepository:
         OPTIMIZED: Uses select_related and prefetch_related to avoid N+1 queries.
         """
         # Prefetch all related data at once
-        product_db = Product.objects.prefetch_related(
+        product_db = Product.objects.select_related("category").prefetch_related(
             Prefetch(
                 "variants",
                 queryset=ProductVariantModel.objects.prefetch_related(
@@ -177,7 +178,7 @@ class ProductRepository:
         ).get(id=product_id)
 
         product_name = ProductName(product_db.name)
-        product_category = ProductCategory(product_db.category)
+        product_category = ProductCategory(product_db.category.slug)
         product_thumbnail = product_db.thumbnail
         product_slug = Slug(product_db.slug)
         product_tags = list(product_db.tags.values_list("name", flat=True))
@@ -208,7 +209,7 @@ class ProductRepository:
         OPTIMIZED: Uses select_related and prefetch_related to avoid N+1 queries.
         """
         # Prefetch all related data at once
-        product_db = Product.objects.prefetch_related(
+        product_db = Product.objects.select_related("category").prefetch_related(
             Prefetch(
                 "variants",
                 queryset=ProductVariantModel.objects.prefetch_related(
@@ -222,7 +223,7 @@ class ProductRepository:
         ).get(slug=product_slug)
 
         product_name = ProductName(product_db.name)
-        product_category = ProductCategory(product_db.category)
+        product_category = ProductCategory(product_db.category.slug)
         product_thumbnail = product_db.thumbnail
         product_slug = Slug(product_db.slug)
         product_tags = list(product_db.tags.values_list("name", flat=True))
@@ -284,7 +285,7 @@ class ProductRepository:
             product_db = variant_db.product
 
             # Prefetch all variants and images for the product
-            product_db = Product.objects.prefetch_related(
+            product_db = Product.objects.select_related("category").prefetch_related(
                 Prefetch(
                     "variants",
                     queryset=ProductVariantModel.objects.prefetch_related(
@@ -298,7 +299,7 @@ class ProductRepository:
             ).get(id=product_db.id)
 
             product_name = ProductName(product_db.name)
-            product_category = ProductCategory(product_db.category)
+            product_category = ProductCategory(product_db.category.slug)
             product_thumbnail = product_db.thumbnail
             product_slug = Slug(product_db.slug)
             product_tags = list(product_db.tags.values_list("name", flat=True))
@@ -330,7 +331,7 @@ class ProductRepository:
         q_objects = Q()
 
         if category:
-            filter_params["category"] = category
+            filter_params["category__slug"] = category
 
         if tag:
             # TaggableManager search
@@ -344,7 +345,7 @@ class ProductRepository:
             q_objects |= Q(name__icontains=search)
 
         # Apply filters with prefetch_related to avoid N+1 queries
-        products = Product.objects.filter(**filter_params).prefetch_related(
+        products = Product.objects.filter(**filter_params).select_related("category").prefetch_related(
             Prefetch(
                 "variants",
                 queryset=ProductVariantModel.objects.prefetch_related(
@@ -379,7 +380,7 @@ class ProductRepository:
             entity = ProductEntity(
                 id=p.id,
                 name=ProductName(p.name),
-                category=ProductCategory(p.category),
+                category=ProductCategory(p.category.slug),
                 thumbnail=p.thumbnail,
                 slug=Slug(p.slug),
                 tags=list(p.tags.values_list("name", flat=True)),
@@ -418,7 +419,8 @@ class ProductRepository:
         if "name" in data:
             product_db.name = ProductName(str(data["name"])).value
         if "category" in data:
-            product_db.category = ProductCategory(data["category"]).value
+            category_slug = ProductCategory(data["category"]).value
+            product_db.category = Category.objects.get(slug=category_slug)
         if "slug" in data:
             product_db.slug = Slug(data["slug"]).value
         if "thumbnail" in data:

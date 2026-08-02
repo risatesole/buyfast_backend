@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from payment.models import PaymentProvider
+from products.default.models import Category
 
 PROVIDERS = [
     {"name": "Los Santos Bank",               "description": "Los Santos Bank payment provider"},
@@ -7,9 +8,75 @@ PROVIDERS = [
     {"name": "Banreservas",                    "description": "Banco de Reservas de la Republica Dominicana"},
 ]
 
+CATEGORIES = [
+    {
+        "slug": "stationery",
+        "name": "Papelería y Suministros",
+        "description": "Cuadernos, bolígrafos, papel y material gastable.",
+        "priority": 1,
+        "image_banner": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "books_manuals",
+        "name": "Libros y Manuales",
+        "description": "Textos universitarios, manuales de laboratorio y guías.",
+        "priority": 1,
+        "image_banner": "https://images.unsplash.com/photo-150784272343-583f20270319?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1507842872343-583f20270319?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1507842872343-583f20270319?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "medical_lab",
+        "name": "Medicina y Laboratorio",
+        "description": "Estetoscopios, batas médicas, kits de disección y bioseguridad.",
+        "priority": 1,
+        "image_banner": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "architecture_arts",
+        "name": "Arquitectura y Artes",
+        "description": "Reglas T, escalímetros, maquetas, pinturas y pinceles.",
+        "priority": 2,
+        "image_banner": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "electronics",
+        "name": "Electrónica y Calculadoras",
+        "description": "Calculadoras científicas, memorias USB y accesorios periféricos.",
+        "priority": 2,
+        "image_banner": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "uniforms",
+        "name": "Uniformes e Institucional",
+        "description": "T-shirts UASD, ropa deportiva y promocionales.",
+        "priority": 3,
+        "image_banner": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+    },
+    {
+        "slug": "snacks_beverages",
+        "name": "Snacks y Bebidas",
+        "description": "Comida rápida, café, agua y meriendas.",
+        "priority": 3,
+        "image_banner": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop",
+        "image_cart": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop",
+        "image_default": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop",
+    },
+]
+
 
 class Command(BaseCommand):
-    help = "Seed payment providers"
+    help = "Seed payment providers and product categories"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -23,7 +90,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Seed Payment Providers
         self.stdout.write(self.style.WARNING("\n=== Seeding Payment Providers ==="))
-        
+
         default_map = {
             "los_santos_bank": "Los Santos Bank",
             "banco_popular":   "Banco Popular Dominicana",
@@ -51,4 +118,27 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS("\n✓ Done seeding payment providers.\n")
+        )
+
+        # Seed Product Categories
+        self.stdout.write(self.style.WARNING("=== Seeding Product Categories ==="))
+
+        for data in CATEGORIES:
+            category, created = Category.objects.get_or_create(
+                slug=data["slug"],
+                defaults={
+                    "name": data["name"],
+                    "description": data["description"],
+                    "priority": data["priority"],
+                    "image_banner": data["image_banner"],
+                    "image_cart": data["image_cart"],
+                    "image_default": data["image_default"],
+                },
+            )
+
+            status = "created" if created else "already exists"
+            self.stdout.write(f"  {category.name} — {status}")
+
+        self.stdout.write(
+            self.style.SUCCESS("\n✓ Done seeding product categories.\n")
         )

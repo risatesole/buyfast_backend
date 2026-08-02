@@ -52,6 +52,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 from products.default.models.product_model import Product
+from products.default.models.product_category_model import Category
 from products.default.models.product_variant_model import ProductVariant
 from products.default.models.product_image_model import ProductImage
 from inventory.inventory import create_initial_inventory
@@ -72,20 +73,20 @@ def normalize_header(header: str) -> str:
     return header.strip().lower().replace(' ', '_').replace('-', '_')
 
 
-# Spanish spreadsheet category slugs -> internal Product.Category values.
-# Internal values are also accepted as-is (identity mapping).
+# Spanish spreadsheet category slugs -> internal Category slugs.
+# Internal slugs are also accepted as-is (identity mapping).
 CATEGORY_ALIASES = {
-    'papeleria': Product.Category.STATIONERY,
-    'libros_manuales': Product.Category.BOOKS_MANUALS,
-    'laboratorio_medicina': Product.Category.MEDICAL_LAB,
-    'medicina_laboratorio': Product.Category.MEDICAL_LAB,
-    'arquitectura_arte': Product.Category.ARCHITECTURE_ARTS,
-    'arquitectura_artes': Product.Category.ARCHITECTURE_ARTS,
-    'electronicos': Product.Category.ELECTRONICS,
-    'electronica': Product.Category.ELECTRONICS,
-    'uniformes': Product.Category.UNIFORMS,
-    'snacks_bebidas': Product.Category.SNACKS_BEVERAGES,
-    'bebidas_snacks': Product.Category.SNACKS_BEVERAGES,
+    'papeleria': 'stationery',
+    'libros_manuales': 'books_manuals',
+    'laboratorio_medicina': 'medical_lab',
+    'medicina_laboratorio': 'medical_lab',
+    'arquitectura_arte': 'architecture_arts',
+    'arquitectura_artes': 'architecture_arts',
+    'electronicos': 'electronics',
+    'electronica': 'electronics',
+    'uniformes': 'uniforms',
+    'snacks_bebidas': 'snacks_beverages',
+    'bebidas_snacks': 'snacks_beverages',
 }
 
 # Spanish spreadsheet product-type slugs -> internal Product.ProductType values.
@@ -99,11 +100,11 @@ TYPE_ALIASES = {
 
 
 def normalize_category(raw_value: str) -> Optional[str]:
-    """Map a raw CSV category value to an internal Product.Category value."""
+    """Map a raw CSV category value to an internal Category slug."""
     value = (raw_value or '').strip().lower()
     if not value:
         return None
-    valid_categories = {choice[0] for choice in Product.Category.choices}
+    valid_categories = set(Category.objects.values_list('slug', flat=True))
     if value in valid_categories:
         return value
     return CATEGORY_ALIASES.get(value)
@@ -188,7 +189,7 @@ def validate_product_row(row: Dict[str, str], row_num: int) -> List[Dict[str, An
     # Check category (accepts either the Spanish spreadsheet slug or the internal code)
     if row.get('category', '').strip():
         if normalize_category(row['category']) is None:
-            valid_categories = [choice[0] for choice in Product.Category.choices]
+            valid_categories = list(Category.objects.values_list('slug', flat=True))
             errors.append({
                 'field': 'category',
                 'message': (
@@ -530,11 +531,13 @@ def get_or_create_product(product_data: Dict[str, Any]) -> Tuple[Product, bool, 
     errors = []
 
     try:
+        category = Category.objects.get(slug=product_data['category'])
+
         product, created = Product.objects.get_or_create(
             slug=product_data['product_slug'],
             defaults={
                 'name': product_data['product_name'],
-                'category': product_data['category'],
+                'category': category,
                 'product_type': product_data['product_type'],
                 'thumbnail': product_data.get('thumbnail', ''),
             }
@@ -546,8 +549,8 @@ def get_or_create_product(product_data: Dict[str, Any]) -> Tuple[Product, bool, 
             if product.name != product_data['product_name']:
                 product.name = product_data['product_name']
                 updated = True
-            if product.category != product_data['category']:
-                product.category = product_data['category']
+            if product.category_id != category.id:
+                product.category = category
                 updated = True
             if product.product_type != product_data['product_type']:
                 product.product_type = product_data['product_type']

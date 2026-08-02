@@ -51,7 +51,7 @@ class AdminProductInventoryListView(generics.ListAPIView):
         # Filter by product category if provided
         category = self.request.query_params.get('category')
         if category:
-            queryset = queryset.filter(product__category=category)
+            queryset = queryset.filter(product__category__slug=category)
         
         # Filter by status (active/inactive)
         status_param = self.request.query_params.get('status')
@@ -246,7 +246,7 @@ class AdminInventorySummaryView(APIView):
         # Category breakdown
         category_breakdown = {}
         for variant in variants:
-            category = variant.product.category
+            category = variant.product.category.slug if variant.product.category else "uncategorized"
             if category not in category_breakdown:
                 category_breakdown[category] = {
                     'count': 0,

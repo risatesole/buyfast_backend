@@ -4,8 +4,16 @@ from django.db import transaction
 
 # Asegúrate de ajustar las importaciones a la estructura de tu app
 from .models.product_model import Product
+from .models.product_category_model import Category
 from .models.product_variant_model import ProductVariant
 from .models.product_image_model import ProductImage
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'priority')
+    search_fields = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
@@ -62,6 +70,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'product_type', 'created_at')
     search_fields = ('name', 'slug', 'variants__sku') # Permite buscar producto por SKU de variante
     prepopulated_fields = {'slug': ('name',)}
+    list_select_related = ('category',)
     inlines = [ProductVariantInline]
     
     def thumbnail_preview(self, obj: Product) -> str:

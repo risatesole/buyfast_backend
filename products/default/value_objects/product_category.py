@@ -1,48 +1,30 @@
-from enum import Enum
 from typing import Optional
 
-# Si usas Python 3.11+, puedes heredar de StrEnum en lugar de str, Enum.
-# En el ecosistema Django, lo ideal es heredar de django.db.models.TextChoices.
-class ProductCategory(str, Enum):
+
+class ProductCategory:
     """
-    Categorías alineadas al dominio del economato de la UASD.
-    Heredar de 'str' permite que la serialización (ej. JSON/DRF) funcione nativamente.
+    Wraps the category slug for a product. Categories themselves are no longer
+    a fixed set of Python values - they're rows in the Category table - so this
+    just validates that a slug string was provided; whether it corresponds to a
+    real category is checked against the database (e.g. by the repository).
     """
-    STATIONERY = 'stationery'
-    BOOKS_MANUALS = 'books_manuals'
-    MEDICAL_LAB = 'medical_lab'
-    ARCHITECTURE_ARTS = 'architecture_arts'
-    ELECTRONICS = 'electronics'
-    UNIFORMS = 'uniforms'
-    SNACKS_BEVERAGES = 'snacks_beverages'
+
+    def __init__(self, value: str):
+        if not value or not isinstance(value, str):
+            raise ValueError("category is required and must be a non-empty string")
+        self.value = value.strip().lower()
 
     @classmethod
     def from_optional(cls, value: Optional[str]) -> Optional['ProductCategory']:
         if value is None:
             return None
-        try:
-            return cls(value)
-        except ValueError:
-            # cls._value2member_map_ o una comprensión simple para obtener valores válidos
-            valid_categories = [e.value for e in cls]
-            raise ValueError(f"Categoría inválida. Debe ser una de: {', '.join(valid_categories)}")
+        return cls(value)
 
     def __str__(self) -> str:
         return self.value
 
-if __name__ == "__main__":
-    # Instanciación correcta y validada por el Enum
-    cat1 = ProductCategory("electronics")
-    print(cat1)  # electronics
-    
-    cat2 = ProductCategory.from_optional("stationery")
-    print(cat2)  # stationery
-    
-    cat3 = ProductCategory.from_optional(None)
-    print(cat3)  # None
-    
-    # Manejo de excepciones consistente
-    try:
-        cat4 = ProductCategory("beauty") # Falla porque no existe en el dominio UASD
-    except ValueError as e:
-        print(f"Error: {e}")
+    def __eq__(self, other) -> bool:
+        return isinstance(other, ProductCategory) and self.value == other.value
+
+    def __hash__(self) -> int:
+        return hash(self.value)

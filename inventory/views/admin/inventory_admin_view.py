@@ -35,21 +35,13 @@ class StockMovementSerializer:
         
         # Get category info
         category_info = None
-        if hasattr(product, 'category') and product.category:
-            # Get the category label from Product.Category.choices
-            category_label = dict(Product.Category.choices).get(product.category, "")
-            
+        if product.category:
             category_info = {
-                "slug": product.category,
-                "label": category_label,
+                "slug": product.category.slug,
+                "label": product.category.name,
+                "description": product.category.description,
+                "priority": product.category.priority,
             }
-            
-            # Add additional category info if available
-            if hasattr(Product.Category, 'INFO') and product.category in Product.Category.INFO:
-                category_info.update({
-                    "description": Product.Category.INFO[product.category].get("description", ""),
-                    "priority": Product.Category.INFO[product.category].get("priority", 0),
-                })
         
         # Get images from the variant's images
         variant_images = []
