@@ -44,6 +44,7 @@ from inventory.views.admin.inventory_products_admin_view import (
     AdminInventorySummaryView,
     AdminBulkInventoryUpdateView,
 )
+from inventory.views.admin.reduce_stock_api_view import ReduceStockView
 
 from .views import upload_file_api_view
 from store.views import store_carrousel_view
@@ -99,6 +100,7 @@ urlpatterns = [
     path('admin/inventory/out-of-stock/', AdminOutOfStockView.as_view(), name='admin-inventory-out-of-stock'),
     path('admin/inventory/summary/', AdminInventorySummaryView.as_view(), name='admin-inventory-summary'),
     path('admin/inventory/bulk-update/', AdminBulkInventoryUpdateView.as_view(), name='admin-inventory-bulk-update'),
+    path("admin/inventory/stock/reduce/", ReduceStockView.as_view(), name="reduce-stock"),
 
     path("upload/", upload_file_api_view, name="upload-file"),
 
