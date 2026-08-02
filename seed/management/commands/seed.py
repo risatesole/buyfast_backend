@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from payment.models import PaymentProvider
 from products.default.models import Category
+from store.models import CarouselSlide
 
 PROVIDERS = [
     {"name": "Los Santos Bank",               "description": "Los Santos Bank payment provider"},
@@ -141,4 +142,52 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS("\n✓ Done seeding product categories.\n")
+        )
+
+        # Seed Carousel Slides
+        self.stdout.write(self.style.WARNING("=== Seeding Carousel Slides ==="))
+
+        slides_data = [
+            {
+                "id": "1",
+                "image": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/carrousel/calculadoras.png",
+                "title": "Calculadoras",
+                "description": "Descubre la que va con tu estilo",
+                "button_text": "Comprar Ahora",
+                "button_link": "categories",
+                "order": 1,
+                "is_active": True,
+            },
+            {
+                "id": "2",
+                "image": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/carrousel/manualeslab.png",
+                "title": "Ya Disponibles",
+                "description": "No pierdas tiempo ahora es más rápido",
+                "button_text": "Ver Todos",
+                "button_link": "categories",
+                "order": 2,
+                "is_active": True,
+            },
+            {
+                "id": "3",
+                "image": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/carrousel/econodigital.jpeg",
+                "title": "BuyFast",
+                "description": "El mismo ecónomato, pero digital",
+                "button_text": "Ver todas las categorias",
+                "button_link": "categories",
+                "order": 3,
+                "is_active": True,
+            },
+        ]
+
+        for slide_data in slides_data:
+            slide, created = CarouselSlide.objects.update_or_create(
+                id=slide_data["id"],
+                defaults=slide_data,
+            )
+            status = "created" if created else "updated"
+            self.stdout.write(f"  {slide.title} — {status}")
+
+        self.stdout.write(
+            self.style.SUCCESS("\n✓ Done seeding carousel slides.\n")
         )
