@@ -1,6 +1,6 @@
 import json
 
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Min, Max
 
 from ..entities.product_attributes_normal import ProductAttributesNormal
 from ..entities.product_entity import ProductEntity
@@ -259,6 +259,8 @@ class ProductRepository:
         search: str = None,
         slug: str = None,
         variantslug: str = None,
+        price_min: Decimal = None,
+        price_max: Decimal = None,
     ):
         """
         Get products via query parameters.
@@ -331,7 +333,11 @@ class ProductRepository:
         q_objects = Q()
 
         if category:
-            filter_params["category__slug"] = category
+            category_slugs = [c.strip() for c in category.split(",") if c.strip()]
+            if len(category_slugs) > 1:
+                filter_params["category__slug__in"] = category_slugs
+            elif category_slugs:
+                filter_params["category__slug"] = category_slugs[0]
 
         if tag:
             # TaggableManager search
@@ -360,6 +366,15 @@ class ProductRepository:
 
         if q_objects:
             products = products.filter(q_objects)
+
+        if price_min is not None:
+            products = products.filter(variants__selling_price__gte=price_min)
+
+        if price_max is not None:
+            products = products.filter(variants__selling_price__lte=price_max)
+
+        if price_min is not None or price_max is not None:
+            products = products.distinct()
 
         if sort:
             products = products.order_by(sort)
@@ -391,6 +406,21 @@ class ProductRepository:
             entities.append(entity)
 
         return entities
+
+    def get_price_bounds(self) -> dict:
+        """
+        Return the lowest and highest variant selling price across the whole
+        catalog, regardless of any active filters. Used by the storefront to
+        size the price range slider.
+        """
+        bounds = ProductVariantModel.objects.aggregate(
+            min_price=Min("selling_price"), max_price=Max("selling_price")
+        )
+
+        return {
+            "min": float(bounds["min_price"]) if bounds["min_price"] is not None else 0,
+            "max": float(bounds["max_price"]) if bounds["max_price"] is not None else 0,
+        }
 
     def delete_product_by_id(self, product_id: int) -> bool:
         """

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from ..repositories.product_repository import ProductRepository
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from datetime import datetime, UTC
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
@@ -103,6 +103,19 @@ class ProductDetailView(APIView):
                 query_param_limit = request.GET.get('limit')
                 query_param_slug = request.GET.get('slug')
                 query_param_variantslug = request.GET.get('variantslug')
+                query_param_price_min = request.GET.get('price_min')
+                query_param_price_max = request.GET.get('price_max')
+
+                try:
+                    query_param_price_min = (
+                        Decimal(query_param_price_min) if query_param_price_min else None
+                    )
+                    query_param_price_max = (
+                        Decimal(query_param_price_max) if query_param_price_max else None
+                    )
+                except InvalidOperation:
+                    query_param_price_min = None
+                    query_param_price_max = None
 
                 if query_param_status:
                     if query_param_status is "true":
@@ -129,8 +142,11 @@ class ProductDetailView(APIView):
                                     query_param_search,
                                     slug=query_param_slug,
                                     variantslug=query_param_variantslug,
+                                    price_min=query_param_price_min,
+                                    price_max=query_param_price_max,
                                 )
                 utc_now = datetime.now(timezone.utc)
+                price_bounds = repository.get_price_bounds()
                 products_data = {
                     "data":[
                         {
@@ -172,7 +188,8 @@ class ProductDetailView(APIView):
                         for product_entity in product_entity
                     ],
                     "meta":{
-                        "timestamp": utc_now
+                        "timestamp": utc_now,
+                        "price_bounds": price_bounds
                     }
                     }
 
