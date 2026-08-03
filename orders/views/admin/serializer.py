@@ -60,11 +60,12 @@ class OrderListSerializer(serializers.ModelSerializer):
         customer = getattr(obj, "customer", None)
         return getattr(customer, "email", None) if customer else None
 
-    # --- total: use the annotated total_amount from the view's queryset ---
+    # --- total: subtotal + tax from the view's annotated queryset, matching
+    # what the customer was actually charged (OrderItem.subtotal semantics) ---
     def get_total(self, obj):
-        # total_amount comes from the .annotate(...) in the view.
+        # total_amount/total_tax come from the .annotate(...) in the view.
         # Falls back to 0 if the serializer is ever used without that annotation.
-        return getattr(obj, "total_amount", 0)
+        return getattr(obj, "total_amount", 0) + getattr(obj, "total_tax", 0)
 
     # --- datetimes: ISO-8601 with milliseconds + "Z", matching the JS Date
     # .toISOString() format the frontend expects (e.g. 2026-05-04T23:51:25.203Z) ---
