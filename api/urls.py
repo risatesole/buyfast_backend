@@ -10,6 +10,7 @@ from .views_dashboard import admin_dashboard_summary_view
 
 # --- Accounts ---
 from accounts.accounts import (
+    avatar_upload_api_view,
     change_password_api_view,
     delete_account,
     me_api_view,
@@ -68,6 +69,7 @@ urlpatterns = [
     path("signout/", signout_api_view, name="auth-signout"),
     path("change-password/", change_password_api_view, name="auth-change-password"),
     path("delete-account/", delete_account, name="auth-delete-account"),
+    path("me/avatar/", avatar_upload_api_view, name="me-avatar-upload"),
 
     path("users/<int:matricula>/", user_details_api_view, name="admin-user-detail"),
     path("users/", users, name="admin-users"),
