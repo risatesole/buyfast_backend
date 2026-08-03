@@ -37,6 +37,7 @@ from checkout.views.checkout_api_view import (
 from orders.views.admin.orders_admin_api_view import admin_order_view
 from orders.views.admin.order_details_admin_api_view import order_details_admin_view
 from orders.views.customers.orders_api_view import OrderDetailView
+from orders.views.customers.order_voucher_api_view import order_voucher_api_view
 from inventory.inventory import StockMovementListView, StockMovementDecreaseView
 
 # --- Inventory Admin Views ---
@@ -94,6 +95,7 @@ urlpatterns = [
     path("admin/orders/<int:pk>/", order_details_admin_view, name="admin-order-detail"),
     path("customers/orders/", OrderDetailView.as_view(), name="customer-orders-list"),
     path("customers/orders/<int:order_id>/", OrderDetailView.as_view(), name="customer-order-detail"),
+    path("customers/orders/<int:order_id>/voucher/", order_voucher_api_view, name="customer-order-voucher"),
 
     # Inventory - Stock Movements
     path('admin/inventory/stockmovement/', StockMovementListView.as_view(), name='stock-movement-list'),

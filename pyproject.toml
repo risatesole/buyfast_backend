@@ -36,4 +36,5 @@ dependencies = [
     "uritemplate==4.2.0",
     "django-cors-headers==4.9.0",
     "mediaupload",
+    "reportlab>=5.0.0",
 ]
