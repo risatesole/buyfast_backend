@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from inventory.models import StockMovement_model
+from inventory.models import StockMovement_model, StockEntry_model, StockDecrease_model
 from products.default.models import ProductVariant, Product
 
 
@@ -95,7 +96,7 @@ class StockMovementSerializer:
     @staticmethod
     def serialize_stock_movement(movement):
         """Serialize a single stock movement"""
-        return {
+        data = {
             "id": movement.id,
             "date_time": movement.date_time.isoformat(),
             "product_variant": StockMovementSerializer.serialize_product_variant(movement.product_variant),
@@ -105,6 +106,38 @@ class StockMovementSerializer:
             "balance": movement.balance,
             "document_reference": movement.document_reference or "",
         }
+
+        try:
+            decrease = movement.stock_decrease
+        except ObjectDoesNotExist:
+            decrease = None
+
+        if decrease is not None:
+            data["stock_decrease"] = {
+                "reason": decrease.reason,
+                "decreased_by": {
+                    "id": decrease.decreased_by.id,
+                    "full_name": f"{decrease.decreased_by.first_name} {decrease.decreased_by.last_name}".strip(),
+                    "email": decrease.decreased_by.email,
+                },
+            }
+
+        try:
+            entry = movement.stock_entry
+        except ObjectDoesNotExist:
+            entry = None
+
+        if entry is not None:
+            data["stock_entry"] = {
+                "reason": entry.reason,
+                "created_by": {
+                    "id": entry.created_by.id,
+                    "full_name": f"{entry.created_by.first_name} {entry.created_by.last_name}".strip(),
+                    "email": entry.created_by.email,
+                },
+            }
+
+        return data
 
 
 class StockMovementListView(APIView):
@@ -227,6 +260,14 @@ class StockMovementListView(APIView):
                     document_reference=document_reference,
                 )
 
+                # Record who registered this entry and their stated reason,
+                # separately from the movement's own document_reference.
+                StockEntry_model.objects.create(
+                    stock_movement=movement,
+                    created_by=request.user,
+                    reason=document_reference,
+                )
+
             serialized_data = StockMovementSerializer.serialize_stock_movement(movement)
 
             return Response(
@@ -255,7 +296,11 @@ class StockMovementListView(APIView):
         movement = get_object_or_404(
             StockMovement_model.objects.select_related(
                 "product_variant",
-                "product_variant__product"
+                "product_variant__product",
+                "stock_decrease",
+                "stock_decrease__decreased_by",
+                "stock_entry",
+                "stock_entry__created_by"
             ).prefetch_related(
                 "product_variant__images"
             ),
@@ -348,3 +393,129 @@ class StockMovementListView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class StockMovementDecreaseView(APIView):
+    """
+    API endpoint for manually decreasing stock
+    - POST /api/v1/admin/inventory/stockmovement/decrease  -> manual stock decrease (inventory staff)
+    """
+
+    permission_classes = [IsInventory]
+
+    def post(self, request):
+        """
+        Manually remove stock from inventory (e.g. damaged goods, loss, correction).
+
+        Expects JSON body:
+            {
+                "sku": "<product variant sku>",
+                "quantity": <positive int>,
+                "reason": "<required string>"
+            }
+
+        Creates a StockMovement_model row with movement_type="manual_decrease"
+        (quantity stays positive; balance is computed as the previous balance
+        for that variant minus quantity) plus a StockDecrease_model row
+        recording who performed the decrease and their stated reason.
+        """
+        sku = request.data.get("sku")
+        quantity = request.data.get("quantity")
+        reason = request.data.get("reason", "").strip() if isinstance(request.data.get("reason"), str) else ""
+
+        if not sku:
+            return Response(
+                {"status": "error", "message": "sku is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if quantity is None:
+            return Response(
+                {"status": "error", "message": "quantity is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            quantity = int(quantity)
+        except (TypeError, ValueError):
+            return Response(
+                {"status": "error", "message": "quantity must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if quantity <= 0:
+            return Response(
+                {"status": "error", "message": "quantity must be greater than zero"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not reason:
+            return Response(
+                {"status": "error", "message": "reason is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            with transaction.atomic():
+                # Lock the product variant row to avoid race conditions on balance calc
+                product_variant = get_object_or_404(
+                    ProductVariant.objects.select_for_update(),
+                    sku=sku,
+                )
+
+                # Lock and fetch the most recent movement for this variant
+                last_movement = (
+                    StockMovement_model.objects
+                    .select_for_update()
+                    .filter(product_variant=product_variant)
+                    .order_by("-date_time", "-id")
+                    .first()
+                )
+                current_balance = last_movement.balance if last_movement else 0
+
+                if quantity > current_balance:
+                    return Response(
+                        {
+                            "status": "error",
+                            "message": f"No hay suficiente stock. Balance actual: {current_balance}.",
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                new_balance = current_balance - quantity
+
+                movement = StockMovement_model.objects.create(
+                    product_variant=product_variant,
+                    movement_type="manual_decrease",
+                    quantity=quantity,
+                    balance=new_balance,
+                )
+
+                # Record who performed this decrease and their stated reason.
+                StockDecrease_model.objects.create(
+                    stock_movement=movement,
+                    decreased_by=request.user,
+                    reason=reason,
+                )
+
+            serialized_data = StockMovementSerializer.serialize_stock_movement(movement)
+
+            return Response(
+                {"status": "ok", "data": serialized_data},
+                status=status.HTTP_201_CREATED,
+            )
+
+        except Http404:
+            return Response(
+                {"status": "error", "message": f"Product variant with sku '{sku}' not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Exception as e:
+            import traceback
+            print(f"Error in StockMovementDecreaseView.post: {str(e)}")
+            print(traceback.format_exc())
+            return Response(
+                {"status": "error", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

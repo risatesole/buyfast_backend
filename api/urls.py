@@ -36,7 +36,7 @@ from checkout.views.checkout_api_view import (
 from orders.views.admin.orders_admin_api_view import admin_order_view
 from orders.views.admin.order_details_admin_api_view import order_details_admin_view
 from orders.views.customers.orders_api_view import OrderDetailView
-from inventory.inventory import StockMovementListView
+from inventory.inventory import StockMovementListView, StockMovementDecreaseView
 
 # --- Inventory Admin Views ---
 from inventory.views.admin.inventory_products_admin_view import (
@@ -96,6 +96,7 @@ urlpatterns = [
     # Inventory - Stock Movements
     path('admin/inventory/stockmovement/', StockMovementListView.as_view(), name='stock-movement-list'),
     path('admin/inventory/stockmovement/<int:movement_id>/', StockMovementListView.as_view(), name='stock-movement-detail'),
+    path('admin/inventory/stockmovement/decrease/', StockMovementDecreaseView.as_view(), name='stock-movement-decrease'),
 
     # Inventory - Product Inventory Admin Views
     path('admin/inventory/products/', AdminProductInventoryListView.as_view(), name='admin-inventory-products-list'),
