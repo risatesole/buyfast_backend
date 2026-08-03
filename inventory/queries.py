@@ -3,6 +3,26 @@ from django.db.models import Sum, Value, IntegerField
 from django.db.models.functions import Coalesce
 
 
+def get_variant_current_stock(variant_id):
+    """
+    Returns the current stock for a single variant: the `balance` on its
+    most recent StockMovement_model row (0 if it has none yet).
+
+    Shared by the product-status recompute logic so every stock-changing
+    endpoint (purchase entry, manual reduction, checkout sale, initial
+    inventory) agrees on what "current stock" means for a variant.
+    """
+    from .models import StockMovement_model
+
+    last_movement = (
+        StockMovement_model.objects
+        .filter(product_variant_id=variant_id)
+        .order_by("-date_time", "-id")
+        .first()
+    )
+    return last_movement.balance if last_movement else 0
+
+
 def annotate_variant_stock(queryset):
     """
     Adds a computed `total_quantity` field to a ProductVariant queryset, equal

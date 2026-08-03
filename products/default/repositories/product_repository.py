@@ -465,8 +465,8 @@ class ProductRepository:
                     variant_db.tax_rate = TaxRate(
                         Decimal(str(variant_data["tax_rate"]))
                     ).value
-                if "status" in variant_data:
-                    variant_db.status = bool(variant_data["status"])
+                # status is derived from stock (see inventory/signals.py),
+                # never accepted from the client.
 
                 variant_db.save()
 

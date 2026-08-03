@@ -212,6 +212,14 @@ class ProductDetailView(APIView):
             product_variants = []
             product_variant_initial_inventory = []
 
+            # Status is no longer accepted from the client: the product is
+            # active only if its variants carry stock in total.
+            total_initial_inventory = sum(
+                int(variant_data["initial_inventory"])
+                for variant_data in request.data["data"]["variants"]
+            )
+            computed_status = total_initial_inventory > 0
+
             for variant_data in request.data["data"]["variants"]:
                 variant_name = ProductName(str(variant_data["name"]))
                 variant_description = ProductDescription(str(variant_data["description"]))
@@ -221,7 +229,6 @@ class ProductDetailView(APIView):
                 variant_slug = Slug(variant_data["slug"])
                 variant_selling_price = SellingPrice(Decimal(variant_data["selling_price"]))
                 variant_tax_rate = TaxRate(Decimal(variant_data["tax_rate"]))
-                variant_status = bool(variant_data["status"])
 
                 # get variant initial inventory data to save to the inventory
                 variant_initial_inventory = variant_data["initial_inventory"]
@@ -268,7 +275,7 @@ class ProductDetailView(APIView):
                     SellingPrice=variant_selling_price,
                     tax_rate=variant_tax_rate,
                     images=variant_images if variant_images else None,
-                    status=variant_status,
+                    status=computed_status,
                 )
 
                 product_variants.append(product_variant)
