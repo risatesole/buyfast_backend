@@ -23,6 +23,9 @@ from .cors_session_and_csfr.cors_session_and_csfr import (
     CSRF_TRUSTED_ORIGINS as CSRF_TRUSTED_ORIGINS,
 )
 from .cors_session_and_csfr.cors_session_and_csfr import (
+    FRONTEND_URL as FRONTEND_URL,
+)
+from .cors_session_and_csfr.cors_session_and_csfr import (
     SESSION_COOKIE_SAMESITE as SESSION_COOKIE_SAMESITE,
 )
 from .cors_session_and_csfr.cors_session_and_csfr import (

@@ -3,6 +3,9 @@ import os
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:3000").split(",")
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
+# Origin of the Next.js storefront, used to build links (e.g. password reset) sent in emails
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
 vercel_url = os.getenv("VERCEL_URL")
 if vercel_url:
     CSRF_TRUSTED_ORIGINS.append(f"https://{vercel_url}")

@@ -14,3 +14,5 @@ from .views.signout_api_view import signout_api_view as signout_api_view
 from .views.change_password import change_password_api_view as change_password_api_view
 from .views.delete_account import delete_account as delete_account
 from .views.avatar_upload_api_view import avatar_upload_api_view as avatar_upload_api_view
+from .views.forgot_password_api_view import forgot_password_api_view as forgot_password_api_view
+from .views.reset_password_api_view import reset_password_api_view as reset_password_api_view

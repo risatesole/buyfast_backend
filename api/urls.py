@@ -13,7 +13,9 @@ from accounts.accounts import (
     avatar_upload_api_view,
     change_password_api_view,
     delete_account,
+    forgot_password_api_view,
     me_api_view,
+    reset_password_api_view,
     signin_api_view,
     signout_api_view,
     signup_api_view,
@@ -69,6 +71,8 @@ urlpatterns = [
     path("signup/", signup_api_view, name="auth-signup"),
     path("signout/", signout_api_view, name="auth-signout"),
     path("change-password/", change_password_api_view, name="auth-change-password"),
+    path("forgot-password/", forgot_password_api_view, name="auth-forgot-password"),
+    path("reset-password/", reset_password_api_view, name="auth-reset-password"),
     path("delete-account/", delete_account, name="auth-delete-account"),
     path("me/avatar/", avatar_upload_api_view, name="me-avatar-upload"),
 
