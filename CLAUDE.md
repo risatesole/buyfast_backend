@@ -45,9 +45,9 @@ the codebase itself stays in English.
 - Custom user model `accounts.User` (`AUTH_USER_MODEL = "accounts.User"`),
   email as the username field, `role` is `"customer"` or `"employee"`
   (no Django groups/permissions-based RBAC in normal use).
-- `matricula` = student ID/registration number — unique, nullable, collected
-  at signup, used as the **lookup key** for admin user endpoints
-  (`/users/<matricula>/`), not the numeric PK.
+- `matricula` = student ID/registration number — unique, nullable, optional at
+  signup. Admin user endpoints (`/users/<id>/`) look users up by numeric PK,
+  not by `matricula`.
 - Session auth, not JWT. Endpoints that need CSRF-free session auth (because
   they're called cross-origin from the Next.js frontend) use
   `api/utils.py::CsrfExemptSessionAuthentication`.

@@ -25,6 +25,9 @@ class SignupSerializer(serializers.Serializer):
 
     matricula = serializers.CharField(
         write_only=True,
+        required=False,
+        allow_blank=True,
+        allow_null=True,
         help_text="Student matricula"
     )
 

@@ -76,7 +76,7 @@ urlpatterns = [
     path("delete-account/", delete_account, name="auth-delete-account"),
     path("me/avatar/", avatar_upload_api_view, name="me-avatar-upload"),
 
-    path("users/<int:matricula>/", user_details_api_view, name="admin-user-detail"),
+    path("users/<int:id>/", user_details_api_view, name="admin-user-detail"),
     path("users/", users, name="admin-users"),
 
     path("employee/", create_employee, name="admin-create-employee"),

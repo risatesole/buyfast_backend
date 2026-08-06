@@ -50,7 +50,7 @@ def signup_api_view(request):
         email = request.data.get("email")
         password = request.data.get("password")
         phone_number = request.data.get("phone")
-        matricula = request.data.get("matricula")
+        matricula = request.data.get("matricula") or None
         terms = request.data.get("terms")
 
         if terms == None or terms == False:

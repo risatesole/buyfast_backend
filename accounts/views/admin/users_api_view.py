@@ -27,13 +27,13 @@ def _require_employee(request):
 
 @api_view(["GET", "PATCH"])
 @authentication_classes([CsrfExemptSessionAuthentication])
-def user_details_api_view(request, matricula):  # ← CAMBIADO: pk → matricula
+def user_details_api_view(request, id):
     """
         Retrieve or update a user account.
 
         Endpoint:
-            GET   /api/v1/users/<matricula>/
-            PATCH /api/v1/users/<matricula>/
+            GET   /api/v1/users/<id>/
+            PATCH /api/v1/users/<id>/
 
         Permissions:
             - Requires an authenticated user.
@@ -90,7 +90,7 @@ def user_details_api_view(request, matricula):  # ← CAMBIADO: pk → matricula
             Multiple fields can be updated together:
 
             Request:
-                PATCH /api/v1/users/A12345/
+                PATCH /api/v1/users/1/
 
                 {
                     "institution_member": true,
@@ -135,12 +135,11 @@ def user_details_api_view(request, matricula):  # ← CAMBIADO: pk → matricula
     if error:
         return error
 
-    # ← CAMBIADO: Buscar por matricula en lugar de pk
     try:
         user = User.objects.select_related(
             "customer_profile",
             "employee_profile",
-        ).get(matricula=matricula)
+        ).get(pk=id)
     except User.DoesNotExist:
         raise Http404("User not found")
 
