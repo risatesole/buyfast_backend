@@ -37,6 +37,7 @@ class OrderDetailView(APIView):
                         # "total": float(total),
                         "status": order.status,
                         "pickup_time": order.pickup_time,
+                        "pickup_code": order.pickup_code,
                         "phone": order.customer.phone_number,
                         "address": {
                             "street": "unknown",
@@ -105,6 +106,7 @@ class OrderDetailView(APIView):
                     "created_at": order.created_at,
                     "status": order.status,
                     "pickup_time": order.pickup_time,
+                    "pickup_code": order.pickup_code,
                     "phone": order.customer.phone_number,
                     "address": {
                         "street": "unknown",

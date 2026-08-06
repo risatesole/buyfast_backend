@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from ...models import Order, OrderItem
+from ...models import Order, OrderItem, OrderCodeView_model
 from django.core.mail import send_mail
 
 def send_order_fulfilled_email(order):
@@ -46,6 +46,9 @@ def order_details_admin_view(request, pk):
 
         # Handle GET request - Retrieve order details
         if request.method == 'GET':
+            # Log that this employee viewed the order's pickup code
+            OrderCodeView_model.objects.create(order=order, viewed_by=request.user)
+
             # Serialize order items
             items = []
             for item in order.items.all():
@@ -86,6 +89,7 @@ def order_details_admin_view(request, pk):
                 "customer_profile_picture": order.customer.profile_picture,
                 "status": order.status,
                 "pickup_time": order.pickup_time,
+                "pickup_code": order.pickup_code,
                 "created_at": order.created_at,
                 "items": items,
                 "total_items": sum(item["quantity"] for item in items)
@@ -107,6 +111,16 @@ def order_details_admin_view(request, pk):
                         },
                         status=status.HTTP_400_BAD_REQUEST
                     )
+
+            submitted_code = str(request.data.get("code", "")).strip().upper()
+            if not submitted_code or submitted_code != order.pickup_code.upper():
+                return Response(
+                    {
+                        "status": "error",
+                        "message": "El código de retiro ingresado no coincide."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             order.status = Order.Status.FULFILLED
             order.save()

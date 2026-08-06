@@ -1,6 +1,10 @@
 from django.db import transaction
+from django.utils.crypto import get_random_string
 from ..models import Order, OrderItem, OrderPayment
 from products.default.models import ProductVariant
+
+# No ambiguous chars (O/0, I/1, L) so the code stays easy to read aloud.
+PICKUP_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
 
 # def create_order(customer, items, payment_transaction,pickuptime):
 def create_order(customer, items,pickuptime):
@@ -14,6 +18,7 @@ def create_order(customer, items,pickuptime):
     order = Order.objects.create(
         customer = customer,
         pickup_time=pickuptime,
+        pickup_code=get_random_string(6, allowed_chars=PICKUP_CODE_ALPHABET),
     )
 
     for item in items:

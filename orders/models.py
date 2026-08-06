@@ -22,6 +22,7 @@ class Order(models.Model):
         default=Status.PENDING
     )
     pickup_time = models.DateTimeField(null=True, blank=True)
+    pickup_code = models.CharField(max_length=8, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -82,3 +83,23 @@ class OrderPayment(models.Model):
 
     def __str__(self):
         return f"Payment for Order #{self.order.id} — ${self.amount}"
+
+
+class OrderCodeView_model(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="code_views"
+    )
+    viewed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name="order_code_views"
+    )
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "core_order_code_view"
+
+    def __str__(self):
+        return f"Order #{self.order_id} code viewed by {self.viewed_by.email} at {self.viewed_at}"
