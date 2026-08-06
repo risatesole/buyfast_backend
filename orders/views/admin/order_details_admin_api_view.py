@@ -81,6 +81,9 @@ def order_details_admin_view(request, pk):
             order_data = {
                 "id": order.id,
                 "customer_email": order.customer.email,
+                "customer_first_name": order.customer.first_name,
+                "customer_last_name": order.customer.last_name,
+                "customer_profile_picture": order.customer.profile_picture,
                 "status": order.status,
                 "pickup_time": order.pickup_time,
                 "created_at": order.created_at,
