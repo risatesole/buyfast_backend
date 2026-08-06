@@ -53,6 +53,7 @@ def checkout_handler_get(request):
                 "phone_number": getattr(user, "phone_number", ""),
                 "permissions": [],
                 "profilepicture": getattr(user, "profilepicture", "") or "",
+                "is_email_verified": getattr(user, "is_email_verified", False),
             }
         }
     })

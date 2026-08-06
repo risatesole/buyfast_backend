@@ -18,6 +18,7 @@ def _serialize_user(user):
         "is_authenticated": True,
         "is_active": user.is_active,
         "is_staff": user.is_staff,
+        "is_email_verified": user.is_email_verified,
         "phone_number": user.phone_number,
         "matricula": user.matricula,
         "institutionMember": user.institution_member,
@@ -59,6 +60,7 @@ def me_api_view(request):
                         "permisions": None,
                         "is_active": None,
                         "is_staff": None,
+                        "is_email_verified": None,
                         "institutionMember": None,
                     }
                 }
@@ -98,6 +100,8 @@ def me_api_view(request):
                         "message": "this email is already in use"
                     }, status=400)
 
+                if normalized_email != user.email:
+                    user.is_email_verified = False
                 user.email = normalized_email
 
             user.save()

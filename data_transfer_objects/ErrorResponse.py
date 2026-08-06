@@ -9,6 +9,7 @@ from enum import Enum
 class ErrorCode(Enum):
     """Enumeration of all possible error codes"""
     CHECKOUT_LOGIN_REQUIRED = "CHECKOUT_LOGIN_REQUIRED"
+    CHECKOUT_EMAIL_NOT_VERIFIED = "CHECKOUT_EMAIL_NOT_VERIFIED"
     EMPTY_BODY="EMPTY_BODY"
     PRODUCT_DOESNT_EXISTS = "PRODUCT_DOESNT_EXISTS"
     INVALID_INPUT = "INVALID_INPUT"
@@ -34,6 +35,7 @@ class ErrorCode(Enum):
         """Map error codes to appropriate HTTP status codes"""
         status_map = {
             cls.CHECKOUT_LOGIN_REQUIRED: 401,
+            cls.CHECKOUT_EMAIL_NOT_VERIFIED: 403,
             cls.PRODUCT_DOESNT_EXISTS: 404,
             cls.INVALID_INPUT: 400,
             cls.RESOURCE_NOT_FOUND: 404,
@@ -58,6 +60,7 @@ class ErrorCode(Enum):
         """Get default human-readable message for each error code"""
         messages = {
             cls.CHECKOUT_LOGIN_REQUIRED: "You must be logged in to complete checkout",
+            cls.CHECKOUT_EMAIL_NOT_VERIFIED: "You must verify your email before completing checkout",
             cls.PRODUCT_DOESNT_EXISTS: "The requested product does not exist",
             cls.INVALID_INPUT: "Invalid input data provided",
             cls.RESOURCE_NOT_FOUND: "The requested resource was not found",
@@ -83,6 +86,7 @@ class ErrorResponse:
     """
     Error codes list:
     - CHECKOUT_LOGIN_REQUIRED: the user must log in in order to checkout
+    - CHECKOUT_EMAIL_NOT_VERIFIED: the user must verify their email before completing checkout
     - PRODUCT_DOESNT_EXISTS: Product user is reaching for doesnt exists
     - INVALID_INPUT: invalid input data
     - RESOURCE_NOT_FOUND: requested resource not found

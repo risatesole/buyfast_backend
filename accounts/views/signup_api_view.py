@@ -6,7 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.password_validation import validate_password
 from django.db import IntegrityError, transaction  # ADD transaction import
 from accounts.accounts import create_account, AccountRole, AccountStatus
+from accounts.tokens import email_verification_token
+from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from drf_spectacular.utils import extend_schema
 from .signup_api_view_serializer import SignupSerializer
@@ -89,6 +93,11 @@ def signup_api_view(request):
 
             login(request, user)
             request.META["CSRF_COOKIE_USED"] = True
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = email_verification_token.make_token(user)
+            verify_link = f"{settings.FRONTEND_URL}/verify-email?uid={uid}&token={token}"
+
             send_mail(
                 subject="¡Bienvenido al Economato UASD!",
                 message=(
@@ -99,6 +108,8 @@ def signup_api_view(request):
                     f"Nombre: {user.first_name} {user.last_name}\n"
                     f"Correo electrónico: {user.email}\n"
                     f"Matrícula: {user.matricula}\n\n"
+                    "Antes de poder completar compras, debe verificar su correo electrónico "
+                    f"visitando el siguiente enlace:\n{verify_link}\n\n"
                     "Si usted no realizó este registro, por favor comuníquese con el equipo de soporte lo antes posible.\n\n"
                     "Atentamente,\n"
                     "Equipo del Economato UASD"

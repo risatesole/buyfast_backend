@@ -16,9 +16,11 @@ from accounts.accounts import (
     forgot_password_api_view,
     me_api_view,
     reset_password_api_view,
+    resend_verification_email_api_view,
     signin_api_view,
     signout_api_view,
     signup_api_view,
+    verify_email_api_view,
 )
 from accounts.views.admin.users_api_view import users, user_details_api_view
 from accounts.views.employee_api_view import create_employee
@@ -73,6 +75,8 @@ urlpatterns = [
     path("change-password/", change_password_api_view, name="auth-change-password"),
     path("forgot-password/", forgot_password_api_view, name="auth-forgot-password"),
     path("reset-password/", reset_password_api_view, name="auth-reset-password"),
+    path("verify-email/", verify_email_api_view, name="auth-verify-email"),
+    path("resend-verification-email/", resend_verification_email_api_view, name="auth-resend-verification-email"),
     path("delete-account/", delete_account, name="auth-delete-account"),
     path("me/avatar/", avatar_upload_api_view, name="me-avatar-upload"),
 

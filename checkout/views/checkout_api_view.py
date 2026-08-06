@@ -29,6 +29,15 @@ def checkout_api_view(request):
             return checkout_handler_get(request)
 
         if request.method == "POST":
+            if not user.is_email_verified:
+                error = ErrorResponse(
+                    ErrorCode.CHECKOUT_EMAIL_NOT_VERIFIED,
+                    "You must verify your email before completing checkout",
+                    "error",
+                    403
+                )
+                return error.http_response()
+
             return checkout_handler_post(request)
 
         if request.method == "DELETE":

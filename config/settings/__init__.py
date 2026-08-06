@@ -36,6 +36,11 @@ from .development.debug import DEBUG as DEBUG
 from .development.testrunner import TEST_RUNNER as TEST_RUNNER
 from .email.email import DEFAULT_FROM_EMAIL as DEFAULT_FROM_EMAIL
 from .email.email import EMAIL_BACKEND as EMAIL_BACKEND
+from .email.email import EMAIL_HOST as EMAIL_HOST
+from .email.email import EMAIL_HOST_PASSWORD as EMAIL_HOST_PASSWORD
+from .email.email import EMAIL_HOST_USER as EMAIL_HOST_USER
+from .email.email import EMAIL_PORT as EMAIL_PORT
+from .email.email import EMAIL_USE_TLS as EMAIL_USE_TLS
 from .hosts.allowed_hosts import ALLOWED_HOSTS as ALLOWED_HOSTS
 from .installed_apps.installed_apps import INSTALLED_APPS as INSTALLED_APPS
 from .localization.localization import LANGUAGE_CODE as LANGUAGE_CODE

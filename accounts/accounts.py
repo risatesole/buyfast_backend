@@ -16,3 +16,5 @@ from .views.delete_account import delete_account as delete_account
 from .views.avatar_upload_api_view import avatar_upload_api_view as avatar_upload_api_view
 from .views.forgot_password_api_view import forgot_password_api_view as forgot_password_api_view
 from .views.reset_password_api_view import reset_password_api_view as reset_password_api_view
+from .views.verify_email_api_view import verify_email_api_view as verify_email_api_view
+from .views.resend_verification_email_api_view import resend_verification_email_api_view as resend_verification_email_api_view
