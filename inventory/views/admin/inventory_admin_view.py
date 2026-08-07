@@ -11,19 +11,7 @@ from rest_framework.views import APIView
 from accounts.models import User
 from inventory.models import StockMovement_model, StockEntry_model, StockDecrease_model
 from products.default.models import ProductVariant, Product
-
-
-class IsEmployee(IsAuthenticated):
-    """Custom permission to check if user is an employee"""
-
-    def has_permission(self, request, view):
-        return super().has_permission(request, view) and request.user.role == "employee"
-
-class IsInventory(IsAuthenticated):
-    """Custom permission to check if user is inventory staff"""
-
-    def has_permission(self, request, view):
-        return super().has_permission(request, view) and request.user.role == "employee"
+from api.permissions import permission_required
 
 
 class StockMovementSerializer:
@@ -154,8 +142,8 @@ class StockMovementListView(APIView):
         - POST requires the user to be inventory staff
         """
         if self.request.method == "POST":
-            return [IsInventory()]
-        return [IsEmployee()]
+            return [permission_required("inventory.manage")()]
+        return [permission_required("inventory.view")()]
 
     def get(self, request, movement_id=None):
         """
@@ -401,7 +389,7 @@ class StockMovementDecreaseView(APIView):
     - POST /api/v1/admin/inventory/stockmovement/decrease  -> manual stock decrease (inventory staff)
     """
 
-    permission_classes = [IsInventory]
+    permission_classes = [permission_required("inventory.manage")]
 
     def post(self, request):
         """

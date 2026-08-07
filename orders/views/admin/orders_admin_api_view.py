@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from api.utils import CsrfExemptSessionAuthentication
-from api.permissions import require_employee
+from api.permissions import require_permission
 from accounts.models import User
 from orders.models import Order, OrderItem, OrderPayment
 from orders.queries import annotate_order_totals
@@ -21,10 +21,6 @@ VALID_SORT_FIELDS = {
     "pickup_time": "pickup_time",
     "status": "status",
 }
-
-
-def _require_employee(request):
-    return require_employee(request)
 
 
 @api_view(["GET"])
@@ -46,7 +42,7 @@ def admin_order_view(request):
       ?limit=       max number of results (default 20)
       ?offset=      number of results to skip (default 0)
     """
-    error = _require_employee(request)
+    error = require_permission(request, "orders.view")
     if error:
         return error
 

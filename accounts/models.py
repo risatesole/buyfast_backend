@@ -1,6 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+PERMISSION_CATALOG = [
+    ("employees.view",   "Ver información de empleados"),
+    ("employees.manage", "Crear, desactivar o modificar cuentas de empleados"),
+    ("customers.view",   "Ver información de clientes"),
+    ("customers.manage", "Desactivar cuentas de clientes"),
+    ("products.view",    "Ver catálogo e información de productos"),
+    ("products.create",  "Crear productos nuevos"),
+    ("products.edit",    "Editar o eliminar productos existentes"),
+    ("inventory.view",   "Ver niveles de inventario y movimientos"),
+    ("inventory.manage", "Agregar stock y registrar disminuciones manuales"),
+    ("orders.view",      "Ver órdenes de clientes"),
+    ("orders.manage",    "Marcar una orden como entregada"),
+]
+PERMISSION_CODES = [code for code, _label in PERMISSION_CATALOG]
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -88,6 +104,21 @@ class Customer_model(models.Model):
     def __str__(self):
         return f"Customer: {self.user.email}"
 
+class Profile(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, default="")
+    permissions = models.JSONField(default=list, blank=True)
+    is_protected = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "core_profile"
+
+    def __str__(self):
+        return self.name
+
+
 class EmployeePosition(models.TextChoices):
     ADMIN = "admin", "System Administrator"
     STORE_MANAGER = "store_manager", "Store Manager"
@@ -109,6 +140,10 @@ class employee_model(models.Model):
         max_length=20,
         choices=EmployeePosition.choices,
         default=EmployeePosition.STORE_MANAGER
+    )
+
+    profile = models.ForeignKey(
+        Profile, on_delete=models.PROTECT, null=True, blank=True, related_name="employees"
     )
 
     hired_at = models.DateTimeField(auto_now_add=True)

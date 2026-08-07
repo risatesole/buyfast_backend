@@ -26,6 +26,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.permissions import permission_required
 from inventory.models import StockMovement_model
 from products.default.models import ProductVariant
 
@@ -107,7 +108,7 @@ class ReduceStockView(APIView):
     recorded on the created StockMovement row's document_reference field.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permission_required("inventory.manage")]
     # Override in a subclass, or make this a serializer field, if you need
     # to support movement types other than "customer_sell" from this endpoint.
     movement_type = "customer_sell"

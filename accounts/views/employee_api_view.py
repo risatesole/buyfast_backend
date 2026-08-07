@@ -1,6 +1,7 @@
 from accounts.accounts import employee_model, EmployeePosition
 from accounts.accounts import User, AccountRole
 from api.utils import CsrfExemptSessionAuthentication
+from api.permissions import require_permission
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +11,10 @@ from rest_framework.permissions import IsAuthenticated
 @permission_classes([IsAuthenticated])
 def create_employee(request):
     if request.method == 'GET':
+        error = require_permission(request, "employees.view")
+        if error:
+            return error
+
         employees = employee_model.objects.select_related('user').all()
 
         return Response({
@@ -37,11 +42,9 @@ def create_employee(request):
                 "message": "Authentication required"
             }, status=401)
 
-        if user.role != AccountRole.EMPLOYEE.value:
-            return Response({
-                "status": "error",
-                "message": "Only employees can create employee accounts"
-            }, status=403)
+        error = require_permission(request, "employees.manage")
+        if error:
+            return error
 
         email = request.data.get("email")
         password = request.data.get("password")
@@ -49,6 +52,22 @@ def create_employee(request):
         last_name = request.data.get("lastname", "")
         position = request.data.get("position", EmployeePosition.STORE_MANAGER)
         matricula = request.data.get("matricula") or None
+
+        profile_id = request.data.get("profile")
+        if not profile_id:
+            return Response({
+                "status": "error",
+                "message": "profile is required"
+            }, status=400)
+
+        from accounts.models import Profile
+        try:
+            profile = Profile.objects.get(pk=profile_id)
+        except Profile.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Invalid profile"
+            }, status=400)
 
         if not email or not password:
             return Response({
@@ -88,7 +107,8 @@ def create_employee(request):
 
             employee = employee_model.objects.create(
                 user=new_user,
-                position=position
+                position=position,
+                profile=profile
             )
 
             return Response({
@@ -101,6 +121,7 @@ def create_employee(request):
                     "matricula": new_user.matricula,
                     "position": employee.position,
                     "hired_at": employee.hired_at,
+                    "profile": {"id": profile.id, "name": profile.name},
                 }
             }, status=201)
 

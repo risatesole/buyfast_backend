@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from api.utils import CsrfExemptSessionAuthentication
+from accounts.serializer_helpers import serialize_profile
 
 User = get_user_model()
 
@@ -26,7 +27,9 @@ def _serialize_user(user):
             perm.split(".")[1]
             for perm in user.get_all_permissions()
             if perm.startswith("accounts.")
-        ]
+        ],
+        "is_superuser": user.is_superuser,
+        "profile": serialize_profile(user),
     }
 
 
@@ -62,6 +65,8 @@ def me_api_view(request):
                         "is_staff": None,
                         "is_email_verified": None,
                         "institutionMember": None,
+                        "is_superuser": None,
+                        "profile": None,
                     }
                 }
             })

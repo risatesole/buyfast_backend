@@ -23,6 +23,7 @@ from accounts.accounts import (
     verify_email_api_view,
 )
 from accounts.views.admin.users_api_view import users, user_details_api_view
+from accounts.views.admin.profiles_api_view import profiles_list_view, profile_detail_view
 from accounts.views.employee_api_view import create_employee
 
 # --- Products ---
@@ -84,6 +85,9 @@ urlpatterns = [
     path("users/", users, name="admin-users"),
 
     path("employee/", create_employee, name="admin-create-employee"),
+
+    path("admin/profiles/", profiles_list_view, name="admin-profiles-list"),
+    path("admin/profiles/<int:id>/", profile_detail_view, name="admin-profile-detail"),
 
     # Products
     path("products/", ProductDetailView.as_view(), name="product-list"),

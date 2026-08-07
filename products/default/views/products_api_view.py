@@ -36,6 +36,14 @@ from django.utils.decorators import method_decorator
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
 
+    def get_permissions(self):
+        from api.permissions import permission_required
+        if self.request.method == "POST":
+            return [permission_required("products.create")()]
+        if self.request.method in ("PUT", "PATCH", "DELETE"):
+            return [permission_required("products.edit")()]
+        return [AllowAny()]
+
     def get(self, request, pk=None):
         """GET /api/products/<id>/ - Get a specific product with all variants"""
         if pk:
@@ -206,15 +214,6 @@ class ProductDetailView(APIView):
         """POST /api/products/ - Create a new product with multiple variants"""
 
         try:
-            if not request.user.is_authenticated:
-                raise PermissionDenied("Authentication required")
-
-            if not request.user.is_active:
-                raise PermissionDenied("Your account is inactive")
-
-            if request.user.role != "employee":  # Use != not is not
-                raise PermissionDenied("Only employees are allowed to perform this action")
-
             # Extract main product data
             product_name = ProductName(str(request.data["data"]["name"]))
             product_category = ProductCategory(request.data["data"]["category"])
@@ -384,16 +383,6 @@ class ProductDetailView(APIView):
             )
 
         try:
-            # Check authentication and permissions
-            if not request.user.is_authenticated:
-                raise PermissionDenied("Authentication required")
-
-            if not request.user.is_active:
-                raise PermissionDenied("Your account is inactive")
-
-            if request.user.role != "employee":
-                raise PermissionDenied("Only employees are allowed to perform this action")
-
             # Delete the product using repository
             repository = ProductRepository()
             deleted = repository.delete_product_by_id(product_id=pk)
@@ -434,15 +423,6 @@ class ProductDetailView(APIView):
             )
 
         try:
-            if not request.user.is_authenticated:
-                raise PermissionDenied("Authentication required")
-
-            if not request.user.is_active:
-                raise PermissionDenied("Your account is inactive")
-
-            if request.user.role != "employee":
-                raise PermissionDenied("Only employees are allowed to perform this action")
-
             # Accept either {"data": {...}} or a raw body, matching your POST convention
             payload = request.data.get("data", request.data)
 

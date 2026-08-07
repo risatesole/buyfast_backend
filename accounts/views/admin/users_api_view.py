@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 
 from api.utils import CsrfExemptSessionAuthentication
-from api.permissions import require_employee
-from accounts.models import User
+from api.permissions import require_permission, has_permission
+from accounts.models import User, Profile
 from .users_api_serializer import UserSerializer
 
 
@@ -19,10 +19,6 @@ VALID_SORT_FIELDS = {
     "lastLoggedIn": "updated_at",
     "created_at": "created_at",
 }
-
-
-def _require_employee(request):
-    return require_employee(request)
 
 
 @api_view(["GET", "PATCH"])
@@ -131,10 +127,6 @@ def user_details_api_view(request, id):
                     "message": "is_active must be a boolean."
                 }
     """
-    error = _require_employee(request)
-    if error:
-        return error
-
     try:
         user = User.objects.select_related(
             "customer_profile",
@@ -142,6 +134,14 @@ def user_details_api_view(request, id):
         ).get(pk=id)
     except User.DoesNotExist:
         raise Http404("User not found")
+
+    if request.method == "GET":
+        required_code = "employees.view" if user.role == "employee" else "customers.view"
+    else:  # PATCH
+        required_code = "employees.manage" if user.role == "employee" else "customers.manage"
+    error = require_permission(request, required_code)
+    if error:
+        return error
 
     if request.method == "GET":
         serializer = UserSerializer(user)
@@ -216,6 +216,42 @@ def user_details_api_view(request, id):
         user.matricula = new_matricula
         updated = True
 
+    # Reassign an employee's access profile (e.g. moving someone from Human
+    # Resources to Almacen). Only meaningful for employee accounts — customers
+    # have no employee_profile/Profile relation.
+    new_profile_id = request.data.get("profile")
+    if new_profile_id is not None:
+        if user.role != "employee":
+            return Response(
+                {"success": False, "message": "Only employee accounts have an access profile."},
+                status=400,
+            )
+
+        employee = getattr(user, "employee_profile", None)
+        if not employee:
+            return Response(
+                {"success": False, "message": "Employee record not found for this user."},
+                status=400,
+            )
+
+        try:
+            new_profile = Profile.objects.get(pk=new_profile_id)
+        except Profile.DoesNotExist:
+            return Response({"success": False, "message": "Invalid profile."}, status=400)
+
+        # Assigning the protected "Superuser" profile hands out every
+        # permission code it holds — only an actual superuser may grant that,
+        # otherwise an employees.manage holder could self-escalate by
+        # reassigning themselves (or anyone) to it.
+        if new_profile.is_protected and not request.user.is_superuser:
+            return Response(
+                {"success": False, "message": "Only a superuser can assign this profile."},
+                status=403,
+            )
+
+        employee.profile = new_profile
+        employee.save()
+
     if updated:
         user.save()
 
@@ -245,7 +281,27 @@ def users(request):
       ?limit=       max number of results (default 20)
       ?offset=      number of results to skip (default 0)
     """
-    error = _require_employee(request)
+    role_filter = request.query_params.get("role", "").strip()
+    if role_filter == "employee":
+        error = require_permission(request, "employees.view")
+    elif role_filter == "customer":
+        error = require_permission(request, "customers.view")
+    else:
+        # Unfiltered listing requires at least one of the two view permissions
+        # ("require either", not "require both" — `or` on two Response-or-None
+        # results would short-circuit on the first failure and behave as AND).
+        if not request.user or not request.user.is_authenticated:
+            error = Response({"success": False, "message": "Authentication required."}, status=401)
+        elif not (
+            has_permission(request.user, "employees.view")
+            or has_permission(request.user, "customers.view")
+        ):
+            error = Response(
+                {"success": False, "message": "You do not have permission to perform this action."},
+                status=403,
+            )
+        else:
+            error = None
     if error:
         return error
 

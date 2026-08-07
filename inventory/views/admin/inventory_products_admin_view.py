@@ -7,6 +7,7 @@ from products.default.models import ProductVariant
 from inventory.models import StockMovement_model
 from inventory.serializers import ProductInventorySerializer
 from inventory.queries import annotate_variant_stock
+from api.permissions import permission_required
 
 class CustomPagination(PageNumberPagination):
     page_size = 20
@@ -39,8 +40,8 @@ class AdminProductInventoryListView(generics.ListAPIView):
     """
     serializer_class = ProductInventorySerializer
     pagination_class = CustomLimitOffsetPagination
-    permission_classes = [permissions.IsAdminUser]
-    
+    permission_classes = [permission_required("inventory.view")]
+
     def get_queryset(self):
         # Annotate with total quantity
         queryset = ProductVariant.objects.all().select_related('product').prefetch_related('images')
@@ -108,9 +109,13 @@ class AdminProductInventoryDetailView(generics.RetrieveUpdateAPIView):
     """
     queryset = ProductVariant.objects.all().select_related('product').prefetch_related('images')
     serializer_class = ProductInventorySerializer
-    permission_classes = [permissions.IsAdminUser]
     lookup_field = 'pk'
-    
+
+    def get_permissions(self):
+        if self.request.method in ("PUT", "PATCH"):
+            return [permission_required("products.edit")()]
+        return [permission_required("inventory.view")()]
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         
@@ -137,8 +142,8 @@ class AdminLowStockView(generics.ListAPIView):
     """
     serializer_class = ProductInventorySerializer
     pagination_class = CustomLimitOffsetPagination
-    permission_classes = [permissions.IsAdminUser]
-    
+    permission_classes = [permission_required("inventory.view")]
+
     def get_queryset(self):
         threshold = int(self.request.query_params.get('threshold', 10))
         
@@ -170,11 +175,11 @@ class AdminOutOfStockView(generics.ListAPIView):
     """
     serializer_class = ProductInventorySerializer
     pagination_class = CustomLimitOffsetPagination
-    permission_classes = [permissions.IsAdminUser]
-    
+    permission_classes = [permission_required("inventory.view")]
+
     def get_queryset(self):
         variants = ProductVariant.objects.all().select_related('product').prefetch_related('images')
-        
+
         out_of_stock_variants = []
         for variant in variants:
             quantity = self.get_variant_quantity(variant)
@@ -193,7 +198,7 @@ class AdminInventorySummaryView(APIView):
     """
     Admin view to get inventory summary statistics.
     """
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permission_required("inventory.view")]
     
     def get(self, request):
         # Total product variants
@@ -294,7 +299,7 @@ class AdminBulkInventoryUpdateView(APIView):
     """
     Admin view to bulk update inventory status.
     """
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permission_required("products.edit")]
     
     def post(self, request):
         variant_ids = request.data.get('variant_ids', [])

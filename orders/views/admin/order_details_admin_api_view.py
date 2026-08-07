@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from api.permissions import has_permission
 from ...models import Order, OrderItem, OrderCodeView_model
 from django.core.mail import send_mail
 
@@ -38,8 +39,9 @@ def order_details_admin_view(request, pk):
         if not request.user.is_active:
             raise PermissionDenied("Your account is inactive")
 
-        if request.user.role != "employee":
-            raise PermissionDenied("Only employees are allowed to perform this action")
+        required_code = "orders.view" if request.method == "GET" else "orders.manage"
+        if not has_permission(request.user, required_code):
+            raise PermissionDenied("You do not have permission to perform this action")
 
         # Get the order
         order = get_object_or_404(Order, pk=pk)

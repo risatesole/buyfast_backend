@@ -18,12 +18,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     status = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
+    is_superuser = serializers.BooleanField(read_only=True)
+    profile = serializers.SerializerMethodField()
 
     def get_status(self, obj):
         return obj.status == "active"
 
     def get_permissions(self, obj):
         return sorted(obj.get_all_permissions())
+
+    def get_profile(self, obj):
+        from accounts.serializer_helpers import serialize_profile
+        return serialize_profile(obj)
 
     class Meta:
         model = User
@@ -40,4 +46,6 @@ class UserSerializer(serializers.ModelSerializer):
             "institutionMember",
             "role",
             "permissions",
+            "is_superuser",
+            "profile",
         ]
