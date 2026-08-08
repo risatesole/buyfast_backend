@@ -62,6 +62,10 @@ from inventory.views.admin.inventory_report_api_view import (
     admin_inventory_stock_report_view,
     admin_inventory_movements_report_view,
 )
+from accounts.views.admin.reports_api_view import (
+    admin_employees_report_view,
+    admin_customers_report_view,
+)
 from reports.views.report_logs_api_view import report_logs_view
 
 from .views import upload_file_api_view
@@ -142,5 +146,7 @@ urlpatterns = [
     path("admin/reports/orders/", admin_orders_report_view, name="admin-orders-report"),
     path("admin/reports/inventory/stock/", admin_inventory_stock_report_view, name="admin-inventory-stock-report"),
     path("admin/reports/inventory/movements/", admin_inventory_movements_report_view, name="admin-inventory-movements-report"),
+    path("admin/reports/employees/", admin_employees_report_view, name="admin-employees-report"),
+    path("admin/reports/customers/", admin_customers_report_view, name="admin-customers-report"),
     path("admin/reports/logs/", report_logs_view, name="admin-reports-logs"),
 ]
