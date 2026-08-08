@@ -2,7 +2,7 @@
 from io import BytesIO
 
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
@@ -36,7 +36,7 @@ def _build_report_doc(title, filters_summary):
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
-        pagesize=letter,
+        pagesize=landscape(letter),
         topMargin=18 * mm,
         bottomMargin=18 * mm,
         leftMargin=16 * mm,
