@@ -2,11 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from products.default.models import ProductVariant
 from inventory.models import StockMovement_model
 from inventory.serializers import ProductInventorySerializer
-from inventory.queries import annotate_variant_stock
+from inventory.queries import annotate_variant_stock, apply_admin_inventory_filters
 from api.permissions import permission_required
 
 class CustomPagination(PageNumberPagination):
@@ -45,62 +45,13 @@ class AdminProductInventoryListView(generics.ListAPIView):
     def get_queryset(self):
         # Annotate with total quantity
         queryset = ProductVariant.objects.all().select_related('product').prefetch_related('images')
-        
+
         # Annotate with quantity for filtering and ordering (shared helper, see inventory/queries.py)
         queryset = annotate_variant_stock(queryset)
-        
-        # Filter by product category if provided
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(product__category__slug=category)
-        
-        # Filter by status (active/inactive)
-        status_param = self.request.query_params.get('status')
-        if status_param is not None:
-            status_bool = status_param.lower() == 'true'
-            queryset = queryset.filter(status=status_bool)
-        
-        # Filter by search term
-        search = self.request.query_params.get('search')
-        if search:
-            queryset = queryset.filter(
-                Q(product__name__icontains=search) |
-                Q(name__icontains=search) |
-                Q(sku__icontains=search)
-            )
-        
-        # Filter by min/max quantity
-        min_quantity = self.request.query_params.get('min_quantity')
-        max_quantity = self.request.query_params.get('max_quantity')
-        
-        if min_quantity:
-            queryset = queryset.filter(total_quantity__gte=int(min_quantity))
-        if max_quantity:
-            queryset = queryset.filter(total_quantity__lte=int(max_quantity))
-        
-        # Filter by inventory status
-        inventory_status = self.request.query_params.get('inventory_status')
-        if inventory_status:
-            if inventory_status == 'out_of_stock':
-                queryset = queryset.filter(total_quantity=0)
-            elif inventory_status == 'low_stock':
-                queryset = queryset.filter(total_quantity__gt=0, total_quantity__lte=10)
-            elif inventory_status == 'medium_stock':
-                queryset = queryset.filter(total_quantity__gt=10, total_quantity__lte=50)
-            elif inventory_status == 'in_stock':
-                queryset = queryset.filter(total_quantity__gt=50)
-        
-        # Order by
-        ordering = self.request.query_params.get('ordering', '-created_at')
-        allowed_orderings = ['name', 'sku', 'total_quantity', 'created_at', 'selling_price', '-name', '-sku', '-total_quantity', '-created_at', '-selling_price']
-        
-        if ordering in allowed_orderings:
-            # Handle ordering by total_quantity
-            if ordering == 'total_quantity' or ordering == '-total_quantity':
-                queryset = queryset.order_by(ordering)
-            else:
-                queryset = queryset.order_by(ordering)
-        
+
+        # Filters + ordering (shared with the admin inventory report/export view)
+        queryset = apply_admin_inventory_filters(queryset, self.request)
+
         return queryset
 
 class AdminProductInventoryDetailView(generics.RetrieveUpdateAPIView):

@@ -20,4 +20,5 @@ INSTALLED_APPS = [
     "orders",
     "seed",
     "store",
+    "reports",
 ]

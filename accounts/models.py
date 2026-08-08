@@ -13,6 +13,7 @@ PERMISSION_CATALOG = [
     ("inventory.manage", "Agregar stock y registrar disminuciones manuales"),
     ("orders.view",      "Ver órdenes de clientes"),
     ("orders.manage",    "Marcar una orden como entregada"),
+    ("reports.create",   "Crear y descargar reportes"),
 ]
 PERMISSION_CODES = [code for code, _label in PERMISSION_CATALOG]
 

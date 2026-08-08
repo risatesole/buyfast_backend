@@ -1,6 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -10,6 +9,7 @@ from rest_framework.views import APIView
 
 from accounts.models import User
 from inventory.models import StockMovement_model, StockEntry_model, StockDecrease_model
+from inventory.queries import apply_admin_stock_movement_filters
 from products.default.models import ProductVariant, Product
 from api.permissions import permission_required
 
@@ -311,10 +311,6 @@ class StockMovementListView(APIView):
         # Get query parameters
         limit = int(request.query_params.get("limit", 10))
         offset = int(request.query_params.get("offset", 0))
-        search = request.query_params.get("search", "").strip()
-        sort = request.query_params.get(
-            "sort", "-date_time"
-        )  # Default: newest first
 
         # Validate pagination parameters
         limit = max(1, min(limit, 100))  # Min 1, Max 100
@@ -328,32 +324,8 @@ class StockMovementListView(APIView):
             "product_variant__images"
         )
 
-        # Apply search filter if provided
-        if search:
-            queryset = queryset.filter(
-                Q(product_variant__product__name__icontains=search)
-                | Q(product_variant__name__icontains=search)
-                | Q(document_reference__icontains=search)
-                | Q(product_variant__sku__icontains=search)
-                | Q(product_variant__product__slug__icontains=search)
-            )
-
-        # Apply sorting
-        # Validate sort field to prevent SQL injection
-        allowed_sort_fields = [
-            "date_time",
-            "-date_time",
-            "quantity",
-            "-quantity",
-            "balance",
-            "-balance",
-            "movement_type",
-            "-movement_type",
-        ]
-        if sort in allowed_sort_fields:
-            queryset = queryset.order_by(sort)
-        else:
-            queryset = queryset.order_by("-date_time")
+        # Filters + sorting (shared with the admin inventory movements report/export view)
+        queryset = apply_admin_stock_movement_filters(queryset, request)
 
         # Get total count for pagination info
         total_count = queryset.count()

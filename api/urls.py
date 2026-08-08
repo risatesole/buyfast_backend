@@ -56,6 +56,14 @@ from inventory.views.admin.inventory_products_admin_view import (
 )
 from inventory.views.admin.reduce_stock_api_view import ReduceStockView
 
+# --- Reports ---
+from orders.views.admin.orders_report_api_view import admin_orders_report_view
+from inventory.views.admin.inventory_report_api_view import (
+    admin_inventory_stock_report_view,
+    admin_inventory_movements_report_view,
+)
+from reports.views.report_logs_api_view import report_logs_view
+
 from .views import upload_file_api_view
 from store.views import store_carrousel_view
 
@@ -129,4 +137,10 @@ urlpatterns = [
 
     # Dashboard
     path("admin/dashboard/summary/", admin_dashboard_summary_view, name="admin-dashboard-summary"),
+
+    # Reports
+    path("admin/reports/orders/", admin_orders_report_view, name="admin-orders-report"),
+    path("admin/reports/inventory/stock/", admin_inventory_stock_report_view, name="admin-inventory-stock-report"),
+    path("admin/reports/inventory/movements/", admin_inventory_movements_report_view, name="admin-inventory-movements-report"),
+    path("admin/reports/logs/", report_logs_view, name="admin-reports-logs"),
 ]

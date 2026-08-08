@@ -1,26 +1,13 @@
 # orders/views/admin_orders_api_view.py
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from django.db.models import Q
 
 from api.utils import CsrfExemptSessionAuthentication
 from api.permissions import require_permission
 from accounts.models import User
 from orders.models import Order, OrderItem, OrderPayment
-from orders.queries import annotate_order_totals
+from orders.queries import annotate_order_totals, apply_admin_order_filters
 from .serializer import OrderListSerializer
-
-
-VALID_SORT_FIELDS = {
-    "id": "id",
-    "firstname": "customer__first_name",
-    "lastname": "customer__last_name",
-    "email": "customer__email",
-    "created_at": "created_at",
-    "total": "total_amount",
-    "pickup_time": "pickup_time",
-    "status": "status",
-}
 
 
 @api_view(["GET"])
@@ -52,51 +39,8 @@ def admin_order_view(request):
     # Annotate with computed fields (shared helper, see orders/queries.py)
     qs = annotate_order_totals(qs)
 
-    # --- filters ---
-    search = request.query_params.get("search", "").strip()
-    if search:
-        qs = qs.filter(
-            Q(customer__first_name__icontains=search)
-            | Q(customer__last_name__icontains=search)
-            | Q(customer__email__icontains=search)
-        )
-
-    status = request.query_params.get("status", "").strip()
-    if status:
-        qs = qs.filter(status=status)
-
-    min_total = request.query_params.get("min_total", "").strip()
-    if min_total:
-        try:
-            qs = qs.filter(total_amount__gte=float(min_total))
-        except ValueError:
-            pass
-
-    max_total = request.query_params.get("max_total", "").strip()
-    if max_total:
-        try:
-            qs = qs.filter(total_amount__lte=float(max_total))
-        except ValueError:
-            pass
-
-    date_from = request.query_params.get("date_from", "").strip()
-    if date_from:
-        qs = qs.filter(created_at__date__gte=date_from)
-
-    date_to = request.query_params.get("date_to", "").strip()
-    if date_to:
-        qs = qs.filter(created_at__date__lte=date_to)
-
-    # --- sorting ---
-    sort_param = request.query_params.get("sort", "-created_at").strip()
-    descending = sort_param.startswith("-")
-    sort_key = sort_param.lstrip("-")
-    db_field = VALID_SORT_FIELDS.get(sort_key)
-
-    if db_field:
-        qs = qs.order_by(f"-{db_field}" if descending else db_field)
-    else:
-        qs = qs.order_by("-created_at")  # fallback
+    # --- filters + sorting (shared with the admin orders report/export view) ---
+    qs = apply_admin_order_filters(qs, request)
 
     # Total count of matching rows BEFORE pagination is applied.
     # Must be computed here (on the filtered/annotated qs, before slicing)
