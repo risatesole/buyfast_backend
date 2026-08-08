@@ -7,6 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from accounts.models import Profile, employee_model
 from inventory.models import StockMovement_model, StockDecrease_model
 from products.default.models import Category, Product, ProductVariant
 
@@ -22,6 +23,8 @@ class StockMovementDecreaseAPITests(APITestCase):
             last_name="Clerk",
             role="employee",
         )
+        profile = Profile.objects.create(name="Inventory", permissions=["inventory.manage"])
+        employee_model.objects.create(user=self.employee, profile=profile)
         self.customer = User.objects.create_user(
             email="customer@example.com",
             password="Password123!",

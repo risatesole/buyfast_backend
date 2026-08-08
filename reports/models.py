@@ -28,7 +28,7 @@ class ReportLog(models.Model):
 
     class Meta:
         db_table = "core_report_log"
-        ordering = ["-created_at"]
+        ordering = ["-created_at", "-id"]
 
     def __str__(self):
         return f"{self.report_type} report ({self.format}) by {self.generated_by}"
