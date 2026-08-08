@@ -9,6 +9,17 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, Tabl
 
 from .voucher_pdf import STATUS_LABELS_ES
 
+PAGE_WIDTH, _PAGE_HEIGHT = landscape(letter)
+MARGIN = 16 * mm
+USABLE_WIDTH = PAGE_WIDTH - 2 * MARGIN
+
+
+def _scaled_col_widths(weights):
+    """Rescales relative column-width weights so they always sum to exactly
+    the page's usable width, regardless of page size/margins."""
+    total_weight = sum(weights)
+    return [USABLE_WIDTH * (weight / total_weight) for weight in weights]
+
 
 def build_orders_report_pdf(orders, filters_summary):
     buffer = BytesIO()
@@ -17,8 +28,8 @@ def build_orders_report_pdf(orders, filters_summary):
         pagesize=landscape(letter),
         topMargin=18 * mm,
         bottomMargin=18 * mm,
-        leftMargin=16 * mm,
-        rightMargin=16 * mm,
+        leftMargin=MARGIN,
+        rightMargin=MARGIN,
         title="Reporte de Pedidos",
     )
 
@@ -57,7 +68,7 @@ def build_orders_report_pdf(orders, filters_summary):
 
     table = Table(
         table_data,
-        colWidths=[12 * mm, 40 * mm, 55 * mm, 30 * mm, 25 * mm, 22 * mm, 30 * mm],
+        colWidths=_scaled_col_widths([12, 40, 55, 30, 25, 22, 30]),
         repeatRows=1,
     )
     table.setStyle(TableStyle([

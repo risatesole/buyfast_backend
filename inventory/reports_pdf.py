@@ -21,6 +21,17 @@ MOVEMENT_TYPE_LABELS_ES = {
     "manual_decrease": "Salida Manual",
 }
 
+PAGE_WIDTH, _PAGE_HEIGHT = landscape(letter)
+MARGIN = 16 * mm
+USABLE_WIDTH = PAGE_WIDTH - 2 * MARGIN
+
+
+def _scaled_col_widths(weights):
+    """Rescales relative column-width weights so they always sum to exactly
+    the page's usable width, regardless of page size/margins."""
+    total_weight = sum(weights)
+    return [USABLE_WIDTH * (weight / total_weight) for weight in weights]
+
 
 def inventory_status_label(quantity):
     if quantity <= 0:
@@ -39,8 +50,8 @@ def _build_report_doc(title, filters_summary):
         pagesize=landscape(letter),
         topMargin=18 * mm,
         bottomMargin=18 * mm,
-        leftMargin=16 * mm,
-        rightMargin=16 * mm,
+        leftMargin=MARGIN,
+        rightMargin=MARGIN,
         title=title,
     )
 
@@ -92,7 +103,7 @@ def build_inventory_stock_report_pdf(variants, filters_summary):
         ])
 
     elements.append(_styled_table(
-        table_data, col_widths=[55 * mm, 30 * mm, 30 * mm, 20 * mm, 25 * mm, 25 * mm]
+        table_data, col_widths=_scaled_col_widths([55, 30, 30, 20, 25, 25])
     ))
     doc.build(elements)
     return buffer.getvalue()
@@ -114,7 +125,7 @@ def build_inventory_movements_report_pdf(movements, filters_summary):
         ])
 
     elements.append(_styled_table(
-        table_data, col_widths=[28 * mm, 55 * mm, 28 * mm, 32 * mm, 20 * mm, 22 * mm]
+        table_data, col_widths=_scaled_col_widths([28, 55, 28, 32, 20, 22])
     ))
     doc.build(elements)
     return buffer.getvalue()
