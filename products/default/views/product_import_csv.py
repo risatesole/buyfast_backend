@@ -35,7 +35,7 @@ all work.
 """
 import csv
 import logging
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from io import TextIOWrapper
 from typing import Dict, List, Tuple, Any, Optional
 from collections import defaultdict
@@ -285,7 +285,7 @@ def validate_product_row(row: Dict[str, str], row_num: int) -> List[Dict[str, An
                     'message': f'Tax rate too high (max 100%): {tax}%',
                     'row': row_num
                 })
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, InvalidOperation):
             errors.append({
                 'field': 'tax_rate',
                 'message': f'Invalid tax rate format: {row.get("tax_rate")}',
@@ -355,7 +355,7 @@ def process_row_with_validation(row: Dict[str, str], row_num: int) -> Tuple[Dict
                     'row': row_num
                 })
                 tax_decimal = Decimal('0')
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, InvalidOperation):
             tax_decimal = Decimal('0')
     else:
         tax_decimal = Decimal('0')
