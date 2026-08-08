@@ -11,7 +11,7 @@ PROVIDERS = [
 
 CATEGORIES = [
     {
-        "slug": "stationery",
+        "slug": "papeleria",
         "name": "Papelería y Suministros",
         "description": "Cuadernos, bolígrafos, papel y material gastable.",
         "priority": 1,
@@ -20,7 +20,7 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=400&fit=crop",
     },
     {
-        "slug": "books_manuals",
+        "slug": "libros_manuales",
         "name": "Libros y Manuales",
         "description": "Textos universitarios, manuales de laboratorio y guías.",
         "priority": 1,
@@ -29,7 +29,7 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1507842872343-583f20270319?w=400&h=400&fit=crop",
     },
     {
-        "slug": "medical_lab",
+        "slug": "laboratorio_medicina",
         "name": "Medicina y Laboratorio",
         "description": "Estetoscopios, batas médicas, kits de disección y bioseguridad.",
         "priority": 1,
@@ -38,7 +38,7 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=400&fit=crop",
     },
     {
-        "slug": "architecture_arts",
+        "slug": "arquitectura_arte",
         "name": "Arquitectura y Artes",
         "description": "Reglas T, escalímetros, maquetas, pinturas y pinceles.",
         "priority": 2,
@@ -47,7 +47,7 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop",
     },
     {
-        "slug": "electronics",
+        "slug": "electronicos",
         "name": "Electrónica y Calculadoras",
         "description": "Calculadoras científicas, memorias USB y accesorios periféricos.",
         "priority": 2,
@@ -56,7 +56,7 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=400&h=400&fit=crop",
     },
     {
-        "slug": "uniforms",
+        "slug": "uniformes",
         "name": "Uniformes e Institucional",
         "description": "T-shirts UASD, ropa deportiva y promocionales.",
         "priority": 3,
@@ -65,14 +65,16 @@ CATEGORIES = [
         "image_default": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
     },
     {
-        "slug": "snacks_beverages",
-        "name": "Snacks y Bebidas",
-        "description": "Comida rápida, café, agua y meriendas.",
+        
+        "slug": "material_escolar",
+        "name": "Materiales Escolares",
+        "description": "Materiales escolares",
         "priority": 3,
-        "image_banner": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop",
-        "image_cart": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=100&h=100&fit=crop",
-        "image_default": "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop",
-    },
+        "image_banner": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/images/51UXrrCNLOL._AC_SL1500_.jpg",
+        "image_cart": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/images/51UXrrCNLOL._AC_SL1500_.jpg",
+        "image_default": "https://zdnhvnvrngxvxedrvuon.supabase.co/storage/v1/object/public/bucket1/images/51UXrrCNLOL._AC_SL1500_.jpg",
+    
+    }
 ]
 
 
