@@ -113,7 +113,10 @@ def paypal_capture_api_view(request):
         for item in order.items.all()
     ]
     remove_cart_item(items, order.customer)
-    send_order_confirmation_email(order)
+    try:
+        send_order_confirmation_email(order)
+    except Exception as e:
+        print(f"Failed to send order confirmation email for order {order.id}: {e}")
 
     return Response(
         {"success": True, "order_id": order.id, "status": order.status}, status=status.HTTP_200_OK
