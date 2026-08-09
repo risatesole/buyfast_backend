@@ -49,6 +49,13 @@ from .localization.localization import USE_I18N as USE_I18N
 from .mediaconfig.media import MEDIA_ROOT as MEDIA_ROOT
 from .mediaconfig.media import MEDIA_URL as MEDIA_URL
 from .middleware.middleware import MIDDLEWARE as MIDDLEWARE
+from .payment.azul import AZUL_AUTH_KEY as AZUL_AUTH_KEY
+from .payment.azul import AZUL_CURRENCY_CODE as AZUL_CURRENCY_CODE
+from .payment.azul import AZUL_ENVIRONMENT as AZUL_ENVIRONMENT
+from .payment.azul import AZUL_MERCHANT_ID as AZUL_MERCHANT_ID
+from .payment.azul import AZUL_MERCHANT_NAME as AZUL_MERCHANT_NAME
+from .payment.azul import AZUL_MERCHANT_TYPE as AZUL_MERCHANT_TYPE
+from .payment.azul import AZUL_PAYMENT_PAGE_URL as AZUL_PAYMENT_PAGE_URL
 from .rest_framework.rest_framework import REST_FRAMEWORK as REST_FRAMEWORK
 from .staticfiles.staticfiles import STATIC_ROOT as STATIC_ROOT
 from .staticfiles.staticfiles import STATIC_URL as STATIC_URL

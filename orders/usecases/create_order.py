@@ -7,7 +7,7 @@ from products.default.models import ProductVariant
 PICKUP_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
 
 # def create_order(customer, items, payment_transaction,pickuptime):
-def create_order(customer, items,pickuptime):
+def create_order(customer, items, pickuptime, status=Order.Status.AWAITING_PAYMENT):
     print(f"executing create order")
     print(f"customer credentials:")
     print(f"id: {customer.id}")
@@ -19,6 +19,7 @@ def create_order(customer, items,pickuptime):
         customer = customer,
         pickup_time=pickuptime,
         pickup_code=get_random_string(6, allowed_chars=PICKUP_CODE_ALPHABET),
+        status=status,
     )
 
     for item in items:

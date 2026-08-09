@@ -37,6 +37,11 @@ from checkout.views.checkout_api_view import (
     checkout_api_view,
     checkout_timeslots_api_view,
 )
+from checkout.views.checkout_azul_return_view import (
+    checkout_azul_approved_view,
+    checkout_azul_cancelled_view,
+    checkout_azul_declined_view,
+)
 
 # --- Orders & Inventory ---
 from orders.views.admin.orders_admin_api_view import admin_order_view
@@ -113,6 +118,11 @@ urlpatterns = [
     path("cart/", CartAPIView.as_view(), name="cart-api"),
     path("checkout/", checkout_api_view, name="checkout-api"),
     path("checkout/timeslots/", checkout_timeslots_api_view, name="checkout-timeslots"),
+
+    # Payment — Azul Payment Page return URLs
+    path("payment/azul/approved/", checkout_azul_approved_view, name="payment-azul-approved"),
+    path("payment/azul/declined/", checkout_azul_declined_view, name="payment-azul-declined"),
+    path("payment/azul/cancelled/", checkout_azul_cancelled_view, name="payment-azul-cancelled"),
 
     # Orders
     path("admin/orders/", admin_order_view, name="admin-orders-list"),
