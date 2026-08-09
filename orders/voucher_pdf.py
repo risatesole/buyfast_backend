@@ -7,9 +7,11 @@ from reportlab.lib.units import mm
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 STATUS_LABELS_ES = {
+    "awaiting_payment": "Esperando pago",
     "pending": "Pendiente",
     "fulfilled": "Entregado",
     "returned": "Devuelto",
+    "cancelled": "Cancelada",
 }
 
 
