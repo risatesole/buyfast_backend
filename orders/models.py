@@ -7,10 +7,12 @@ from payment.models import PaymentProvider, PaymentProviderTransaction
 
 class Order(models.Model):
     class Status(models.TextChoices):
+        AWAITING_PAYMENT = "awaiting_payment", "Awaiting Payment"
         PENDING = "pending", "Pending"
         FULFILLED = "fulfilled", "Fulfilled"
         RETURNED = "returned", "Returned"
-    
+        CANCELLED = "cancelled", "Cancelled"
+
     customer = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -19,7 +21,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.PENDING
+        default=Status.AWAITING_PAYMENT
     )
     pickup_time = models.DateTimeField(null=True, blank=True)
     pickup_code = models.CharField(max_length=8, blank=True, default="")

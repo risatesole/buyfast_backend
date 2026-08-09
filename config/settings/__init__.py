@@ -49,6 +49,9 @@ from .localization.localization import USE_I18N as USE_I18N
 from .mediaconfig.media import MEDIA_ROOT as MEDIA_ROOT
 from .mediaconfig.media import MEDIA_URL as MEDIA_URL
 from .middleware.middleware import MIDDLEWARE as MIDDLEWARE
+from .payment.payment import PAYPAL_API_BASE as PAYPAL_API_BASE
+from .payment.payment import PAYPAL_CLIENT_ID as PAYPAL_CLIENT_ID
+from .payment.payment import PAYPAL_CLIENT_SECRET as PAYPAL_CLIENT_SECRET
 from .rest_framework.rest_framework import REST_FRAMEWORK as REST_FRAMEWORK
 from .staticfiles.staticfiles import STATIC_ROOT as STATIC_ROOT
 from .staticfiles.staticfiles import STATIC_URL as STATIC_URL

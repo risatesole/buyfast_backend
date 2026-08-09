@@ -38,6 +38,13 @@ from checkout.views.checkout_api_view import (
     checkout_timeslots_api_view,
 )
 
+# --- Payment ---
+from payment.views.paypal_api_view import (
+    paypal_create_order_api_view,
+    paypal_capture_api_view,
+    paypal_cancel_api_view,
+)
+
 # --- Orders & Inventory ---
 from orders.views.admin.orders_admin_api_view import admin_order_view
 from orders.views.admin.order_details_admin_api_view import order_details_admin_view
@@ -113,6 +120,9 @@ urlpatterns = [
     path("cart/", CartAPIView.as_view(), name="cart-api"),
     path("checkout/", checkout_api_view, name="checkout-api"),
     path("checkout/timeslots/", checkout_timeslots_api_view, name="checkout-timeslots"),
+    path("checkout/paypal/create-order/", paypal_create_order_api_view, name="checkout-paypal-create-order"),
+    path("checkout/paypal/capture/", paypal_capture_api_view, name="checkout-paypal-capture"),
+    path("checkout/paypal/cancel/", paypal_cancel_api_view, name="checkout-paypal-cancel"),
 
     # Orders
     path("admin/orders/", admin_order_view, name="admin-orders-list"),

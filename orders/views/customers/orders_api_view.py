@@ -23,8 +23,8 @@ class OrderDetailView(APIView):
                 ).get(id=order_id,customer=request.user)
                 
                 payment_method = None
-                # if hasattr(order, 'payment'):
-                #     payment_method = order.payment.payment_provider.name
+                if hasattr(order, 'payment'):
+                    payment_method = order.payment.payment_provider.name
 
                 return Response({
                     "data": {
@@ -62,7 +62,7 @@ class OrderDetailView(APIView):
                             for item in order.items.all()
                         ),
                         "shipping_method": "pick_up",
-                        "payment_method": payment_method or "credit_card",
+                        "payment_method": payment_method,
                         "notes": "Please leave at front door"
                     }
                 }, status=status.HTTP_200_OK)
@@ -96,7 +96,11 @@ class OrderDetailView(APIView):
                     })
                 
                 total = sum(item["subtotal"] for item in items_data)
-                
+
+                payment_method = None
+                if hasattr(order, 'payment'):
+                    payment_method = order.payment.payment_provider.name
+
                 orders_data.append({
                     "id": order.id,
                     "profilepicture": order.customer.profile_picture,
@@ -118,7 +122,7 @@ class OrderDetailView(APIView):
                     "items": items_data,
                     "total": total,
                     "shipping_method": "pick_up",
-                    "payment_method": "credit_card",
+                    "payment_method": payment_method,
                     "notes": "Please leave at front door"
                 })
 

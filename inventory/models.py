@@ -8,6 +8,7 @@ class StockMovement_model(models.Model):
         ("purchase_entry", "Purchase Entry"),
         ("customer_sell", "Customer Sell"),
         ("manual_decrease", "Manual Decrease"),
+        ("order_cancelled", "Order Cancelled"),
     ]
     date_time = models.DateTimeField(auto_now_add=True)
     product_variant = models.ForeignKey(

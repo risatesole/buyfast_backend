@@ -2,3 +2,7 @@ from .usecases.validate_credit_card import validate_credit_card as validate_cred
 from .usecases.validate_credit_card import InvalidCreditCardError as InvalidCreditCardError
 from .usecases.process_payment import process_payment as process_payment
 from .usecases.process_payment import PaymentDeclinedException as PaymentDeclinedException
+from .usecases.paypal_client import get_paypal_access_token as get_paypal_access_token
+from .usecases.paypal_client import create_paypal_order as create_paypal_order
+from .usecases.paypal_client import capture_paypal_order as capture_paypal_order
+from .usecases.paypal_client import PayPalAPIError as PayPalAPIError

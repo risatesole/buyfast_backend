@@ -1,6 +1,4 @@
 from .validators.validate_product_available import validation_product_avialability
-from payment.payment import validate_credit_card, InvalidCreditCardError
-from payment.payment import validate_credit_card, InvalidCreditCardError, process_payment, PaymentDeclinedException
 from inventory.inventory import ProductUnavailableException, sell_products
 from orders.orders import create_order
 from django.db import transaction
@@ -97,25 +95,18 @@ def create_order_checkout(
     billing_address_country,
     billing_address_postal_code,
     billing_address_state,
-    card_information_card_number,
-    card_information_expiry_month,
-    card_information_expiry_year,
-    card_information_cvv,
     pickuptime,
     items
 ):
+    """
+    Creates the order and reserves stock for it, leaving it in
+    AWAITING_PAYMENT. The cart is only cleared and the confirmation email
+    only sent once PayPal capture succeeds (see payment/views/paypal_api_view.py).
+    """
 
-    is_card_valid = validate_credit_card(
-        card_information_card_number,
-        card_information_expiry_month,
-        card_information_expiry_year,
-        card_information_cvv
-    )
     is_product_avialable = validation_product_avialability(items)
     order = create_order(user, items, pickuptime)
-    sell_products(items,f"{order.customer} bought the product")
-    remove_cart_item(items, user)
-    send_order_confirmation_email(order)
+    sell_products(items, f"Order #{order.id} reserved")
     return order
 
 
@@ -134,11 +125,6 @@ def checkout_handler_post(request):
     billing_address_postal_code = request.data["billing_address"]["postal_code"]
     billing_address_state = request.data["billing_address"]["state"]
 
-    card_information_card_number = request.data["card_information"]["card_number"]
-    card_information_expiry_month = request.data["card_information"]["expiry_month"]
-    card_information_expiry_year = request.data["card_information"]["expiry_year"]
-    card_information_cvv = request.data["card_information"]["cvv"]
-
     pickuptime = request.data["pickuptime"]
 
     items = request.data.get("items", [])
@@ -155,25 +141,21 @@ def checkout_handler_post(request):
                 billing_address_country,
                 billing_address_postal_code,
                 billing_address_state,
-                card_information_card_number,
-                card_information_expiry_month,
-                card_information_expiry_year,
-                card_information_cvv,
                 pickuptime,
                 items
             )
+
+        amount = sum(item.subtotal for item in order.items.all())
 
         return Response(
                     {
                         "success": True,
                         "status": "ok",
                         "message": "Checkout successful",
+                        "order_id": order.id,
+                        "amount": amount,
                     }
                 )
-
-    except InvalidCreditCardError as e:
-        return Response({"success": False, "message": "No pudimos procesar la tarjeta. Verifica los datos e intenta nuevamente.","error":{"message":""
-        "Tarjeta inválida"}},status=status.HTTP_400_BAD_REQUEST)
 
     except ProductUnavailableException as e:
         return Response(
