@@ -9,7 +9,8 @@ from orders.models import Order, OrderPayment
 from orders.orders import cancel_unpaid_order
 from payment.models import PaymentProvider, PaymentProviderTransaction
 from payment.payment import create_paypal_order, capture_paypal_order, PayPalAPIError
-from checkout.handlers.checkout_handler_post import remove_cart_item, send_order_confirmation_email
+from checkout.handlers.checkout_handler_post import remove_cart_item
+from notifications.emailing import send_order_confirmation_email
 
 
 def _get_own_awaiting_order(request, order_id):
@@ -113,10 +114,27 @@ def paypal_capture_api_view(request):
         for item in order.items.all()
     ]
     remove_cart_item(items, order.customer)
-    try:
-        send_order_confirmation_email(order)
-    except Exception as e:
-        print(f"Failed to send order confirmation email for order {order.id}: {e}")
+
+    order_items = [
+        {
+            "product_name": item.product.product.name,
+            "variant_name": item.product.name,
+            "quantity": item.quantity,
+            "price_per_item": item.price_per_item,
+            "tax_amount": item.tax_amount,
+            "subtotal": item.subtotal,
+        }
+        for item in order.items.all()
+    ]
+    send_order_confirmation_email(
+        to_email=order.customer.email,
+        first_name=order.customer.first_name,
+        last_name=order.customer.last_name,
+        order_id=order.id,
+        pickup_time=order.pickup_time,
+        items=order_items,
+        total=sum(item["subtotal"] for item in order_items),
+    )
 
     return Response(
         {"success": True, "order_id": order.id, "status": order.status}, status=status.HTTP_200_OK

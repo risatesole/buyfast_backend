@@ -1,0 +1,32 @@
+{% extends "notifications/emails/base_email.html" %}
+
+{% block title %}Confirmación de pedido #{{ order_id }}{% endblock %}
+
+{% block content %}
+<p style="margin:0 0 16px 0;">Estimado(a) {{ first_name }} {{ last_name }},</p>
+<p style="margin:0 0 16px 0;">¡Gracias por su compra en el Económato UASD! Su pedido #{{ order_id }} ha sido recibido correctamente.</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:1px solid #e0e3e5; margin:0 0 20px 0;">
+<tr>
+<td style="background-color:#f8fafd; border-bottom:1px solid #e0e3e5; padding:10px 16px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; color:#747781;">PRODUCTO</td>
+<td style="background-color:#f8fafd; border-bottom:1px solid #e0e3e5; padding:10px 16px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; color:#747781;" align="center">CANT.</td>
+<td style="background-color:#f8fafd; border-bottom:1px solid #e0e3e5; padding:10px 16px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; color:#747781;" align="right">SUBTOTAL</td>
+</tr>
+{% for item in items %}
+<tr>
+<td style="padding:10px 16px; border-bottom:1px solid #e0e3e5; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#191c1e;">
+{{ item.product_name }}{% if item.variant_name %} &mdash; {{ item.variant_name }}{% endif %}
+</td>
+<td style="padding:10px 16px; border-bottom:1px solid #e0e3e5; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#191c1e;" align="center">{{ item.quantity }}</td>
+<td style="padding:10px 16px; border-bottom:1px solid #e0e3e5; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#191c1e;" align="right">{{ item.subtotal_display }}</td>
+</tr>
+{% endfor %}
+<tr>
+<td style="padding:12px 16px; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold; color:#191c1e;" colspan="2">Total</td>
+<td style="padding:12px 16px; font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:bold; color:#191c1e;" align="right">{{ total_display }}</td>
+</tr>
+</table>
+
+<p style="margin:0 0 8px 0;"><strong>Hora de recogida:</strong> {{ pickup_time_display }}</p>
+<p style="margin:0;">Puede pasar a retirar su pedido en la fecha y hora seleccionadas.</p>
+{% endblock %}

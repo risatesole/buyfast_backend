@@ -7,56 +7,7 @@ from accounts.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from cart.models import CartItem
-from django.core.mail import send_mail
 
-
-def send_order_confirmation_email(order):
-    print(f"Sending email:")
-    lines = [
-        f"Estimado(a) {order.customer.first_name} {order.customer.last_name},",
-        "",
-        "¡Gracias por su compra en el Economato UASD!",
-        "",
-        f"Su pedido #{order.id} ha sido recibido correctamente.",
-        "",
-        "Detalles del pedido:",
-        "-" * 40,
-    ]
-
-    total = 0
-
-    for item in order.items.all():
-        subtotal = item.subtotal
-        total += subtotal
-
-        lines.extend([
-            f"• {item.product.product.name} - {item.product.name}",
-            f"  Cantidad: {item.quantity}",
-            f"  Precio: RD$ {item.price_per_item:.2f}",
-            f"  Impuestos: RD$ {item.tax_amount:.2f}",
-            f"  Subtotal: RD$ {subtotal:.2f}",
-            "",
-        ])
-
-    lines.extend([
-        "-" * 40,
-        f"Total: RD$ {total:.2f}",
-        "",
-        f"Hora de recogida: {order.pickup_time}",
-        "",
-        "Puede pasar a retirar su pedido en la fecha y hora seleccionadas.",
-        "",
-        "Atentamente,",
-        "Equipo del Economato UASD",
-    ])
-
-    send_mail(
-        subject=f"Confirmación de pedido #{order.id}",
-        message="\n".join(lines),
-        recipient_list=[order.customer.email],
-        from_email=None,
-        fail_silently=False,
-    )
 
 def remove_cart_item(items, user):
     from cart.models import Cart  # Import Cart model

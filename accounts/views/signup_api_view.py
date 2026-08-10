@@ -7,8 +7,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.db import IntegrityError, transaction  # ADD transaction import
 from accounts.accounts import create_account, AccountRole, AccountStatus
 from accounts.tokens import email_verification_token
+from notifications.emailing import send_welcome_email
 from django.conf import settings
-from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -98,25 +98,12 @@ def signup_api_view(request):
             token = email_verification_token.make_token(user)
             verify_link = f"{settings.FRONTEND_URL}/verify-email?uid={uid}&token={token}"
 
-            send_mail(
-                subject="¡Bienvenido al Economato UASD!",
-                message=(
-                    f"Estimado(a) {user.first_name} {user.last_name},\n\n"
-                    "Le damos la bienvenida al Economato UASD!\n\n"
-                    "Su cuenta ha sido creada exitosamente y ya puede acceder a nuestros servicios.\n\n"
-                    "Información de la cuenta:\n"
-                    f"Nombre: {user.first_name} {user.last_name}\n"
-                    f"Correo electrónico: {user.email}\n"
-                    f"Matrícula: {user.matricula}\n\n"
-                    "Antes de poder completar compras, debe verificar su correo electrónico "
-                    f"visitando el siguiente enlace:\n{verify_link}\n\n"
-                    "Si usted no realizó este registro, por favor comuníquese con el equipo de soporte lo antes posible.\n\n"
-                    "Atentamente,\n"
-                    "Equipo del Economato UASD"
-                ),
-                from_email=None,  # Usa DEFAULT_FROM_EMAIL
-                recipient_list=[user.email],
-                fail_silently=False,
+            send_welcome_email(
+                to_email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                matricula=user.matricula,
+                verify_link=verify_link,
             )
 
             return Response({

@@ -1,0 +1,35 @@
+{% extends "notifications/emails/base_email.html" %}
+
+{% block title %}{% if is_welcome %}Bienvenido al Económato UASD{% else %}Verifica tu correo{% endif %}{% endblock %}
+
+{% block content %}
+<p style="margin:0 0 16px 0;">Estimado(a) {{ first_name }} {{ last_name }},</p>
+
+{% if is_welcome %}
+<p style="margin:0 0 16px 0;">¡Le damos la bienvenida al Económato UASD! Su cuenta ha sido creada exitosamente y ya puede acceder a nuestros servicios.</p>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:1px solid #e0e3e5; margin:0 0 20px 0;">
+<tr>
+<td style="padding:16px; font-family:Arial, Helvetica, sans-serif; font-size:14px; color:#191c1e;">
+<strong>Nombre:</strong> {{ first_name }} {{ last_name }}<br>
+<strong>Correo electrónico:</strong> {{ to_email }}<br>
+{% if matricula %}<strong>Matrícula:</strong> {{ matricula }}<br>{% endif %}
+</td>
+</tr>
+</table>
+
+<p style="margin:0 0 8px 0;">Antes de poder completar compras, debe verificar su correo electrónico:</p>
+{% else %}
+<p style="margin:0 0 8px 0;">Para poder completar compras en el Económato UASD, primero debe verificar su correo electrónico:</p>
+{% endif %}
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px 0;">
+<tr>
+<td style="background-color:#002d62; border-radius:4px;">
+<a href="{{ verify_link }}" style="display:inline-block; padding:12px 28px; font-family:Arial, Helvetica, sans-serif; font-size:15px; font-weight:bold; color:#ffffff; text-decoration:none;">Verificar mi correo</a>
+</td>
+</tr>
+</table>
+
+<p style="margin:0; font-size:13px; color:#747781;">Si usted no {% if is_welcome %}realizó este registro{% else %}solicitó este correo{% endif %}, puede ignorar este mensaje.</p>
+{% endblock %}

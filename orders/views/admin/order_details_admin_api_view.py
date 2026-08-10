@@ -6,26 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from api.permissions import has_permission
 from ...models import Order, OrderItem, OrderCodeView_model
-from django.core.mail import send_mail
-
-def send_order_fulfilled_email(order):
-    send_mail(
-        subject=f"Confirmación de entrega del pedido #{order.id}",
-        message=(
-            f"Estimado(a) {order.customer.first_name} {order.customer.last_name},\n\n"
-            "Le confirmamos que su pedido ha sido entregado exitosamente en el Economato UASD.\n\n"
-            f"Número de pedido: {order.id}\n"
-            f"Fecha y hora de retiro: {order.pickup_time}\n\n"
-            "Esperamos que los productos recibidos sean de su satisfacción.\n\n"
-            "Si tiene alguna duda, observa algún inconveniente con su pedido o necesita asistencia, puede comunicarse con el personal del Economato UASD.\n\n"
-            "Agradecemos su confianza y esperamos atenderle nuevamente.\n\n"
-            "Atentamente,\n"
-            "Equipo del Economato UASD"
-        ),
-        from_email=None,
-        recipient_list=[order.customer.email],
-        fail_silently=False,
-    )
+from notifications.emailing import send_order_fulfilled_email
 
 
 @api_view(['GET', 'POST'])
@@ -126,7 +107,13 @@ def order_details_admin_view(request, pk):
 
             order.status = Order.Status.FULFILLED
             order.save()
-            send_order_fulfilled_email(order)
+            send_order_fulfilled_email(
+                to_email=order.customer.email,
+                first_name=order.customer.first_name,
+                last_name=order.customer.last_name,
+                order_id=order.id,
+                pickup_time=order.pickup_time,
+            )
             
             return Response(
                 {

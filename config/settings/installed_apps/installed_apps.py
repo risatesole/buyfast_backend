@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "checkout",
     "payment",
     "orders",
+    "notifications",
     "seed",
     "store",
     "reports",

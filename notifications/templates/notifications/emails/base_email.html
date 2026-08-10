@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{% block title %}Económato UASD{% endblock %}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f7f9fb;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; background-color:#f7f9fb;">
+<tr>
+<td align="center" style="padding:24px 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background-color:#ffffff; border:1px solid #e0e3e5;">
+<tr>
+<td style="background-color:#002d62; padding:24px 32px;">
+<span style="font-family:Arial, Helvetica, sans-serif; font-size:20px; font-weight:bold; color:#ffffff;">Económato UASD</span>
+</td>
+</tr>
+<tr>
+<td style="background-color:#ffffff; padding:32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#191c1e;">
+{% block content %}{% endblock %}
+</td>
+</tr>
+<tr>
+<td style="background-color:#f8fafd; border-top:1px solid #e0e3e5; padding:20px 32px; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:1.5; color:#747781;">
+Este es un mensaje automático, por favor no responda a este correo.<br>
+&copy; Económato UASD
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
