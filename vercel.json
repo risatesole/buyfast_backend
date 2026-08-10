@@ -1,5 +1,5 @@
 {
-  "installCommand": "uv sync",
+  "installCommand": "uv sync && uv run python manage.py migrate --noinput",
   "builds": [
     {
       "src": "config/wsgi.py",
