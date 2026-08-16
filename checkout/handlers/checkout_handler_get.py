@@ -23,6 +23,7 @@ def checkout_handler_get(request):
                         "variant_name": item.variant.name,
                         "quantity": item.quantity,
                         "selling_price": float(item.variant.selling_price),
+                        "tax_rate": float(item.variant.tax_rate),
 
                         # Mantengo esta estructura para compatibilidad con tu CheckoutPage actual,
                         # porque tu frontend usa item.product.id, item.product.name, etc.
@@ -31,6 +32,7 @@ def checkout_handler_get(request):
                             "name": item.variant.name,
                             "description": item.variant.description,
                             "selling_price": float(item.variant.selling_price),
+                            "tax_rate": float(item.variant.tax_rate),
                         },
 
                         # También dejo productvariant por si otra parte del frontend lo usa.
@@ -39,6 +41,7 @@ def checkout_handler_get(request):
                             "name": item.variant.name,
                             "description": item.variant.description,
                             "selling_price": float(item.variant.selling_price),
+                            "tax_rate": float(item.variant.tax_rate),
                         },
                     }
                     for item in items

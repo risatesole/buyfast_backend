@@ -17,6 +17,12 @@ class CartItemReadSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True
     )
+    tax_rate = serializers.DecimalField(
+        source="variant.tax_rate",
+        max_digits=5,
+        decimal_places=2,
+        read_only=True
+    )
 
     thumbnail = serializers.SerializerMethodField()
     total_price = serializers.SerializerMethodField()
@@ -30,6 +36,7 @@ class CartItemReadSerializer(serializers.ModelSerializer):
             "variant_name",
             "product_slug",
             "selling_price",
+            "tax_rate",
             "quantity",
             "thumbnail",
             "total_price",
