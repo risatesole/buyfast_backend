@@ -83,7 +83,7 @@ class SignupAPITestCase(TestCase):
 
         # Check email was sent
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, '¡Bienvenido al Economato UASD!')
+        self.assertEqual(mail.outbox[0].subject, '¡Bienvenido al Económato UASD!')
         self.assertIn(signup_data['email'], mail.outbox[0].to)
 
         # Check response contains user data

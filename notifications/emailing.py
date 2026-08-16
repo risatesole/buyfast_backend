@@ -61,6 +61,14 @@ def send_verification_email(*, to_email, first_name, last_name, verify_link):
 
 
 def send_password_reset_email(*, to_email, first_name, last_name, reset_link):
+    text_body = (
+        f"Estimado(a) {first_name} {last_name},\n\n"
+        "Recibimos una solicitud para restablecer la contraseña de su cuenta. "
+        "Para crear una nueva contraseña, visite el siguiente enlace:\n\n"
+        f"{reset_link}\n\n"
+        "Si usted no solicitó este cambio, puede ignorar este correo."
+    )
+
     return _send_email(
         subject="Recupera tu contraseña - Económato UASD",
         template_name="password_reset.html",
@@ -70,6 +78,7 @@ def send_password_reset_email(*, to_email, first_name, last_name, reset_link):
             "reset_link": reset_link,
         },
         to_email=to_email,
+        text_body=text_body,
     )
 
 
